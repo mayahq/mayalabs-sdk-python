@@ -2,7 +2,8 @@ import requests
 import os
 from .creds import api_key, api_base_url, api_ws_url
 from .utils.pac_engine import GenerateTask, InstructTask
-from .worker import WorkerClient
+from .worker import WorkerClient, Worker
+from .utils.name_gen import get_random_name
 import asyncio
 
 class SessionClient:
@@ -97,6 +98,7 @@ class Session():
         self.id = None
         self.engine = engine
         self.script = ""
+        self.worker : Worker = None
 
     @classmethod
     def new(cls, script=None):
@@ -116,10 +118,40 @@ class Session():
         asyncio.create_task(task.execute())
         pass
 
-    def deploy(self, worker_id):
+    def deploy(self, worker_id=None):
         # Implement this method
-        response = SessionClient.deploy_session(self.id, worker_id)
-        return response
+        print(worker_id)
+        if worker_id is not None:
+            response = WorkerClient.get_worker(worker_id)
+            try:
+                print(response['results'])
+                self.worker = Worker().parse_obj(response['results'])
+                print("Found worker: ", worker.name)
+                print("Deploying...")
+            except:
+                print("Worker not found")
+        elif self.worker is None:
+            print("No worker found, creating new worker...")
+            random_name = "SDK:" + get_random_name()
+            self.worker = WorkerClient.create_worker(worker_name=random_name, alias=random_name)
+        else:
+            raise Exception("Error: Could not find worker")
+        if self.worker:
+            print("Starting worker: ", self.worker.name, "...")
+            self.worker.start()
+            print("Generating program...")
+            self.generate()
+            ## need to wait for generate to end before deploying
+            ## loop until worker.status is "STARTED"
+            print("Waiting for worker to start...")
+            while self.worker.status != "STARTED":
+                print("Checking - worker status:", self.worker.status)
+                self.worker.update()
+            print("Started! Deploying on worker:", self.worker.name, "...")
+            response = SessionClient.deploy_session(self.id, self.worker.id)
+            return response
+        else:
+            raise Exception("Error: Could not find worker") 
 
     def delete(self):
         # Implement this method
@@ -137,7 +169,10 @@ class Session():
 
     def to_string(self):
         pass
-        
+
+    def call(self, msg):
+        response = self.worker.call(msg) 
+        return response
 
     @property
     def id(self):

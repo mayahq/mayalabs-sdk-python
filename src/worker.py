@@ -8,7 +8,11 @@ from .creds import api_key, api_base_url, api_ws_url
 
 class Worker:
     def __init__(self) -> None:
+        self.name : str = None
+        self.alias : str = None
         self.id : str = None
+        self.url : str = None
+        self.status : str = None
 
     def start(self):
         return WorkerClient.start_worker(worker_id=self.id)
@@ -22,16 +26,40 @@ class Worker:
     def clear(self):
         pass
 
+    def update(self):
+        if self.id is not None:
+            response = WorkerClient.get_worker(worker_id=self.id)
+            self.parse_obj(response['results'])
+        else:
+            raise Exception("Worker ID is not set")
+
+    def call(self, msg : dict):
+        if self.id is None:
+            raise Exception("Worker ID is not set")
+        if self.url is None:
+            self.update()
+        try:
+            response = WorkerClient.call_worker(worker_url=self.url, msg=msg)
+            return response
+        except Exception as e:
+            raise Exception("Something went wrong while calling worker with message.")
+
     @classmethod
     def parse_obj(cls, obj):
         worker = cls()
         worker.id = obj.get('_id', None)
+        worker.url = obj.get('url', None)
+        worker.status = obj.get('status', None)
+        worker.name = obj.get('name', None)
+        worker.alias = obj.get('alias', None)
         return worker
     
     @classmethod
     def new(cls, name, alias=None):
         worker = WorkerClient.create_worker(worker_name=name, alias=alias)
         return worker
+    
+    
 
 
 
@@ -39,17 +67,29 @@ class Worker:
 class WorkerClient:
     @staticmethod
     def get_worker(worker_id, alias=None) -> Worker:
-        request = {
-            'url': f"{api_base_url}/app/v2/brains/{worker_id}",
-            'method': "get",
-            'json': {
-                'workspaceId': worker_id,
-                'alias': alias
-            },
-            'headers': {
-                'x-api-key': api_key,
-            },
-        }
+        if alias:
+            request = {
+                'url': f"{api_base_url}/app/v2/brains/{worker_id}",
+                'method': "get",
+                'json': {
+                    'workspaceId': worker_id,
+                    'alias': alias
+                },
+                'headers': {
+                    'x-api-key': api_key,
+                },
+            }
+        else:
+            request = {
+                'url': f"{api_base_url}/app/v2/brains/{worker_id}",
+                'method': "get",
+                'json': {
+                    'workspaceId': worker_id,
+                },
+                'headers': {
+                    'x-api-key': api_key,
+                },
+            }
 
         response = requests.request(**request)
         return response.json()
@@ -89,8 +129,6 @@ class WorkerClient:
             return worker
         else:
             return None
-        
-        return data[0] if len(data) > 0 else None
 
     @staticmethod
     def create_worker(worker_name, alias) -> Worker:
@@ -147,7 +185,8 @@ class WorkerClient:
             poll(start_confirmation_function, 1000, 120000)
         return start_response.json()
     
-    def stop_worker(self, worker_id, wait=False) -> Worker:
+    @staticmethod
+    def stop_worker(worker_id, wait=False) -> Worker:
         stop_request = {
             'url': f"{api_base_url}/app/v2/brains/stop",
             'method': 'post',
@@ -187,6 +226,21 @@ class WorkerClient:
 
         response = requests.request(**request)
         return response.json
+    
+    def call_worker(worker_url, msg):
+        request = {
+            'url': f"{worker_url}/send-maya-message",
+            'method': "post",
+            'json': msg,
+            'headers': {
+                'x-api-key': api_key,
+            },
+            'timeout' : 30
+        }
+
+        response = requests.request(**request)
+        return response.json()
+
     
     # def get_worker_health(self, worker_id):
     #     response = self.get_worker(worker_id)
