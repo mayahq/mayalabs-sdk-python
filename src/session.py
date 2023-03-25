@@ -5,7 +5,7 @@ from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
 import asyncio
-
+import time
 class SessionClient:
 
     @staticmethod
@@ -137,16 +137,21 @@ class Session():
         else:
             raise Exception("Error: Could not find worker")
         if self.worker:
-            print("Starting worker: ", self.worker.name, "...")
-            self.worker.start()
+            if self.worker.status != "STARTED":
+                print("Starting worker: ", self.worker.name, "...")
+                self.worker.start()
             print("Generating program...")
             self.generate()
             ## need to wait for generate to end before deploying
             ## loop until worker.status is "STARTED"
-            print("Waiting for worker to start...")
-            while self.worker.status != "STARTED":
+            while self.worker.status and self.worker.status != "STARTED":
                 print("Checking - worker status:", self.worker.status)
-                self.worker.update()
+                # self.worker.update()
+                print("Waiting for worker to start...")
+                worker_response = WorkerClient.get_worker(worker_id)
+                if worker_response['results']:
+                    self.worker = Worker().parse_obj(worker_response['results'])
+                time.sleep(3)
             print("Started! Deploying on worker:", self.worker.name, "...")
             response = SessionClient.deploy_session(self.id, self.worker.id)
             return response
