@@ -126,10 +126,10 @@ class Session():
             try:
                 print(response['results'])
                 self.worker = Worker().parse_obj(response['results'])
-                print("Found worker: ", worker.name)
+                print("Found worker: ", self.worker.name)
                 print("Deploying...")
             except:
-                print("Worker not found")
+                raise Exception("Worker not found")
         elif self.worker is None:
             print("No worker found, creating new worker...")
             random_name = "SDK:" + get_random_name()
