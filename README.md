@@ -1,9 +1,13 @@
-## Maya Python SDK
+## Maya Labs Python SDK
 
-For development
+A new way to program machines, using natural language.
+
+WIP version : alpha - 0.0.1.
+
+## Usage
 
 ```
-import src as mayalabs
+import mayalabs
 
 script = """
 1. inject default
@@ -23,7 +27,7 @@ session.generate()
 session.deploy(worker_id=worker.id)
 
 # soon
-output = session.call({ 'payload' : "cool"})
+output = session.call({ 'payload' : 'cool'})
 
 # clear everything
 session.delete()
