@@ -101,7 +101,7 @@ class Worker:
 
         call_task.add_done_callback(stop_log_task)
 
-        print(Style.BRIGHT + Fore.CYAN + '\nExecuting program on worker.' + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.CYAN + '\nExecuting program on worker.\n' + Style.RESET_ALL)
         loop.run_until_complete(
             asyncio.gather(call_task, log_task)
         )
