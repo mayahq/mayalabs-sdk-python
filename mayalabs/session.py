@@ -1,17 +1,31 @@
 import requests
 import os
-from .creds import api_key, api_base_url, api_ws_url
+
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
+from .utils.authkey import load_key
 import asyncio
 import time
 from time import sleep
 import concurrent.futures
+from .consts import api_base_url, api_ws_url
+from .mayalabs import authenticate
+
 class SessionClient:
 
     @staticmethod
-    def get_session(session_id, alias=None):
+    @authenticate
+    def get_session(session_id, alias=None, api_key=None):
+        """get the session object by providing session identifier
+
+        Args:
+            session_id (_type_): _description_
+            alias (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         request = {
             'url': f"{api_base_url}/pac/v1/session/{session_id}",
             'method': "get",
@@ -24,7 +38,8 @@ class SessionClient:
         return response.json()
     
     @staticmethod
-    def create_session(from_script="") -> 'Session':
+    @authenticate
+    def create_session(from_script="", api_key=None) -> 'Session':
         request = {
             'url': f"{api_base_url}/pac/v1/session/new",
             'method': "post",
@@ -39,7 +54,8 @@ class SessionClient:
         return response.json()
     
     @staticmethod
-    def list_sessions():
+    @authenticate
+    def list_sessions(api_key=None):
         request = {
             'url': f"{api_base_url}/pac/v1/sessions",
             'method': "get",
@@ -52,7 +68,8 @@ class SessionClient:
         return response.json()
     
     @staticmethod
-    def delete_session(session_id):
+    @authenticate
+    def delete_session(session_id, api_key=None):
         request = {
             'url': f"{api_base_url}/pac/v1/session/{session_id}",
             'method': "delete",
@@ -64,7 +81,8 @@ class SessionClient:
         response = requests.request(**request)
         return response.json()
     
-    def deploy_session(session_id, workspace_id):
+    @authenticate
+    def deploy_session(session_id, workspace_id, api_key=None):
         request = {
             'url': f"{api_base_url}/pac/v1/session/deploy",
             'method': "post",
@@ -82,18 +100,18 @@ class SessionClient:
         except:
             print('deploy error')
     
-    def session_parse(obj):
-        # requests = {
-        #     'url': f"{self.pac_base_url}/pac/v1/session/parse",
-        #     'method': "post",
-        #     'json': {
+    # def session_parse(obj):
+    #     # requests = {
+    #     #     'url': f"{self.pac_base_url}/pac/v1/session/parse",
+    #     #     'method': "post",
+    #     #     'json': {
                 
-        #     },
-        #     'headers': {
-        #         'x-api-key': self.api_key,
+    #     #     },
+    #     #     'headers': {
+    #     #         'x-api-key': self.api_key,
             
-        # }
-        pass
+    #     # }
+    #     pass
 
 class Session():
     def __init__(self, engine="pac-1"):
@@ -115,7 +133,7 @@ class Session():
         task.execute(prompt)
         pass
 
-    async def generate(self):
+    def generate(self):
         task = GenerateTask(self.id)
         asyncio.create_task(task.execute())
         pass
@@ -164,10 +182,9 @@ class Session():
             print("Generating program...")
             with concurrent.futures.ThreadPoolExecutor() as exec:
 
-                future_1 = exec.submit(run_asyncio_coroutine, self.generate())
+                result_1 = exec.submit(self.generate)
                 result_2 = exec.submit(self.check_worker_start)
-                result_1 = future_1.result()
-                print("Program gneerated")
+                print("Program generated", result_1)
                 result_2.result()
                 # report all tasks done
                 print("Deploying on worker:", self.worker.name, "...")

@@ -2,9 +2,8 @@ import os
 import requests
 from .utils.poll import poll
 import time
-from .creds import api_key, api_base_url, api_ws_url
-
-# {'publishedSkillPacks': [], 'skillPacks': [], 'modules': [], 'externalModules': [], 'local': False, 'autoShutdownBehaviour': 'BY_LAST_USE', 'editorAutoDeploy': False, 'parent': None, 'alias': 'API_TEST', 'invalidNodes': [], 'createdAt': '2023-03-22T10:20:50.000Z', 'updatedAt': '2023-03-22T10:20:50.000Z', '_id': '641c89cb902176caaede0144', 'profileSlug': 'mayahq', 'name': 'TESTING API', 'status': 'STOPPED', 'deviceID': '5e0bbfe3717896af1cbb763b', 'deviceName': 'online-cpu', 'device': {'platform': 'cloud'}, 'thumbnail': 'https://maya-frontend-static.s3.ap-south-1.amazonaws.com/default.jpg', 'intents': [], 'url': 'https://rt-641c89cb902176caaede0144.mayahq.dev.mayalabs.io', 'deleted': False, 'createdBy': 'mayahq', 'updatedBy': 'mayahq', '__v': 0}
+from .consts import api_base_url, api_ws_url
+from .mayalabs import authenticate
 
 class Worker:
     def __init__(self) -> None:
@@ -58,15 +57,13 @@ class Worker:
     def new(cls, name, alias=None):
         worker = WorkerClient.create_worker(worker_name=name, alias=alias)
         return worker
-    
-    
-
 
 
 
 class WorkerClient:
     @staticmethod
-    def get_worker(worker_id, alias=None) -> Worker:
+    @authenticate
+    def get_worker(worker_id, alias=None, api_key=None) -> Worker:
         if alias:
             request = {
                 'url': f"{api_base_url}/app/v2/brains/{worker_id}",
@@ -95,7 +92,8 @@ class WorkerClient:
         return response.json()
     
     @staticmethod
-    def get_worker_by_alias(alias) -> Worker:
+    @authenticate
+    def get_worker_by_alias(alias, api_key=None) -> Worker:
         request = {
             'url': f"{api_base_url}/app/v2/brains/getByAlias/{alias}",
             'method': "get",
@@ -113,12 +111,13 @@ class WorkerClient:
             return worker
     
     @staticmethod
-    def search_worker_by_name(self, name) -> Worker:
+    @authenticate
+    def search_worker_by_name(self, name, api_key=None) -> Worker:
         request = {
             'url': f"{api_base_url}/app/v2/brains/search?name={name}",
             'method': 'get',
             'headers': {
-                'x-api-key': self.api_key
+                'x-api-key': api_key
             }
         }
 
@@ -131,7 +130,8 @@ class WorkerClient:
             return None
 
     @staticmethod
-    def create_worker(worker_name, alias) -> Worker:
+    @authenticate
+    def create_worker(worker_name, alias, api_key=None) -> Worker:
         create_request = {
             'url': f"{api_base_url}/app/v2/brains",
             'method': "post",
@@ -154,7 +154,8 @@ class WorkerClient:
         return worker
     
     @staticmethod
-    def start_worker(worker_id, auto_shutdown_behaviour=None, wait=False) -> Worker:
+    @authenticate
+    def start_worker(worker_id, auto_shutdown_behaviour=None, wait=False, api_key=None) -> Worker:
         start_request = {
             'url': f"{api_base_url}/app/v2/brains/start",
             'method': 'post',
@@ -186,7 +187,8 @@ class WorkerClient:
         return start_response.json()
     
     @staticmethod
-    def stop_worker(worker_id, wait=False) -> Worker:
+    @authenticate
+    def stop_worker(worker_id, wait=False, api_key=None) -> Worker:
         stop_request = {
             'url': f"{api_base_url}/app/v2/brains/stop",
             'method': 'post',
@@ -214,7 +216,9 @@ class WorkerClient:
         #     poll(start_confirmation_function, 1000, 120000)
         return stop_response.json()
 
-    def delete_worker(worker_id):
+    @staticmethod
+    @authenticate
+    def delete_worker(worker_id, api_key=None):
         request = {
             'url': f"{api_base_url}/app/v2/brains/{worker_id}",
             'method': "delete",
@@ -226,8 +230,9 @@ class WorkerClient:
 
         response = requests.request(**request)
         return response.json
-    
-    def call_worker(worker_url, msg):
+    @staticmethod
+    @authenticate
+    def call_worker(worker_url, msg, api_key=None):
         request = {
             'url': f"{worker_url}/send-maya-message",
             'method': "post",
