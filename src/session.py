@@ -6,6 +6,8 @@ from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
 import asyncio
 import time
+from time import sleep
+import concurrent.futures
 class SessionClient:
 
     @staticmethod
@@ -113,14 +115,33 @@ class Session():
         task.execute(prompt)
         pass
 
-    def generate(self):
+    async def generate(self):
         task = GenerateTask(self.id)
         asyncio.create_task(task.execute())
         pass
 
+    def check_worker_start(self):
+        status = 0
+        while self.worker.status and self.worker.status != "STARTED":
+            print("Checking - worker status:", self.worker.status)
+            # self.worker.update()
+            print("Waiting for worker to start...")
+            worker_response = WorkerClient.get_worker(self.worker.id)
+            if worker_response['results']:
+                self.worker = Worker().parse_obj(worker_response['results'])
+            time.sleep(2)
+        return
+
     def deploy(self, worker_id=None):
         # Implement this method
-        print(worker_id)
+        # print(worker_id)
+        def run_asyncio_coroutine(coroutine):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            result = loop.run_until_complete(coroutine)
+            loop.close()
+            return result
+        
         if worker_id is not None:
             response = WorkerClient.get_worker(worker_id)
             try:
@@ -141,18 +162,16 @@ class Session():
                 print("Starting worker: ", self.worker.name, "...")
                 self.worker.start()
             print("Generating program...")
-            self.generate()
-            ## need to wait for generate to end before deploying
-            ## loop until worker.status is "STARTED"
-            while self.worker.status and self.worker.status != "STARTED":
-                print("Checking - worker status:", self.worker.status)
-                # self.worker.update()
-                print("Waiting for worker to start...")
-                worker_response = WorkerClient.get_worker(worker_id)
-                if worker_response['results']:
-                    self.worker = Worker().parse_obj(worker_response['results'])
-                time.sleep(3)
-            print("Started! Deploying on worker:", self.worker.name, "...")
+            with concurrent.futures.ThreadPoolExecutor() as exec:
+
+                future_1 = exec.submit(run_asyncio_coroutine, self.generate())
+                result_2 = exec.submit(self.check_worker_start)
+                result_1 = future_1.result()
+                print("Program gneerated")
+                result_2.result()
+                # report all tasks done
+                print("Deploying on worker:", self.worker.name, "...")
+            
             response = SessionClient.deploy_session(self.id, self.worker.id)
             return response
         else:
