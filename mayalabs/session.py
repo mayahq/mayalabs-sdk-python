@@ -4,7 +4,6 @@ import os
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
-from .utils.authkey import load_key
 import asyncio
 import time
 from time import sleep
