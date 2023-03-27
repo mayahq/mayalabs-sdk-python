@@ -1,5 +1,5 @@
 import requests
-import os
+import sys
 
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
@@ -137,6 +137,11 @@ class Session():
         asyncio.create_task(task.execute())
         pass
 
+    async def generate_async(self):
+        task = GenerateTask(self.id)
+        await task.execute()
+        pass
+
     def check_worker_start(self):
         status = 0
         while self.worker.status and self.worker.status != "STARTED":
@@ -181,8 +186,9 @@ class Session():
             print("Generating program...")
             with concurrent.futures.ThreadPoolExecutor() as exec:
 
-                result_1 = exec.submit(self.generate)
+                future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                 result_2 = exec.submit(self.check_worker_start)
+                result_1 = future_1.result()
                 print("Program generated", result_1)
                 result_2.result()
                 # report all tasks done

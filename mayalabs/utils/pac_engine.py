@@ -4,28 +4,21 @@ import websockets
 import json
 from typing import Dict, Any
 import os
+from ..mayalabs import authenticate
+from ..consts import api_base_url, api_ws_url
 
-api_base_url = "https://api.mayalabs.io"
-api_ws_url = "wss://paccomms.prod.mayalabs.io"
 
 class PacTask:
-    def __init__(self, type: str, opts: Dict[str, Any]):
+    @authenticate
+    def __init__(self, type: str, opts: Dict[str, Any], api_key=None):
         self.type = type
         self.opts = opts
         self.api_key = api_key
         self.done_future = asyncio.Future()
 
-    async def execute(self, redact=True):
+    async def execute(self):
         connection_id = uuid.uuid4()
-        print(f"COMMS URL: {api_ws_url}")
-        if redact:
-            print(f"api key: XXXXXXXXX")
-            url = f"{api_ws_url}?connId={connection_id}&apiKey=XXXXXXXXX"
-            print(f"Websocket URL: {url}")
-        else:
-            print(f"api key: {self.api_key}")
-            url = f"{api_ws_url}?connId={connection_id}&apiKey={self.api_key}"
-            print(f"Websocket URL: {url}")
+        url = f"{api_ws_url}?connId={connection_id}&apiKey={self.api_key}"
         
         async with websockets.connect(url) as socket:
             task_id = uuid.uuid4()
