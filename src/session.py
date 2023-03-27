@@ -4,6 +4,7 @@ from .creds import api_key, api_base_url, api_ws_url
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
+from .utils.websocket import WebsocketListener
 import asyncio
 import time
 from time import sleep
@@ -195,7 +196,16 @@ class Session():
         pass
 
     def call(self, msg):
-        response = self.worker.call(msg) 
+        call_task = asyncio.create_task(self.worker.call(msg))
+        log_task = asyncio.create_task(self.worker.ws_client.create_listen_task())
+        call_task.add_done_callback(log_task.cancel)
+
+        tasks = asyncio.gather([call_task, log_task])
+        loop = asyncio.get_event_loop()
+        response = loop.run_until_complete(tasks)
+
+        print('response:', response)
+
         return response
 
     @property
