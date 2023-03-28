@@ -80,3 +80,12 @@ class Function:
         A value like `msg['key']` can be accessed in the script by using {{key}}
         """
         return self.call(**kwds)
+    
+    def clear(self):
+        """
+        Deletes the function by deleteing the associated session and the worker.
+        """
+        if self.session is not None:
+            self.session.delete()
+        if self.worker is not None:
+            self.worker.delete()

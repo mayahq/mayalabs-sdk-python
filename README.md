@@ -19,30 +19,15 @@ pip install mayalabs
 import mayalabs
 
 script = """
-1. inject default
-2. print {{payload}}
+1. trigger on receive
+2. send back response
 """
 
-mayalabs.auth.api_key = <MAYA_API_KEY>
+function = mayalabs.Function(name="Function1", script=script)
 
-#create session
-session = mayalabs.Session.new(script=script)
+function.deploy()
 
-#create worker
-worker = mayalabs.Worker.new(name="Test Worker")
-worker.start()
+output = function.call({ "term" : "alive"})
 
-# generate session
-session.generate()
-
-# wait for generate and start to end
-session.deploy(worker_id=worker.id)
-
-# soon
-output = session.call({ 'payload' : 'cool'})
-
-# clear everything
-session.delete()
-worker.delete()
-
+function.clear()
 ```
