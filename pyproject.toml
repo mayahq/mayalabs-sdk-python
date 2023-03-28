@@ -19,10 +19,6 @@ maintainers = [
  {name="Maya Support", email="humans@mayalabs.io"}
  ]
 
-classifier = [
-  "Topic :: Software Development"
- ]
-
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
