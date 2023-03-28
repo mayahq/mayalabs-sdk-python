@@ -19,15 +19,16 @@ pip install mayalabs
 import mayalabs
 
 script = """
-1. trigger on receive
-2. send back response
+1. receive message {{payload}}
+2. respond back with {{payload}}
 """
 
 function = mayalabs.Function(name="Function1", script=script)
 
 function.deploy()
 
-output = function.call({ "term" : "alive"})
+output = function(term = "Hello, World")
 
+# this will stop and delete your worker from profile. Comment out to view it on your worker dashboard.
 function.clear()
 ```
