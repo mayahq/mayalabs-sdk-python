@@ -140,6 +140,13 @@ class Session():
         session = cls()
         session.parse_obj(response['response'])
         return session
+   
+    @classmethod
+    def get(cls, session_id=None):
+        response = SessionClient.get_session(session_id=session_id)
+        session = cls()
+        session.parse_obj(response['response'])
+        return session
     
     def instruct(self, prompt, from_scratch=True):
         # Implement this method
@@ -255,8 +262,6 @@ class Session():
         tasks = asyncio.gather([call_task, log_task])
         loop = asyncio.get_event_loop()
         response = loop.run_until_complete(tasks)
-
-        print('response:', response)
 
         return response
 
