@@ -76,23 +76,24 @@ class Worker:
         if self.url is None:
             self.update()
 
-        loop = asyncio.get_event_loop()
+        # loop = asyncio.get_event_loop()
 
-        call_task = loop.create_task(WorkerClient.call_worker(worker_url=self.url, msg=msg))
-        log_task = loop.create_task(self.ws_client.start_listener())
+        async def async_wrapper():
+            call_task = asyncio.create_task(WorkerClient.call_worker(worker_url=self.url, msg=msg))
+            log_task = asyncio.create_task(self.ws_client.start_listener())
 
-        def stop_log_task(future):
-            log_task.cancel()
+        
+            def stop_log_task(future):
+                log_task.cancel()
 
-        call_task.add_done_callback(stop_log_task)
+            call_task.add_done_callback(stop_log_task)
 
-        print(Style.BRIGHT + Fore.CYAN + '\nExecuting program on worker.\n' + Style.RESET_ALL)
-        loop.run_until_complete(
-            asyncio.gather(call_task, log_task)
-        )
+            print(Style.BRIGHT + Fore.CYAN + '\nExecuting program on worker.\n' + Style.RESET_ALL)
+            await asyncio.gather(call_task, log_task)
 
-        loop.close()
+            return call_task, log_task
 
+        call_task, log_task = asyncio.run(async_wrapper())
         return call_task.result()
 
     @classmethod
