@@ -1,6 +1,6 @@
 [project]
 name = "mayalabs"
-version = "0.0.2"
+version = "0.0.3"
 description = "Python SDK for Maya Labs' natural language programming paradigm"
 dependencies = [
     "requests",
@@ -10,7 +10,7 @@ dependencies = [
     "colorama",
     "aiohttp>=3.6,<4.0"
 ]
-requires-python = ">=3.6,<3.10"
+requires-python = ">=3.6"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
 authors=[
