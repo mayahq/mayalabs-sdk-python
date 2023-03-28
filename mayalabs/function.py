@@ -6,7 +6,7 @@ import asyncio
 
 class Function:
     # @authenticate
-    def __init__(self, name, script, init = True):
+    def __init__(self, name, script = None, init = True):
         self.name : str = name
         self.script : str = script
         self.worker : Worker = None
@@ -61,6 +61,7 @@ class Function:
                 if self.worker.session_id:
                     try:
                         self.session = Session.get(session_id=self.worker.session_id)
+                        self.script = self.session.script
                     except Exception as e:
                         print("Session not found. Error:", e)
                         raise e
