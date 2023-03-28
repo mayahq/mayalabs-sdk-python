@@ -6,6 +6,35 @@ from typing import Dict, Any
 import os
 from ..mayalabs import authenticate
 from ..consts import api_base_url, api_ws_url
+from colorama import Fore, Style
+
+
+def get_message(pac_message):
+    pass
+    try:
+        if pac_message['status'] and pac_message['status'] == 'complete':
+            return {
+                'status': 'success',
+                'message': 'Generation successful'
+            }
+        elif 'error' in pac_message and pac_message['error'] == True:
+            msg = pac_message['msg']
+            if not msg:
+                msg = 'Something went wrong'
+            return {
+                'status': 'error',
+                'message': msg
+            }
+        else:
+            return {
+                'status': 'progress',
+                'message': 'Step generated'
+            }
+    except:
+        return {
+            'status': 'error',
+            'message': 'Something went wrong'
+        }
 
 
 class PacTask:
@@ -36,8 +65,18 @@ class PacTask:
                     data = msg_object["data"]
                     if isinstance(data, str):
                         data = json.loads(data)
-                    self.done_future.set_result(data)
-                    break
+
+                    msg = get_message(data)
+
+                    if msg['status'] == 'error':
+                        print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
+                        raise Exception('Error occured during generation: ' + msg['message'])
+                    elif msg['status'] == 'success':
+                        break
+                    else:
+                        print('[Maya]', Fore.CYAN + 'Step generated' + Style.RESET_ALL)
+                    
+                    # self.done_future.set_result(data)
 
     async def done(self):
         await self.done_future
