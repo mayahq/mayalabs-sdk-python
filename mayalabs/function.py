@@ -1,15 +1,43 @@
 from mayalabs import Session
 from mayalabs import Worker, WorkerClient, SessionClient
 from typing import Any, Dict
+from .mayalabs import authenticate
 import asyncio
 
 class Function:
-    def __init__(self, name, script, api_key=None):
+    def __init__(self, name, script, api_key=None, init = True):
         self.name : str = name
         self.script : str = script
         self.worker : Worker = None
         self.session : Session = None
-        self.init(api_key=api_key)
+        if init:
+            self.init(api_key=api_key)
+
+    @staticmethod
+    def create(name, script):
+        func = Function(
+            name=name,
+            script=script,
+            init=False
+        )
+
+        worker = None
+        try:
+            worker = Worker.create(name=name, alias=name)
+        except:
+            raise Exception('Failed to create a worker for the function')
+
+        session = None
+        try:
+            session = Session.new(script=script)
+            worker.attach_session(session_id=session.id)
+        except:
+            raise Exception('Failed to create a new session for the worker')
+        
+        func.worker = worker
+        func.session = session
+
+        return func
 
     def init(self, api_key=None):
         """

@@ -160,10 +160,12 @@ class Session():
     def check_worker_start(self):
         status = 0
         i = 0
+        if (self.worker.status and self.worker.status != 'STARTED'):
+            status = Fore.RED + 'PENDING' + Style.RESET_ALL
+            print('[Maya]', "Worker status:", status)
+
         while self.worker.status and self.worker.status != "STARTED":
             i += 1
-            status = Fore.RED + 'PENDING' + Style.RESET_ALL
-            print('[Maya]', "Checking - worker status:", status + (i%3)*'.', end='\r')
             # self.worker.update()
             worker_response = WorkerClient.get_worker(self.worker.id)
             if worker_response['results']:
@@ -171,7 +173,7 @@ class Session():
             time.sleep(2)
 
         started_status = Fore.GREEN + 'STARTED' + Style.RESET_ALL
-        print('[Maya]', 'Checking - worker status:', started_status)
+        print('[Maya]', 'Worker status:', started_status)
         return
 
     def deploy(self, worker_id=None):

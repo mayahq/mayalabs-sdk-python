@@ -69,6 +69,22 @@ class Worker:
             self.parse_obj(response['results'])
         else:
             raise Exception("Worker ID is not set")
+        
+    @authenticate
+    def attach_session(self, session_id, api_key=None):
+        request = {
+            'url': f"{api_base_url}/app/v2/brains/linkSessionToRuntime",
+            'method': "post",
+            'json': {
+                'workspaceId': self.id,
+                'sessionId': session_id
+            },
+            'headers': {
+                'x-api-key': api_key,
+            },
+        }
+
+        requests.request(**request)
 
     def call(self, msg : dict):
         if self.id is None:
