@@ -23,11 +23,11 @@ script = """
 2. respond back with {{payload}}
 """
 
-function = mayalabs.Function(name="Function1", script=script)
+function = mayalabs.Function.create(name="Function1", script=script)
 
 function.deploy()
 
-output = function(term = "Hello, World")
+output = function.call(term = "Hello, World")
 
 # this will stop and delete your worker from profile. Comment out to view it on your worker dashboard.
 function.clear()
