@@ -1,6 +1,6 @@
 [project]
 name = "mayalabs"
-version = "0.0.1"
+version = "0.0.2"
 description = "Python SDK for Maya Labs' natural language programming paradigm"
 dependencies = [
     "requests",
