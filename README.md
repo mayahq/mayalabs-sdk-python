@@ -4,9 +4,15 @@ A new way to program machines, using natural language.
 
 WIP version : alpha - 0.0.1.
 
-## Usage
+## Installation
+```shell
+pip3 install mayalabs
 
 ```
+
+## Usage
+
+```python 
 import mayalabs
 
 script = """
