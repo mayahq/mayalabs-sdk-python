@@ -53,7 +53,7 @@ class Function:
         if self.worker is None:
             self.worker = Worker.new(name=self.name, alias=self.name)
 
-        self.worker = self.session.deploy(worker_id=self.worker.id)
+        self.session.deploy(worker_id=self.worker.id)
 
     def call(self, **kwargs : Dict) -> Dict:
         """

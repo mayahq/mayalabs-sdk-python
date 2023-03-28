@@ -210,21 +210,21 @@ class Session():
                 result_2.result()
                 # report all tasks done
             
-            loop = asyncio.get_event_loop()
-            deploy_task = loop.create_task(SessionClient.deploy_session(self.id, self.worker.id))
-            log_task = loop.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
-            def stop_log_task(future):
-                log_task.cancel()
+            # loop = asyncio.get_event_loop()
+            async def async_wrapper():
+                deploy_task = asyncio.create_task(SessionClient.deploy_session(self.id, self.worker.id))
+                log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
+                def stop_log_task(future):
+                    log_task.cancel()
 
-            deploy_task.add_done_callback(stop_log_task)
-            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL)
-            loop.run_until_complete(
-                asyncio.gather(deploy_task, log_task)
-            )
-            loop.close()
-            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL)
+                deploy_task.add_done_callback(stop_log_task)
+                print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL)
+                await asyncio.gather(deploy_task, log_task)
+                print(f'[{self.worker.name}]', Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL)
 
-            return deploy_task.result()
+                return deploy_task.result()
+            asyncio.run(async_wrapper())
+            
         else:
             raise Exception("Error: Could not find worker") 
 
