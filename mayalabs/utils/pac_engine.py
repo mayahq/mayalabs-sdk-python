@@ -22,7 +22,6 @@ class PacTask:
         
         async with websockets.connect(url) as socket:
             task_id = uuid.uuid4()
-            print(f"TaskID: {task_id}")
 
             message = {
                 "task_id": str(task_id),
@@ -33,7 +32,6 @@ class PacTask:
 
             async for message in socket:
                 msg_object = json.loads(json.loads(message))
-                print(f"Received from websocket: {msg_object}")
                 if msg_object["task_id"] == str(task_id):
                     data = msg_object["data"]
                     if isinstance(data, str):
