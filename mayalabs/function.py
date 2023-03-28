@@ -5,8 +5,8 @@ import asyncio
 
 class Function:
     def __init__(self, name, script, api_key=None):
-        name : str = name
-        script : str = script
+        self.name : str = name
+        self.script : str = script
         self.worker : Worker = None
         self.session : Session = None
         self.init(api_key=api_key)
