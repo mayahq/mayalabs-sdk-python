@@ -217,9 +217,7 @@ class WorkerClient:
                 'x-api-key': api_key,
             },
         }
-        print(create_request)
         response = requests.request(**create_request)
-        print(response.json())
         worker = Worker.parse_obj(response.json()['results'])
         return worker
     

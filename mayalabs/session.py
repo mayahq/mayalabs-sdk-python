@@ -159,14 +159,19 @@ class Session():
 
     def check_worker_start(self):
         status = 0
+        i = 0
         while self.worker.status and self.worker.status != "STARTED":
-            print("Checking - worker status:", self.worker.status)
+            i += 1
+            status = Fore.RED + 'PENDING' + Style.RESET_ALL
+            print('[Maya]', "Checking - worker status:", status + (i%3)*'.', end='\r')
             # self.worker.update()
-            print("Waiting for worker to start...")
             worker_response = WorkerClient.get_worker(self.worker.id)
             if worker_response['results']:
                 self.worker = Worker().parse_obj(worker_response['results'])
             time.sleep(2)
+
+        started_status = Fore.GREEN + 'STARTED' + Style.RESET_ALL
+        print('[Maya]', 'Checking - worker status:', started_status)
         return
 
     def deploy(self, worker_id=None):
@@ -182,10 +187,7 @@ class Session():
         if worker_id is not None:
             try:
                 self.worker = Worker.get_by_id(worker_id)
-                print('we here', self.worker.ws_client)
-                # print(response['results'])
-                # self.worker = Worker().parse_obj(response['results'])
-                print("Found worker: ", self.worker.name)
+                print('[Maya]', "Found worker: ", self.worker.name)
             except:
                 raise Exception("Worker not found")
         elif self.worker is None:
@@ -194,34 +196,33 @@ class Session():
             self.worker = WorkerClient.create_worker(worker_name=random_name, alias=random_name)
         else:
             raise Exception("Error: Could not find worker")
+        
         if self.worker:
             if self.worker.status != "STARTED":
-                print("Starting worker: ", self.worker.name, "...")
+                print('[Maya]', "Starting worker: ", self.worker.name)
                 self.worker.start()
-            print("Generating program...")
+            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL)
             with concurrent.futures.ThreadPoolExecutor() as exec:
-
                 future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                 result_2 = exec.submit(self.check_worker_start)
                 result_1 = future_1.result()
-                print("Program generated", result_1)
+                print(f'[{self.worker.name}]', Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL)
                 result_2.result()
                 # report all tasks done
-                print("Deploying on worker:", self.worker.name, "...")
             
             loop = asyncio.get_event_loop()
-            print('and here', self.worker.ws_client)
             deploy_task = loop.create_task(SessionClient.deploy_session(self.id, self.worker.id))
             log_task = loop.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
             def stop_log_task(future):
                 log_task.cancel()
 
             deploy_task.add_done_callback(stop_log_task)
-            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + '\nDeploying session to worker.\n' + Style.RESET_ALL)
+            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL)
             loop.run_until_complete(
                 asyncio.gather(deploy_task, log_task)
             )
             loop.close()
+            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL)
 
             return deploy_task.result()
         else:
