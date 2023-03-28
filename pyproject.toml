@@ -1,6 +1,7 @@
 [project]
 name = "mayalabs"
-version = "0.0.1"
+version = "0.0.2"
+description = "Python SDK for Maya Labs' natural language programming paradigm"
 dependencies = [
     "requests",
     "pydantic",
@@ -9,6 +10,18 @@ dependencies = [
     "importlib-metadata",
     "colorama"
 ]
+license = {file = "LICENSE"}
+authors=[
+ {name="Maya Support, email="humans@mayalabs.io"}
+]
+
+maintainers = [
+ {name="Maya Support, email="humans@mayalabs.io"}
+ ]
+
+classifier = [
+  "Topic :: Software Development"
+ ]
 
 [build-system]
 requires = ["setuptools"]
