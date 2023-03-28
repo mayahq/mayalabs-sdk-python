@@ -75,6 +75,7 @@ class PacTask:
                         break
                     else:
                         print('[Maya]', Fore.CYAN + 'Step generated' + Style.RESET_ALL)
+                        # print(data)
                     
                     # self.done_future.set_result(data)
 
