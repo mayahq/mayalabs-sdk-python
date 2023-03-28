@@ -67,19 +67,19 @@ class Worker:
         worker = WorkerClient.create_worker(worker_name=name, alias=alias)
         return worker
 
-    async def start(self):
+    def start(self):
         return WorkerClient.start_worker(worker_id=self.id)
 
-    async def stop(self):
+    def stop(self):
         return WorkerClient.stop_worker(worker_id=self.id)
 
-    async def delete(self):
+    def delete(self):
         return WorkerClient.delete_worker(worker_id=self.id)
 
     def clear(self):
         pass
 
-    async def update(self):
+    def update(self):
         if self.id is not None:
             response = WorkerClient.get_worker(worker_id=self.id)
             self.parse_obj(response['results'])
@@ -119,6 +119,8 @@ class Worker:
         worker.status = obj.get('status', None)
         worker.name = obj.get('name', None)
         worker.alias = obj.get('alias', None)
+        worker_ws_url = worker.url.replace('https', 'wss') + '/comms'
+        worker.ws_client = WebsocketListener(url=worker_ws_url)
         return worker
     
     @classmethod
@@ -298,48 +300,12 @@ class WorkerClient:
 
         response = requests.request(**request)
         return response.json
-    @staticmethod
-    @authenticate
-    def call_worker(worker_url, msg, api_key=None):
-        request = {
-            'url': f"{worker_url}/send-maya-message",
-            'method': "post",
-            'json': msg,
-            'headers': {
-                'x-api-key': api_key,
-            },
-            'timeout' : 30
-        }
 
     @staticmethod
-    async def call_worker(worker_url, msg):
+    @authenticate
+    async def call_worker(worker_url, msg, api_key=None):
         async with aiohttp.ClientSession(headers={ 'x-api-key': api_key }) as session:
             async with session.post(f"{worker_url}/send-maya-message", json=msg) as response:
                 response_json = await response.json()
                 return response_json
     
-    # async def call_worker(worker_url, msg):
-    #     request = {
-    #         'url': f"{worker_url}/send-maya-message",
-    #         'method': "post",
-    #         'json': msg,
-    #         'headers': {
-    #             'x-api-key': api_key,
-    #         },
-    #         'timeout' : 30
-    #     }
-
-        
-
-    #     response = requests.request(**request)
-    #     return response.json()
-
-    
-    # def get_worker_health(self, worker_id):
-    #     response = self.get_worker(worker_id)
-    #     health_state_response = requests.get(
-    #         f"{response['results']['url']}/health?timesamp={int(time.time() * 1000)}",
-    #         timeout=2,
-    #         allow_redirects=True
-    #     )
-    #     return health_state_response

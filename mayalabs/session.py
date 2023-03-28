@@ -1,16 +1,19 @@
 import requests
 import sys
+import aiohttp
 
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
-from .utils.websocket import WebsocketListener
+from .utils.websocket import WebsocketListener, deploy_events
 import asyncio
 import time
 from time import sleep
 import concurrent.futures
 from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
+from colorama import init, Fore, Back, Style
+
 
 class SessionClient:
 
@@ -81,24 +84,35 @@ class SessionClient:
         response = requests.request(**request)
         return response.json()
     
+    # @authenticate
+    # def deploy_session(session_id, workspace_id, api_key=None):
+    #     request = {
+    #         'url': f"{api_base_url}/pac/v1/session/deploy",
+    #         'method': "post",
+    #         'json': {
+    #             'session_id': session_id,
+    #             'workspace_id' : workspace_id,
+    #         },
+    #         'headers': {
+    #             'x-api-key': api_key,
+    #         }
+    #     }
+    #     response = requests.request(**request)
+    #     try:
+    #         return response.json()
+    #     except:
+    #         print('deploy error')
+
     @authenticate
-    def deploy_session(session_id, workspace_id, api_key=None):
-        request = {
-            'url': f"{api_base_url}/pac/v1/session/deploy",
-            'method': "post",
-            'json': {
-                'session_id': session_id,
-                'workspace_id' : workspace_id,
-            },
-            'headers': {
-                'x-api-key': api_key,
-            }
+    async def deploy_session(session_id, workspace_id, api_key=None):
+        data = {
+            'session_id': session_id,
+            'workspace_id' : workspace_id,
         }
-        response = requests.request(**request)
-        try:
-            return response.json()
-        except:
-            print('deploy error')
+        async with aiohttp.ClientSession(headers={'x-api-key': api_key}) as session:
+            async with session.post(f'{api_base_url}/pac/v1/session/deploy', json=data) as response:
+                response_json = await response.json()
+                return response_json
     
     # def session_parse(obj):
     #     # requests = {
@@ -166,12 +180,12 @@ class Session():
             return result
         
         if worker_id is not None:
-            response = WorkerClient.get_worker(worker_id)
             try:
-                print(response['results'])
-                self.worker = Worker().parse_obj(response['results'])
+                self.worker = Worker.get_by_id(worker_id)
+                print('we here', self.worker.ws_client)
+                # print(response['results'])
+                # self.worker = Worker().parse_obj(response['results'])
                 print("Found worker: ", self.worker.name)
-                print("Deploying...")
             except:
                 raise Exception("Worker not found")
         elif self.worker is None:
@@ -195,8 +209,21 @@ class Session():
                 # report all tasks done
                 print("Deploying on worker:", self.worker.name, "...")
             
-            response = SessionClient.deploy_session(self.id, self.worker.id)
-            return response
+            loop = asyncio.get_event_loop()
+            print('and here', self.worker.ws_client)
+            deploy_task = loop.create_task(SessionClient.deploy_session(self.id, self.worker.id))
+            log_task = loop.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
+            def stop_log_task(future):
+                log_task.cancel()
+
+            deploy_task.add_done_callback(stop_log_task)
+            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + '\nDeploying session to worker.\n' + Style.RESET_ALL)
+            loop.run_until_complete(
+                asyncio.gather(deploy_task, log_task)
+            )
+            loop.close()
+
+            return deploy_task.result()
         else:
             raise Exception("Error: Could not find worker") 
 
