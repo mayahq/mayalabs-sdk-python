@@ -48,8 +48,7 @@ class Function:
         """
         if self.name is None:
             raise Exception("No name provided in the argument `name`")
-        if self.script is None:
-            raise Exception("No script provided in the argument `script`")
+
         try:
             # check if the worker exists    
             if api_key is None:
