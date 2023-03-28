@@ -16,7 +16,7 @@ authors=[
 ]
 
 maintainers = [
- {name="Maya Support, email="humans@mayalabs.io"}
+ {name="Maya Support", email="humans@mayalabs.io"}
  ]
 
 classifier = [
