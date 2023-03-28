@@ -10,7 +10,7 @@ dependencies = [
     "colorama",
     "aiohttp>=3.6,<4.0"
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.6,<3.10"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
 authors=[
@@ -24,6 +24,9 @@ maintainers = [
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages]
+find = {}
 
 [project.urls]
 homepage = "https://mayalabs.io"
