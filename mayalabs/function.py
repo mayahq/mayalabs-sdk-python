@@ -1,5 +1,5 @@
 from mayalabs import Session
-from mayalabs import Worker, WorkerClient
+from mayalabs import Worker, WorkerClient, SessionClient
 from typing import Any, Dict
 import asyncio
 
@@ -30,6 +30,11 @@ class Function:
 
             if self.worker:
                 print("Worker found.")
+                if self.worker.session_id:
+                    try:
+                        self.session = SessionClient().get_session(self.worker.session_id)
+                    except Exception as e:
+                        print("Session not found. Error:", e)
         except:
             print("Worker not found.")
             pass
@@ -47,7 +52,6 @@ class Function:
 
         if self.worker is None:
             self.worker = Worker.new(name=self.name, alias=self.name)
-        self.worker.start()
 
         self.worker = self.session.deploy(worker_id=self.worker.id)
 

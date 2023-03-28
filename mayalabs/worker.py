@@ -19,6 +19,7 @@ class Worker:
         self.id : str = None
         self.url : str = None
         self.status : str = None
+        self.session_id : str = None
         self.ws_client : WebsocketListener = None
 
     def _init_from_api_response(self, response):
@@ -49,23 +50,6 @@ class Worker:
     @staticmethod
     def create(name, alias):
         return WorkerClient.create_worker(worker_name=name, alias=alias)
-    
-    @classmethod
-    def parse_obj(cls, obj):
-        worker = cls()
-        worker.id = obj.get('_id', None)
-        worker.url = obj.get('url', None)
-        worker.status = obj.get('status', None)
-        worker.name = obj.get('name', None)
-        worker.alias = obj.get('alias', None)
-        worker_ws_url = worker.url.replace('https', 'wss') + '/comms'
-        worker.ws_client = WebsocketListener(url=worker_ws_url)
-        return worker
-    
-    @classmethod
-    async def new(cls, name, alias=None):
-        worker = WorkerClient.create_worker(worker_name=name, alias=alias)
-        return worker
 
     def start(self):
         return WorkerClient.start_worker(worker_id=self.id)
@@ -119,6 +103,7 @@ class Worker:
         worker.status = obj.get('status', None)
         worker.name = obj.get('name', None)
         worker.alias = obj.get('alias', None)
+        worker.session_id = obj.get('sessionId', None)
         worker_ws_url = worker.url.replace('https', 'wss') + '/comms'
         worker.ws_client = WebsocketListener(url=worker_ws_url)
         return worker
@@ -174,6 +159,7 @@ class WorkerClient:
 
         response = requests.request(**request)
         results = response.json().get('results', None)
+        print("results: ", results)
         if results is None:
             return None
         else:

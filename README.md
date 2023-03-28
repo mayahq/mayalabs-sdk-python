@@ -4,15 +4,18 @@ A new way to program machines, using natural language.
 
 WIP version : alpha - 0.0.1.
 
+Requirements : Python and PIP >v3.6+ and <3.10
+
 ## Installation
+
 ```shell
-pip3 install mayalabs
+pip install mayalabs
 
 ```
 
 ## Usage
 
-```python 
+```python
 import mayalabs
 
 script = """
