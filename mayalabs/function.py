@@ -5,13 +5,14 @@ from .mayalabs import authenticate
 import asyncio
 
 class Function:
-    def __init__(self, name, script, api_key=None, init = True):
+    # @authenticate
+    def __init__(self, name, script, init = True):
         self.name : str = name
         self.script : str = script
         self.worker : Worker = None
         self.session : Session = None
         if init:
-            self.init(api_key=api_key)
+            self.init()
 
     @staticmethod
     def create(name, script):
@@ -57,15 +58,15 @@ class Function:
                 self.worker = WorkerClient().get_worker_by_alias(self.name, api_key=api_key)
 
             if self.worker:
-                print("Worker found.")
                 if self.worker.session_id:
                     try:
-                        self.session = SessionClient().get_session(self.worker.session_id)
+                        self.session = Session.get(session_id=self.worker.session_id)
                     except Exception as e:
                         print("Session not found. Error:", e)
-        except:
+                        raise e
+        except Exception as err:
             print("Worker not found.")
-            pass
+            raise err
 
     def deploy(self):
         """
@@ -89,17 +90,7 @@ class Function:
         Arguments passed here are passed to the `msg` object in the script.
         A value like `msg['key']` can be accessed in the script by using {{key}}
         """
-        call_task = asyncio.create_task(self.worker.call(kwargs))
-        log_task = asyncio.create_task(self.worker.ws_client.create_listen_task())
-        call_task.add_done_callback(log_task.cancel)
-
-        tasks = asyncio.gather([call_task, log_task])
-        loop = asyncio.get_event_loop()
-        response = loop.run_until_complete(tasks)
-
-        print('response:', response)
-
-        return response
+        return self.worker.call(msg = kwargs)
     
     def __call__(self, **kwds: Dict) -> Dict:
         """
