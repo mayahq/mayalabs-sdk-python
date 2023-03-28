@@ -13,6 +13,9 @@ script = """
 1. inject default
 2. print {{payload}}
 """
+
+mayalabs.auth.api_key = <MAYA_API_KEY>
+
 #create session
 session = mayalabs.Session.new(script=script)
 
