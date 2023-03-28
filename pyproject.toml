@@ -12,7 +12,7 @@ dependencies = [
 ]
 license = {file = "LICENSE"}
 authors=[
- {name="Maya Support, email="humans@mayalabs.io"}
+ {name="Maya Support", email="humans@mayalabs.io"}
 ]
 
 maintainers = [
