@@ -176,7 +176,6 @@ class WorkerClient:
 
         response = requests.request(**request)
         results = response.json().get('results', None)
-        print("results: ", results)
         if results is None:
             return None
         else:
