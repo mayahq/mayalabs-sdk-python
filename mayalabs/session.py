@@ -243,7 +243,7 @@ class Session():
                             f.write(sessions_str)
                             f.close()
                         sessions = None
-                        log(Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                        log(Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL, prefix='mayalabs')
                     elif self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
                         tmp = sessions[self.id] if self.id in sessions.keys() else ""
                         sessions[self.id] = received_script
@@ -252,15 +252,15 @@ class Session():
                             f.write(sessions_str)
                             f.close()
                         # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL)
-                        log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                        log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
                         sessions[self.id] = tmp
                     future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                     future_1.result()
                     # print(f'[Maya]', Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL)
-                    log(Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                    log(Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
                 else:
                     # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL)
-                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
                 # future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                 result_2 = exec.submit(self.check_worker_start)
                 result_1 = future_1.result()
@@ -297,7 +297,7 @@ class Session():
                     return deploy_task.result()
                 else:
                     # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL)
-                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL, prefix='mayalabs')
                     return
             asyncio.run(async_wrapper())
             

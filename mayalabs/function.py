@@ -22,13 +22,13 @@ class Function:
     @staticmethod
     def create(name, script):
         if os.environ.get("MAYA_ENVIRONMENT") == "development":
-            print(f'[Maya]', Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL)
+            log(Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL, prefix='mayalabs')
             try:
                 existing_worker = Worker.get_by_alias(alias=name)
                 session_id = existing_worker.session_id if existing_worker.session_id else None
-                print('[Maya]', Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL)
+                log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
             except Exception as err:
-                print('[Maya]', Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL)
+                log('[Maya]', Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
                 existing_worker = Worker.create(name=name, alias=name)
             try:
                 if session_id is not None:
@@ -47,7 +47,7 @@ class Function:
                 # print('[Maya]', Fore.YELLOW + 'Attaching .' + Style.RESET_ALL)
                 existing_worker.attach_session(session_id=existing_session.id)
             except Exception as err:
-                print('[Maya]', Fore.RED + f'Failed to attach session to worker [{existing_worker.alias}]' + Style.RESET_ALL)
+                log(Fore.RED + f'Failed to attach session to worker [{existing_worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
                 raise err
             func.worker = existing_worker
             func.session = existing_session
