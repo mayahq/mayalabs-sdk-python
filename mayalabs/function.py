@@ -84,21 +84,21 @@ class Function:
 
         self.session.deploy(worker_id=self.worker.id)
 
-    def call(self, **kwargs : Dict) -> Dict:
+    def call(self, payload = {}, **kwargs) -> Dict:
         """
         Call the deployed function. 
         Arguments passed here are passed to the `msg` object in the script.
         A value like `msg['key']` can be accessed in the script by using {{key}}
         """
-        return self.worker.call(msg = kwargs)
+        return self.worker.call(msg = { **payload, **kwargs })
     
-    def __call__(self, **kwds: Dict) -> Dict:
+    def __call__(self, payload = {}) -> Dict:
         """
         Call the deployed function. 
         Arguments passed here are passed to the `msg` object in the script.
         A value like `msg['key']` can be accessed in the script by using {{key}}
         """
-        return self.call(**kwds)
+        return self.call(payload=payload)
     
     def clear(self):
         """
