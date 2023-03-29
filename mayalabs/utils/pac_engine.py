@@ -25,10 +25,18 @@ def get_message(pac_message):
                 'status': 'error',
                 'message': msg
             }
-        else:
+        elif 'metadata' in pac_message and 'steps' in pac_message:
+            generated_step_id = pac_message['metadata']['generated_step_id']
+            generated_step = pac_message['steps'][generated_step_id]
+            step_prefix = generated_step['prefix']
+            step_text = generated_step['text']
+
+            if step_prefix[-1] == '.':
+                step_prefix = step_prefix[:-1]
+
             return {
                 'status': 'progress',
-                'message': 'Step generated'
+                'message': f'Generated step [{step_prefix}]: {step_text}'
             }
     except:
         return {
@@ -74,7 +82,7 @@ class PacTask:
                     elif msg['status'] == 'success':
                         break
                     else:
-                        print('[Maya]', Fore.CYAN + 'Step generated' + Style.RESET_ALL)
+                        print('[Maya]', Fore.CYAN + msg['message'] + Style.RESET_ALL)
                         # print(data)
                     
                     # self.done_future.set_result(data)
