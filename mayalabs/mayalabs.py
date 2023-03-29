@@ -2,7 +2,6 @@ import os
 import click
 from pathlib import Path
 
-API_KEY_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
 def return_error(err):
     raise err
