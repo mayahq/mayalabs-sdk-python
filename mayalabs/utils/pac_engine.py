@@ -3,6 +3,7 @@ import asyncio
 import websockets
 import json
 from typing import Dict, Any
+from .log import log
 import os
 from ..mayalabs import authenticate
 from ..consts import api_base_url, api_ws_url
@@ -77,13 +78,20 @@ class PacTask:
                     msg = get_message(data)
 
                     if msg['status'] == 'error':
-                        print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
+                        log(
+                            Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL,
+                            prefix='mayalabs',
+                            prefix_color=Fore.BLACK
+                        )
                         raise Exception('Error occured during generation: ' + msg['message'])
                     elif msg['status'] == 'success':
                         break
                     else:
-                        print('[Maya]', Fore.CYAN + msg['message'] + Style.RESET_ALL)
-                        # print(data)
+                        log(
+                            Fore.CYAN + msg['message'] + Style.RESET_ALL,
+                            prefix='mayalabs',
+                            prefix_color=Fore.BLACK
+                        )
                     
                     # self.done_future.set_result(data)
 

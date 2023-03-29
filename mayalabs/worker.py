@@ -3,6 +3,7 @@ import requests
 import asyncio
 import aiohttp
 import json
+from urllib.parse import urlparse
 import traceback
 from .utils.poll import poll
 from .utils.websocket import WebsocketListener
@@ -130,6 +131,16 @@ class Worker:
     def new(cls, name, alias=None):
         worker = WorkerClient.create_worker(worker_name=name, alias=alias)
         return worker
+    
+    @property
+    def app_url(self):
+        url_data = urlparse(self.url)
+        origin = url_data.netloc
+        parts = origin.split('.')
+        env = parts[2]
+
+        app_subdomain = 'devapp' if env == 'dev' else 'app'
+        return f'https://{app_subdomain}.mayalabs.io/edit?id={self.id}'
 
 
 
