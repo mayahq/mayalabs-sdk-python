@@ -4,10 +4,10 @@ from typing import Any, Dict
 from .mayalabs import authenticate
 from .utils.log import log
 from colorama import Fore, Style
-import asyncio
 from .exceptions import IntegrityException
 from .utils.logging import format_error_log
 import random
+import asyncio, os
 
 class Function:
     # @authenticate
@@ -21,29 +21,61 @@ class Function:
 
     @staticmethod
     def create(name, script):
-        func = Function(
-            name=name,
-            script=script,
-            init=False
-        )
+        if os.environ.get("MAYA_ENVIRONMENT") == "development":
+            print(f'[Maya]', Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL)
+            try:
+                existing_worker = Worker.get_by_alias(alias=name)
+                session_id = existing_worker.session_id if existing_worker.session_id else None
+                print('[Maya]', Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL)
+            except Exception as err:
+                print('[Maya]', Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL)
+                existing_worker = Worker.create(name=name, alias=name)
+            try:
+                if session_id is not None:
+                    existing_session = Session.get(session_id=session_id)
+                    existing_session.script = script
+                # print('[Maya]', Fore.YELLOW + 'Found existing session. Reusing.' + Style.RESET_ALL)
+            except Exception as err:
+                # print('[Maya]', Fore.RED + 'Failed to fetch associated session, creating new' + Style.RESET_ALL)
+                existing_session = Session.new(script=script)
+            func = Function(
+                name=name,
+                script=script,
+                init=False
+            )
+            try:
+                # print('[Maya]', Fore.YELLOW + 'Attaching .' + Style.RESET_ALL)
+                existing_worker.attach_session(session_id=existing_session.id)
+            except Exception as err:
+                print('[Maya]', Fore.RED + f'Failed to attach session to worker [{existing_worker.alias}]' + Style.RESET_ALL)
+                raise err
+            func.worker = existing_worker
+            func.session = existing_session
+            return func
+        else:
+            func = Function(
+                name=name,
+                script=script,
+                init=False
+            )
 
-        worker = None
-        try:
-            worker = Worker.create(name=name, alias=name)
-        except:
-            raise Exception('Failed to create a worker for the function')
+            worker = None
+            try:
+                worker = Worker.create(name=name, alias=name)
+            except Exception as err:
+                raise Exception('Failed to create a worker for the function')
 
-        session = None
-        try:
-            session = Session.new(script=script)
-            worker.attach_session(session_id=session.id)
-        except:
-            raise Exception('Failed to create a new session for the worker')
-        
-        func.worker = worker
-        func.session = session
+            session = None
+            try:
+                session = Session.new(script=script)
+                worker.attach_session(session_id=session.id)
+            except:
+                raise Exception('Failed to create a new session for the worker')
+            
+            func.worker = worker
+            func.session = session
 
-        return func
+            return func
 
     def init(self, api_key=None):
         """

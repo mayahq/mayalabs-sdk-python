@@ -4,7 +4,6 @@ from pathlib import Path
 from .exceptions import AuthException
 from .utils.logging import format_error_log
 
-API_KEY_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
 def return_error(err):
     raise err

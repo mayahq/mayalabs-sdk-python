@@ -1,6 +1,9 @@
 import requests
 import sys
 import aiohttp
+import asyncio
+import time, os, json, sys, hashlib
+import concurrent.futures
 
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
@@ -8,15 +11,21 @@ from .utils.name_gen import get_random_name
 from .utils.websocket import WebsocketListener, deploy_events
 from .utils.log import log
 import asyncio
-import time
 from time import sleep
-import concurrent.futures
 from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
 from colorama import init, Fore, Back, Style
 from .exceptions import IntegrityException
 from .utils.logging import format_error_log
 
+MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
+
+hashseed = os.getenv('PYTHONHASHSEED')
+if not hashseed:
+    os.environ['PYTHONHASHSEED'] = '0'
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
+hash = hashlib.new('sha256')
 
 class SessionClient:
 
@@ -200,45 +209,96 @@ class Session():
                 prefix=self.worker.name,
                 prefix_color=Fore.WHITE
             )
+            
+            sessions = {}
+            try:
+                with open(MAYA_CACHE_FILE, "r") as f:
+                    file_content = f.read()
+                    try:
+                        sessions = json.loads(file_content)
+                    except Exception as err:
+                        print(err)
+                        sessions = None
+                    f.close()
+            except FileNotFoundError:
+                with open(MAYA_CACHE_FILE, "w+") as f:
+                    f.write("{}")
+                    f.seek(0)
+                    file_content = f.read()
+                    try:
+                        sessions = json.loads(file_content)
+                    except Exception as err:
+                        print(err)
+                        sessions = None
+                    f.close()
+            hash.update(self.script.encode())
+            received_script = hash.hexdigest()
             with concurrent.futures.ThreadPoolExecutor() as exec:
-                future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
+                if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
+                    if sessions is None:
+                        sessions = {}
+                        sessions[self.id] = received_script
+                        sessions_str = json.dumps(sessions)
+                        with open(MAYA_CACHE_FILE, "w") as f:
+                            f.write(sessions_str)
+                            f.close()
+                        sessions = None
+                        log(Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                    elif self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
+                        tmp = sessions[self.id] if self.id in sessions.keys() else ""
+                        sessions[self.id] = received_script
+                        sessions_str = json.dumps(sessions)
+                        with open(MAYA_CACHE_FILE, "w") as f:
+                            f.write(sessions_str)
+                            f.close()
+                        # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL)
+                        log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                        sessions[self.id] = tmp
+                    future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
+                    future_1.result()
+                    # print(f'[Maya]', Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL)
+                    log(Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                else:
+                    # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL)
+                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                # future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                 result_2 = exec.submit(self.check_worker_start)
                 result_1 = future_1.result()
-                log(
-                    Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL,
-                    prefix=self.worker.name,
-                    prefix_color=Fore.WHITE
-                )
                 result_2.result()
                 # report all tasks done
             
             # loop = asyncio.get_event_loop()
             async def async_wrapper():
-                deploy_task = asyncio.create_task(SessionClient.deploy_session(self.id, self.worker.id))
-                log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
-                def stop_log_task(future):
-                    log_task.cancel()
+                if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
+                    deploy_task = asyncio.create_task(SessionClient.deploy_session(self.id, self.worker.id))
+                    log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
+                    def stop_log_task(future):
+                        log_task.cancel()
 
-                deploy_task.add_done_callback(stop_log_task)
-                log(
-                    Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL,
-                    prefix = self.worker.name,
-                    prefix_color = Fore.WHITE
-                )
-                await asyncio.gather(deploy_task, log_task)
-                log(
-                    Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL,
-                    prefix = self.worker.name,
-                    prefix_color = Fore.WHITE
-                )
-                log(
-                    Fore.GREEN + 'Access the function at:' + Style.RESET_ALL, 
-                    "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
-                    prefix = self.worker.name,
-                    prefix_color = Fore.WHITE
-                )
+                    deploy_task.add_done_callback(stop_log_task)
+                    log(
+                        Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL,
+                        prefix = self.worker.name,
+                        prefix_color = Fore.WHITE
+                    )
+                    await asyncio.gather(deploy_task, log_task)
+                    log(
+                        Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL,
+                        prefix = self.worker.name,
+                        prefix_color = Fore.WHITE
+                    )
+                    log(
+                        Fore.GREEN + 'Access the function at:' + Style.RESET_ALL, 
+                        "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
+                        prefix = self.worker.name,
+                        prefix_color = Fore.WHITE
+                    )
 
-                return deploy_task.result()
+                    return deploy_task.result()
+                else:
+                    # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL)
+                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL, prefix=f'[Maya]', prefix_color=Fore.WHITE)
+                    return
             asyncio.run(async_wrapper())
             
         else:

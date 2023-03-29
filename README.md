@@ -18,6 +18,8 @@ pip install mayalabs
 ```python
 import mayalabs
 
+mayalabs.api_key = <MAYA_API_KEY>
+
 script = """
 1. receive message {{payload}}
 2. respond back with {{payload}}
