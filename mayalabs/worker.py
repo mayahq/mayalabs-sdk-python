@@ -207,6 +207,10 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def create_worker(worker_name, alias, api_key=None) -> Worker:
+        if api_key == None:
+            error_log = ['No API key provided.', 'Please provide an API key using mayalabs.auth.api_key and try again.']
+            raise AuthException(format_error_log(error_log))
+
         create_request = {
             'url': f"{api_base_url}/app/v2/brains",
             'method': "post",
@@ -225,7 +229,7 @@ class WorkerClient:
         response = requests.request(**create_request)
         # print(response.json()['message'])
         if response.json()['message'] == "Error validating API key":
-            error_log = ['Invalid API key.', 'Please enter a valid API key and try again.']
+            error_log = ['Invalid API key.', 'Check if you are providing a valid API key and try again.']
             raise AuthException(format_error_log(error_log))
 
         worker = Worker.parse_obj(response.json()['results'])
