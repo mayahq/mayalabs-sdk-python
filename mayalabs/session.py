@@ -13,6 +13,8 @@ import concurrent.futures
 from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
 from colorama import init, Fore, Back, Style
+from .exceptions import IntegrityException
+from .utils.logging import format_error_log
 
 
 class SessionClient:
@@ -136,6 +138,12 @@ class Session():
 
     @classmethod
     def new(cls, script=None):
+        if not isinstance(script, str):
+            error_log = [
+                "Argument must be a string.",
+                f"Received {type(script).__name__}, expected a string."]
+            raise IntegrityException(format_error_log(error_log))
+         
         response = SessionClient.create_session(from_script=script)
         session = cls()
         session.parse_obj(response['response'])
