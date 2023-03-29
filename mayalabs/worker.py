@@ -206,11 +206,7 @@ class WorkerClient:
 
     @staticmethod
     @authenticate
-    def create_worker(worker_name, alias, api_key=None) -> Worker:
-        print(worker_name)
-        if not api_key:
-            error_log = ['No API key provided.', 'Please provide an API key using mayalabs.auth.api_key and try again.']
-            raise AuthException(format_error_log(error_log))
+    def create_worker(worker_name, alias, api_key=None) -> Worker:      
         if not worker_name:
             error_log = ['No worker name provided.', 'Please provide a worker name and try again.']
             raise IntegrityException(format_error_log(error_log))
