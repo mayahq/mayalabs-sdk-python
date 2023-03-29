@@ -24,7 +24,7 @@ deploy_events = [
 ]
 
 # maya_log_prefix = Fore.MAGENTA + '[Maya]' + Style.RESET_ALL
-maya_log_prefix = '[Maya]'
+maya_log_prefix = 'mayalabs'
 
 def rewrite_last_log_line(text):
     sys.stdout.write('\r')
@@ -46,9 +46,8 @@ class WebsocketListener:
             self.handlers[event] = []
         self.handlers[event].append(handler)
 
-    def handle_events(self, log_prefix, events):
+    def handle_events(self, log_prefix, prefix_color, events):
         for event in events:
-            print('event', event)
             if (not isinstance(event, dict)) or ('topic' not in event):
                 return
             
@@ -57,7 +56,8 @@ class WebsocketListener:
                     nodeId = event['data']['nodeId']
                     log(
                         Fore.CYAN + f'Running node: {nodeId}' + Style.RESET_ALL,
-                        prefix=log_prefix
+                        prefix=log_prefix,
+                        prefix_color=prefix_color
                     )
             
             elif event['topic'] == 'debug':
@@ -78,7 +78,8 @@ class WebsocketListener:
                 nodeId = event['data']['id']
                 log(
                     LOG_COLOR + f'Received {logLevel} message from node {nodeId}: {content}' + Style.RESET_ALL, 
-                    prefix=log_prefix
+                    prefix=log_prefix,
+                    prefix_color=prefix_color
                 )
             
             elif event['topic'] == 'notification/node/added':
@@ -89,30 +90,31 @@ class WebsocketListener:
                 module_version = nodes[0]['version']
                 log(
                     Fore.CYAN + f'Installed module {module_name}@{module_version}' + Style.RESET_ALL, 
-                    prefix=log_prefix
+                    prefix=log_prefix,
+                    prefix_color=prefix_color
                 )
 
 
 
                 
     @authenticate
-    async def start_listener(self, events=execution_events, log_prefix=maya_log_prefix, api_key=None):
+    async def start_listener(self, events=execution_events, log_prefix=maya_log_prefix, api_key=None, prefix_color=Fore.WHITE):
         try:
             async with websockets.connect(self.url) as websocket:
                 self.websocket = websocket
-                print('doing auth', api_key)
                 await websocket.send(json.dumps({ 'auth': api_key }))
+                await websocket.recv()
 
                 for event in events:
-                    print('subscribing to', event)
                     await websocket.send(json.dumps({ 'subscribe': event }))
                 while True:
                     message = await websocket.recv()
-                    self.handle_events(log_prefix, json.loads(message))
+                    self.handle_events(log_prefix, prefix_color, json.loads(message))
         except asyncio.CancelledError:
             await self.websocket.close()
         except websockets.exceptions.ConnectionClosedError:
-            print('Connection closed by Function')
+            log(Fore.RED + 'Connection closed unexpectedly by Function', prefix=log_prefix, prefix_color=prefix_color)
+            raise Exception('Connection closed unexpectedly by Function')
 
     async def _disconnect(self, future):
         if self.websocket.open:

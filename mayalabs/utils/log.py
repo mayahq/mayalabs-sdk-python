@@ -3,13 +3,13 @@ from colorama import Fore, Style
 prefix_length = 12
 
 def log(*args, prefix='mayalabs', prefix_color=Fore.BLACK):
-    final_prefix = f'[{prefix}]'
+    final_prefix = f'|{prefix} |'
     if len(prefix) < prefix_length:
-        final_prefix = f'[{prefix}]' + (prefix_length - len(prefix)) * ' ' + ' |'
+        final_prefix = f'|{prefix}' + (prefix_length - len(prefix)) * ' ' + ' |'
     elif len(prefix) > prefix_length:
         overshoot = len(prefix) - prefix_length
-        num_chars = len(prefix) - overshoot - 3
-        final_prefix = f'[{prefix[:num_chars]}...]' + ' |'
+        num_chars = len(prefix) - overshoot - 2
+        final_prefix = f'|{prefix[:num_chars]}..' + ' |'
 
     print(prefix_color + final_prefix + Style.RESET_ALL, *args)
 

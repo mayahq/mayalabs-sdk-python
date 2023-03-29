@@ -2,8 +2,10 @@ from mayalabs import Session
 from mayalabs import Worker, WorkerClient, SessionClient
 from typing import Any, Dict
 from .mayalabs import authenticate
+from .utils.log import log
 from colorama import Fore, Style
 import asyncio
+import random
 
 class Function:
     # @authenticate
@@ -91,7 +93,7 @@ class Function:
         Arguments passed here are passed to the `msg` object in the script.
         A value like `msg['key']` can be accessed in the script by using {{key}}
         """
-        print('[Maya]', Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL)
+        log(Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL, prefix='mayalabs')
         self.worker.start(wait=True)
         return self.worker.call(msg = { **payload, **kwargs })
     
