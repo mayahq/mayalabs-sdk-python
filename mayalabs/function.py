@@ -5,6 +5,7 @@ from .mayalabs import authenticate
 from colorama import Fore, Style
 import asyncio
 from .exceptions import IntegrityException
+from .utils.logging import format_error_log
 
 class Function:
     # @authenticate
@@ -93,10 +94,10 @@ class Function:
         A value like `msg['key']` can be accessed in the script by using {{key}}
         """
         if not isinstance(payload, dict):
-            details = [
-                Fore.RED + "Argument must be a dictionary." + Style.RESET_ALL,
-                Fore.RED + f"Received {type(payload).__name__}, expected a dictionary." + Style.RESET_ALL ]
-            raise IntegrityException("\n".join(details))
+            error_log = [
+                "Argument must be a dictionary.",
+                f"Received {type(payload).__name__}, expected a dictionary."]
+            raise IntegrityException(format_error_log(error_log))
 
         print('[Maya]', Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL)
         self.worker.start(wait=True)
