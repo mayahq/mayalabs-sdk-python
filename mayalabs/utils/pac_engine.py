@@ -7,6 +7,7 @@ import os
 from ..mayalabs import authenticate
 from ..consts import api_base_url, api_ws_url
 from colorama import Fore, Style
+from ..exceptions import GenerationException
 
 
 def get_message(pac_message):
@@ -70,7 +71,7 @@ class PacTask:
 
                     if msg['status'] == 'error':
                         print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
-                        raise Exception('Error occured during generation: ' + msg['message'])
+                        raise GenerationException('Error occured during generation: ' + msg['message'])
                     elif msg['status'] == 'success':
                         break
                     else:
