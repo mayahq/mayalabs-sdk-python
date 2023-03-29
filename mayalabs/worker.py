@@ -2,6 +2,7 @@ import os
 import requests
 import asyncio
 import aiohttp
+import json
 import traceback
 from .utils.poll import poll
 from .utils.websocket import WebsocketListener
@@ -51,8 +52,8 @@ class Worker:
     def create(name, alias):
         return WorkerClient.create_worker(worker_name=name, alias=alias)
 
-    def start(self):
-        return WorkerClient.start_worker(worker_id=self.id)
+    def start(self, wait = False):
+        return WorkerClient.start_worker(worker_id=self.id, wait=wait)
 
     def stop(self):
         return WorkerClient.stop_worker(worker_id=self.id)
@@ -104,7 +105,7 @@ class Worker:
 
             call_task.add_done_callback(stop_log_task)
 
-            print(Style.BRIGHT + Fore.CYAN + '\nExecuting program on worker.\n' + Style.RESET_ALL)
+            print('\n[Maya]', Style.BRIGHT + Fore.CYAN + 'Executing program on worker.\n' + Style.RESET_ALL)
             await asyncio.gather(call_task, log_task)
 
             return call_task, log_task
@@ -241,6 +242,17 @@ class WorkerClient:
             start_request['json']['autoShutdownBehaviour'] = auto_shutdown_behaviour
 
         start_response = requests.request(**start_request)
+        start_json = json.loads(start_response.text)
+
+        worker = start_json['results']
+        status = start_json['status']
+
+        if status != 200:
+            raise Exception('There was an error trying to start brain')
+        
+        if worker['status'] == 'STARTED':
+            return start_json
+
         if wait:
             def start_confirmation_function():
                 try:
@@ -253,7 +265,7 @@ class WorkerClient:
                 except requests.RequestException:
                     return False
 
-            poll(start_confirmation_function, 1000, 120000)
+            asyncio.run(poll(start_confirmation_function, 1000, 120000))
         return start_response.json()
     
     @staticmethod

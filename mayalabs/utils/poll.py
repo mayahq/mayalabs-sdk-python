@@ -1,9 +1,16 @@
 import asyncio
+import inspect
 
 async def poll(fn=lambda: True, time_interval: int = 1000, timeout: int = 10000) -> None:
     async def poll_coroutine() -> None:
         while True:
-            result = await fn()
+            res = fn()
+            result = None
+            if inspect.iscoroutine(res):
+                result = await res
+            else:
+                result = res
+
             if result is True:
                 break
             await asyncio.sleep(time_interval / 1000)
