@@ -10,7 +10,7 @@ import time
 from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
 from colorama import init, Fore, Back, Style
-from .exceptions import AuthException
+from .exceptions import AuthException, IntegrityException
 from .utils.logging import format_error_log
 
 # {'publishedSkillPacks': [], 'skillPacks': [], 'modules': [], 'externalModules': [], 'local': False, 'autoShutdownBehaviour': 'BY_LAST_USE', 'editorAutoDeploy': False, 'parent': None, 'alias': 'API_TEST', 'invalidNodes': [], 'createdAt': '2023-03-22T10:20:50.000Z', 'updatedAt': '2023-03-22T10:20:50.000Z', '_id': '641c89cb902176caaede0144', 'profileSlug': 'mayahq', 'name': 'TESTING API', 'status': 'STOPPED', 'deviceID': '5e0bbfe3717896af1cbb763b', 'deviceName': 'online-cpu', 'device': {'platform': 'cloud'}, 'thumbnail': 'https://maya-frontend-static.s3.ap-south-1.amazonaws.com/default.jpg', 'intents': [], 'url': 'https://rt-641c89cb902176caaede0144.mayahq.dev.mayalabs.io', 'deleted': False, 'createdBy': 'mayahq', 'updatedBy': 'mayahq', '__v': 0}
@@ -207,9 +207,13 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def create_worker(worker_name, alias, api_key=None) -> Worker:
-        if api_key == None:
+        print(worker_name)
+        if api_key == None or api_key == "":
             error_log = ['No API key provided.', 'Please provide an API key using mayalabs.auth.api_key and try again.']
             raise AuthException(format_error_log(error_log))
+        if worker_name == None or worker_name == "":
+            error_log = ['No worker name provided.', 'Please provide a worker name and try again.']
+            raise IntegrityException(format_error_log(error_log))
 
         create_request = {
             'url': f"{api_base_url}/app/v2/brains",
