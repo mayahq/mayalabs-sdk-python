@@ -3,17 +3,26 @@ import requests
 import asyncio
 import aiohttp
 import json
+from urllib.parse import urlparse
 import traceback
 from .utils.poll import poll
 from .utils.websocket import WebsocketListener
 import time
 from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
+from .utils.log import log
 from colorama import init, Fore, Back, Style
 from .exceptions import AuthException, IntegrityException
 from .utils.logging import format_error_log
 
+import random
 # {'publishedSkillPacks': [], 'skillPacks': [], 'modules': [], 'externalModules': [], 'local': False, 'autoShutdownBehaviour': 'BY_LAST_USE', 'editorAutoDeploy': False, 'parent': None, 'alias': 'API_TEST', 'invalidNodes': [], 'createdAt': '2023-03-22T10:20:50.000Z', 'updatedAt': '2023-03-22T10:20:50.000Z', '_id': '641c89cb902176caaede0144', 'profileSlug': 'mayahq', 'name': 'TESTING API', 'status': 'STOPPED', 'deviceID': '5e0bbfe3717896af1cbb763b', 'deviceName': 'online-cpu', 'device': {'platform': 'cloud'}, 'thumbnail': 'https://maya-frontend-static.s3.ap-south-1.amazonaws.com/default.jpg', 'intents': [], 'url': 'https://rt-641c89cb902176caaede0144.mayahq.dev.mayalabs.io', 'deleted': False, 'createdBy': 'mayahq', 'updatedBy': 'mayahq', '__v': 0}
+
+colors = [
+    Fore.MAGENTA,
+    Fore.GREEN,
+    Fore.YELLOW
+]
 
 class Worker:
     def __init__(self) -> None:
@@ -24,6 +33,7 @@ class Worker:
         self.status : str = None
         self.session_id : str = None
         self.ws_client : WebsocketListener = None
+        self.prefix_color = random.choice(colors)
 
     def _init_from_api_response(self, response):
         self.name = response['name']
@@ -99,7 +109,7 @@ class Worker:
 
         async def async_wrapper():
             call_task = asyncio.create_task(WorkerClient.call_worker(worker_url=self.url, msg=msg))
-            log_task = asyncio.create_task(self.ws_client.start_listener())
+            log_task = asyncio.create_task(self.ws_client.start_listener(log_prefix=self.name, prefix_color=self.prefix_color))
 
         
             def stop_log_task(future):
@@ -107,7 +117,7 @@ class Worker:
 
             call_task.add_done_callback(stop_log_task)
 
-            print('\n[Maya]', Style.BRIGHT + Fore.CYAN + 'Executing program on worker.\n' + Style.RESET_ALL)
+            log(Style.BRIGHT + Fore.CYAN + 'Executing program on worker.\n' + Style.RESET_ALL, prefix='mayalabs')
             await asyncio.gather(call_task, log_task)
 
             return call_task, log_task
@@ -132,6 +142,16 @@ class Worker:
     def new(cls, name, alias=None):
         worker = WorkerClient.create_worker(worker_name=name, alias=alias)
         return worker
+    
+    @property
+    def app_url(self):
+        url_data = urlparse(self.url)
+        origin = url_data.netloc
+        parts = origin.split('.')
+        env = parts[2]
+
+        app_subdomain = 'devapp' if env == 'dev' else 'app'
+        return f'https://{app_subdomain}.mayalabs.io/edit?id={self.id}'
 
 
 

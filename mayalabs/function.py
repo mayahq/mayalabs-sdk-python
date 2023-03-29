@@ -2,10 +2,12 @@ from mayalabs import Session
 from mayalabs import Worker, WorkerClient, SessionClient
 from typing import Any, Dict
 from .mayalabs import authenticate
+from .utils.log import log
 from colorama import Fore, Style
 import asyncio
 from .exceptions import IntegrityException
 from .utils.logging import format_error_log
+import random
 
 class Function:
     # @authenticate
@@ -99,7 +101,8 @@ class Function:
                 f"Received {type(payload).__name__}, expected a dictionary."]
             raise IntegrityException(format_error_log(error_log))
 
-        print('[Maya]', Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL)
+        # print('[Maya]', Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL)
+        log(Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL, prefix='mayalabs')
         self.worker.start(wait=True)
         return self.worker.call(msg = { **payload, **kwargs })
     

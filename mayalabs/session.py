@@ -6,6 +6,7 @@ from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
 from .utils.websocket import WebsocketListener, deploy_events
+from .utils.log import log
 import asyncio
 import time
 from time import sleep
@@ -85,25 +86,6 @@ class SessionClient:
         }
         response = requests.request(**request)
         return response.json()
-    
-    # @authenticate
-    # def deploy_session(session_id, workspace_id, api_key=None):
-    #     request = {
-    #         'url': f"{api_base_url}/pac/v1/session/deploy",
-    #         'method': "post",
-    #         'json': {
-    #             'session_id': session_id,
-    #             'workspace_id' : workspace_id,
-    #         },
-    #         'headers': {
-    #             'x-api-key': api_key,
-    #         }
-    #     }
-    #     response = requests.request(**request)
-    #     try:
-    #         return response.json()
-    #     except:
-    #         print('deploy error')
 
     @authenticate
     async def deploy_session(session_id, workspace_id, api_key=None):
@@ -115,19 +97,6 @@ class SessionClient:
             async with session.post(f'{api_base_url}/pac/v1/session/deploy', json=data) as response:
                 response_json = await response.json()
                 return response_json
-    
-    # def session_parse(obj):
-    #     # requests = {
-    #     #     'url': f"{self.pac_base_url}/pac/v1/session/parse",
-    #     #     'method': "post",
-    #     #     'json': {
-                
-    #     #     },
-    #     #     'headers': {
-    #     #         'x-api-key': self.api_key,
-            
-    #     # }
-    #     pass
 
 class Session():
     def __init__(self, engine="pac-1"):
@@ -177,7 +146,11 @@ class Session():
         i = 0
         if (self.worker.status and self.worker.status != 'STARTED'):
             status = Fore.RED + 'PENDING' + Style.RESET_ALL
-            print('[Maya]', "Worker status:", status)
+            log(
+                "Worker status:", status,
+                prefix='mayalabs',
+                prefix_color=Fore.BLACK
+            )
 
         while self.worker.status and self.worker.status != "STARTED":
             i += 1
@@ -188,7 +161,11 @@ class Session():
             time.sleep(2)
 
         started_status = Fore.GREEN + 'STARTED' + Style.RESET_ALL
-        print('[Maya]', 'Worker status:', started_status)
+        log(
+            'Worker status:', started_status,
+            prefix='mayalabs',
+            prefix_color=Fore.BLACK
+        )
         return
 
     def deploy(self, worker_id=None):
@@ -204,11 +181,11 @@ class Session():
         if worker_id is not None:
             try:
                 self.worker = Worker.get_by_id(worker_id)
-                print('[Maya]', "Found worker: ", self.worker.name)
+                log("Found worker: ", self.worker.name, prefix='mayalabs')
             except:
                 raise Exception("Worker not found")
         elif self.worker is None:
-            print("No worker found, creating new worker...")
+            log("No worker found, creating new worker...", prefix='mayalabs')
             random_name = "SDK:" + get_random_name()
             self.worker = WorkerClient.create_worker(worker_name=random_name, alias=random_name)
         else:
@@ -216,14 +193,22 @@ class Session():
         
         if self.worker:
             if self.worker.status != "STARTED":
-                print('[Maya]', "Starting worker: ", self.worker.name)
+                log("Starting worker: ", self.worker.name, prefix='mayalabs')
                 self.worker.start()
-            print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL)
+            log(
+                Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL,
+                prefix=self.worker.name,
+                prefix_color=Fore.WHITE
+            )
             with concurrent.futures.ThreadPoolExecutor() as exec:
                 future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                 result_2 = exec.submit(self.check_worker_start)
                 result_1 = future_1.result()
-                print(f'[{self.worker.name}]', Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL)
+                log(
+                    Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL,
+                    prefix=self.worker.name,
+                    prefix_color=Fore.WHITE
+                )
                 result_2.result()
                 # report all tasks done
             
@@ -235,9 +220,23 @@ class Session():
                     log_task.cancel()
 
                 deploy_task.add_done_callback(stop_log_task)
-                print(f'[{self.worker.name}]', Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL)
+                log(
+                    Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = Fore.WHITE
+                )
                 await asyncio.gather(deploy_task, log_task)
-                print(f'[{self.worker.name}]', Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL)
+                log(
+                    Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = Fore.WHITE
+                )
+                log(
+                    Fore.GREEN + 'Access the function at:' + Style.RESET_ALL, 
+                    "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = Fore.WHITE
+                )
 
                 return deploy_task.result()
             asyncio.run(async_wrapper())
