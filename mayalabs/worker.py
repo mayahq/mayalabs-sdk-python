@@ -10,6 +10,8 @@ import time
 from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
 from colorama import init, Fore, Back, Style
+from .exceptions import AuthException
+from .utils.logging import format_error_log
 
 # {'publishedSkillPacks': [], 'skillPacks': [], 'modules': [], 'externalModules': [], 'local': False, 'autoShutdownBehaviour': 'BY_LAST_USE', 'editorAutoDeploy': False, 'parent': None, 'alias': 'API_TEST', 'invalidNodes': [], 'createdAt': '2023-03-22T10:20:50.000Z', 'updatedAt': '2023-03-22T10:20:50.000Z', '_id': '641c89cb902176caaede0144', 'profileSlug': 'mayahq', 'name': 'TESTING API', 'status': 'STOPPED', 'deviceID': '5e0bbfe3717896af1cbb763b', 'deviceName': 'online-cpu', 'device': {'platform': 'cloud'}, 'thumbnail': 'https://maya-frontend-static.s3.ap-south-1.amazonaws.com/default.jpg', 'intents': [], 'url': 'https://rt-641c89cb902176caaede0144.mayahq.dev.mayalabs.io', 'deleted': False, 'createdBy': 'mayahq', 'updatedBy': 'mayahq', '__v': 0}
 
@@ -221,6 +223,11 @@ class WorkerClient:
             },
         }
         response = requests.request(**create_request)
+        # print(response.json()['message'])
+        if response.json()['message'] == "Error validating API key":
+            error_log = ['Invalid API key.', 'Please enter a valid API key and try again.']
+            raise AuthException(format_error_log(error_log))
+
         worker = Worker.parse_obj(response.json()['results'])
         return worker
     
