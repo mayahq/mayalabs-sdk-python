@@ -1,14 +1,20 @@
-import click
+import argparse
 from .session import Session
 from .function import Function
 from .mayalabs import auth
 
 def cli():
     """
-    What
+    Something
     """
-    instruct()
-    return
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", help="The command to execute")
+    parser.add_argument("-c", "--command_name", help="Name of the user")
+    args = parser.parse_args()
+    print(args)
+    name = args.command_name
+    print(f"Hello, {name}")
+
 
 def instruct():
     """
@@ -36,3 +42,12 @@ def instruct():
     print('Generating...\n')
     session.instruct(prompt=prompt, from_scratch=True, on_message=on_message)
     # end
+
+# if __name__ == "__main__":
+#     print('here')
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-c", "--command", help="Name of the user")
+#     args = parser.parse_args()
+#     print(args)
+#     name = args.command
+#     print(f"Hello, {name}")
