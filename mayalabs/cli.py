@@ -8,15 +8,16 @@ def cli():
     Something
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", help="The command to execute")
-    parser.add_argument("-c", "--command_name", help="Name of the user")
+    parser.add_argument("function_name", help="The function to execute")
+    parser.add_argument("-c", "--command", help="The command to pass to function")
     args = parser.parse_args()
     print(args)
-    name = args.command_name
-    print(f"Hello, {name}")
+    command = args.command
+    # print(f"Hello, {name}")
+    instruct(command=command)
 
 
-def instruct():
+def instruct(command):
     """
     Executes a command provided with the -c option.
     """
@@ -38,9 +39,9 @@ def instruct():
 
     # # instruct
     session = Session.new(script='')
-    prompt = 'create a 5 panel comic book of batman'
-    print('Generating...\n')
-    session.instruct(prompt=prompt, from_scratch=True, on_message=on_message)
+    # prompt = 'create a 5 panel comic book of batman'
+    # print('Generating...\n')
+    session.instruct(prompt=command, from_scratch=True, on_message=on_message)
     # end
 
 # if __name__ == "__main__":
