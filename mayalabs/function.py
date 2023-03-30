@@ -20,6 +20,15 @@ class Function:
             self.init()
 
     @staticmethod
+    def exists(name):
+        pass
+        existing_worker = Worker.get_by_alias(alias=name)
+        if existing_worker is None:
+            return False
+        
+        return True
+
+    @staticmethod
     def create(name, script):
         if os.environ.get("MAYA_ENVIRONMENT") == "development":
             log(Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL, prefix='mayalabs')
