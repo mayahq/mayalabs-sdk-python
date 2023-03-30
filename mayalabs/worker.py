@@ -8,11 +8,11 @@ import traceback
 from .utils.poll import poll
 from .utils.websocket import WebsocketListener
 import time
-from .consts import api_base_url, api_ws_url
+from .consts import api_base_url, api_ws_url, backend_base_url
 from .mayalabs import authenticate
 from .utils.log import log
 from colorama import init, Fore, Back, Style
-from .exceptions import AuthException, IntegrityException
+from .exceptions import AuthException, IntegrityException, ResourceException, APIException
 from .utils.logging import format_error_log
 
 import random
@@ -86,7 +86,7 @@ class Worker:
     @authenticate
     def attach_session(self, session_id, api_key=None):
         request = {
-            'url': f"{api_base_url}/app/v2/brains/linkSessionToRuntime",
+            'url': f"{backend_base_url}/v2/brains/linkSessionToRuntime",
             'method': "post",
             'json': {
                 'workspaceId': self.id,
@@ -97,7 +97,14 @@ class Worker:
             },
         }
 
-        requests.request(**request)
+        response = requests.request(**request)
+        if response.status_code != 200:
+            error_log = [
+                'Unable to attach a session to the worker', 
+                'Please contact the Maya team at humans@mayalabs.io',
+                f'session_id = {session_id}, worker_id = {self.id}'
+            ]
+            raise APIException(format_error_log(error_log))
 
     def call(self, msg : dict):
         if self.id is None:
@@ -161,7 +168,7 @@ class WorkerClient:
     def get_worker(worker_id, alias=None, api_key=None) -> Worker:
         if alias:
             request = {
-                'url': f"{api_base_url}/app/v2/brains/{worker_id}",
+                'url': f"{backend_base_url}/v2/brains/{worker_id}",
                 'method': "get",
                 'json': {
                     'workspaceId': worker_id,
@@ -173,7 +180,7 @@ class WorkerClient:
             }
         else:
             request = {
-                'url': f"{api_base_url}/app/v2/brains/{worker_id}",
+                'url': f"{backend_base_url}/v2/brains/{worker_id}",
                 'method': "get",
                 'json': {
                     'workspaceId': worker_id,
@@ -190,7 +197,7 @@ class WorkerClient:
     @authenticate
     def get_worker_by_alias(alias, api_key=None) -> Worker:
         request = {
-            'url': f"{api_base_url}/app/v2/brains/getByAlias/{alias}",
+            'url': f"{backend_base_url}/v2/brains/getByAlias/{alias}",
             'method': "get",
             'headers': {
                 'x-api-key': api_key,
@@ -209,7 +216,7 @@ class WorkerClient:
     @authenticate
     def search_worker_by_name(self, name, api_key=None) -> Worker:
         request = {
-            'url': f"{api_base_url}/app/v2/brains/search?name={name}",
+            'url': f"{backend_base_url}/v2/brains/search?name={name}",
             'method': 'get',
             'headers': {
                 'x-api-key': api_key
@@ -232,7 +239,7 @@ class WorkerClient:
             raise IntegrityException(format_error_log(error_log))
 
         create_request = {
-            'url': f"{api_base_url}/app/v2/brains",
+            'url': f"{backend_base_url}/v2/brains",
             'method': "post",
             'json': {
                 'name': worker_name,
@@ -247,10 +254,18 @@ class WorkerClient:
             },
         }
         response = requests.request(**create_request)
-        # print(response.json()['message'])
-        if response.json()['message'] == "Error validating API key":
+        responseData = response.json()
+
+        if response.status_code == 401:
             error_log = ['Invalid API key.', 'Check if you are providing a valid API key and try again.']
             raise AuthException(format_error_log(error_log))
+        elif response.status_code == 500:
+            if 'errorObject' in responseData and responseData['errorObject']['type'] == 'RESOURCE_ERROR':
+                error_log = [
+                    'Unable to create function.', 
+                    'This may be because you already have a function with this name.'
+                ]
+                raise ResourceException(format_error_log(error_log))
 
         worker = Worker.parse_obj(response.json()['results'])
         return worker
@@ -259,7 +274,7 @@ class WorkerClient:
     @authenticate
     def start_worker(worker_id, auto_shutdown_behaviour=None, wait=False, api_key=None) -> Worker:
         start_request = {
-            'url': f"{api_base_url}/app/v2/brains/start",
+            'url': f"{backend_base_url}/v2/brains/start",
             'method': 'post',
             'json': {
                 '_id': worker_id
@@ -303,7 +318,7 @@ class WorkerClient:
     @authenticate
     def stop_worker(worker_id, wait=False, api_key=None) -> Worker:
         stop_request = {
-            'url': f"{api_base_url}/app/v2/brains/stop",
+            'url': f"{backend_base_url}/v2/brains/stop",
             'method': 'post',
             'json': {
                 '_id': worker_id
@@ -333,7 +348,7 @@ class WorkerClient:
     @authenticate
     def delete_worker(worker_id, api_key=None):
         request = {
-            'url': f"{api_base_url}/app/v2/brains/{worker_id}",
+            'url': f"{backend_base_url}/v2/brains/{worker_id}",
             'method': "delete",
             'json': {},
             'headers': {

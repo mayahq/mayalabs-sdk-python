@@ -60,10 +60,7 @@ class Function:
             )
 
             worker = None
-            try:
-                worker = Worker.create(name=name, alias=name)
-            except Exception as err:
-                raise Exception('Failed to create a worker for the function')
+            worker = Worker.create(name=name, alias=name)
 
             session = None
             try:
