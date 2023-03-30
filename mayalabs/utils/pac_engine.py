@@ -9,6 +9,7 @@ from ..mayalabs import authenticate
 from ..consts import api_base_url, api_ws_url
 from colorama import Fore, Style
 from ..exceptions import GenerationException
+import traceback
 
 
 def get_message(pac_message):
@@ -45,7 +46,8 @@ def get_message(pac_message):
                 'status': 'progress',
                 'message': f'Generated step [{step_prefix}]: {step_text}'
             }
-    except:
+    except Exception as e:
+        traceback.print_exc()
         return {
             'status': 'error',
             'message': 'Something went wrong'
@@ -59,6 +61,11 @@ class PacTask:
         self.opts = opts
         self.api_key = api_key
         self.done_future = asyncio.Future()
+        self.handlers = []
+
+    def on_message(self, handler):
+        self.handlers.append(handler)
+        pass
 
     async def execute(self):
         connection_id = uuid.uuid4()
@@ -81,8 +88,17 @@ class PacTask:
                     if isinstance(data, str):
                         data = json.loads(data)
 
-                    msg = get_message(data)
+                    for handler in self.handlers:
+                        handler(data)
 
+                    msg = None
+                    if type == "GENERATE":
+                        msg = get_message(data)
+                    elif type == 'TALK':
+                        print(msg)
+
+                    if msg is None:
+                        continue
                     if msg['status'] == 'error':
                         # print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
                         # raise GenerationException('Error occured during generation: ' + msg['message'])
@@ -118,7 +134,7 @@ class GenerateTask(PacTask):
 class InstructTask(PacTask):
     def __init__(self, session_id: str, instruction: str, from_scratch: bool):
         super().__init__(
-            type="INSTRUCT",
+            type="TALK",
             opts={
                 "session_id": session_id,
                 "instruction": instruction,
