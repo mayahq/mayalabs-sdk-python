@@ -11,7 +11,11 @@ def cli():
     parser.add_argument("-c", "--command", help="The command to pass to function")
     args = parser.parse_args()
     command = args.command
-    instruct(command=command)
+    function_name = args.function_name
+    if function_name == "instruct" and not command:
+        print("Please provide a command with the -c flag")
+    elif function_name == "instruct" and command:
+        instruct(command=command)
 
 
 def instruct(command):
@@ -30,10 +34,9 @@ def instruct(command):
     session.instruct(prompt=command, from_scratch=True, on_message=on_message)
 
 # if __name__ == "__main__":
-#     print('here')
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("-c", "--command", help="Name of the user")
-#     args = parser.parse_args()
-#     print(args)
-#     name = args.command
-#     print(f"Hello, {name}")
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("function_name", help="The function to execute")
+    # parser.add_argument("-c", "--command", help="The command to pass to function")
+    # args = parser.parse_args()
+    # command = args.command
+    # instruct(command=command)
