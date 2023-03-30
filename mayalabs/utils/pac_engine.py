@@ -12,7 +12,6 @@ from ..exceptions import GenerationException
 
 
 def get_message(pac_message):
-    pass
     try:
         if pac_message['status'] and pac_message['status'] == 'complete':
             return {
@@ -30,11 +29,17 @@ def get_message(pac_message):
         elif 'metadata' in pac_message and 'steps' in pac_message:
             generated_step_id = pac_message['metadata']['generated_step_id']
             generated_step = pac_message['steps'][generated_step_id]
+
             step_prefix = generated_step['prefix']
             step_text = generated_step['text']
-
             if step_prefix[-1] == '.':
                 step_prefix = step_prefix[:-1]
+
+            if generated_step.get('error', False):
+                return {
+                    'status': 'error',
+                    'message': f'Could not generate step [{step_prefix}] ({step_text})'
+                }
 
             return {
                 'status': 'progress',
@@ -82,11 +87,10 @@ class PacTask:
                         # print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
                         # raise GenerationException('Error occured during generation: ' + msg['message'])
                         log(
-                            Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL,
+                            Fore.RED + 'Error during program generation: ' + msg['message'] + Style.RESET_ALL,
                             prefix='mayalabs',
                             prefix_color=Fore.BLACK
                         )
-                        raise Exception('Error occured during generation: ' + msg['message'])
                     elif msg['status'] == 'success':
                         break
                     else:
@@ -95,6 +99,7 @@ class PacTask:
                             prefix='mayalabs',
                             prefix_color=Fore.BLACK
                         )
+                        # print('received', data)
                     
                     # self.done_future.set_result(data)
 
