@@ -4,6 +4,9 @@ from .function import Function
 from .mayalabs import auth
 
 def cli():
+    """
+    What
+    """
     instruct()
     return
 
@@ -24,12 +27,12 @@ def instruct():
 
     def on_message(message):
         print(message['recipe'])
+        if message['metadata']['status'] == 'complete':
+            exit()
 
     # # instruct
     session = Session.new(script='')
     prompt = 'create a 5 panel comic book of batman'
-    print('Generating...')
-    result = session.instruct(prompt=prompt, from_scratch=True, on_message=on_message)
+    print('Generating...\n')
+    session.instruct(prompt=prompt, from_scratch=True, on_message=on_message)
     # end
-    return
-    
