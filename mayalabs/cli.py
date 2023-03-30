@@ -27,11 +27,42 @@ def instruct(command):
     def on_message(message):
         print(message['recipe'])
         if message['metadata']['status'] == 'complete':
-            exit()
+            print('Recipe generation complete.')
+            # show_post_instruct_options()
 
     session = Session.new(script='')
     print('Generating...\n')
     session.instruct(prompt=command, from_scratch=True, on_message=on_message)
+
+def show_post_instruct_options():
+    """
+    Show the actions available after instruct response is completed.
+    """
+    while True:
+        print("1. Deploy as function")
+        print("2. Modify")
+        print("3. Cancel")
+        print("4. Save to .nl")
+        choice = input("Select an option and press Enter: ")
+
+        if choice == "1":
+            # TODO: implement the Deploy as function option
+            print("Deploying as function...")
+            break
+        elif choice == "2":
+            # TODO: implement the Modify option
+            print("Modifying...")
+            break
+        elif choice == "3":
+            # TODO: implement the Cancel option
+            print("Cancelling...")
+            break
+        elif choice == "4":
+            # TODO: implement the Save to .nl option
+            print("Saving to .nl...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
 # if __name__ == "__main__":
     # parser = argparse.ArgumentParser()
