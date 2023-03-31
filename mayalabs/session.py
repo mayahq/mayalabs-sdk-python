@@ -251,15 +251,12 @@ class Session():
                         with open(MAYA_CACHE_FILE, "w") as f:
                             f.write(sessions_str)
                             f.close()
-                        # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL)
                         log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
                         sessions[self.id] = tmp
                     future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                     future_1.result()
-                    # print(f'[Maya]', Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL)
                     log(Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
                 else:
-                    # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL)
                     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
                 # future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                 result_2 = exec.submit(self.check_worker_start)
@@ -271,7 +268,7 @@ class Session():
             async def async_wrapper():
                 if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
                     deploy_task = asyncio.create_task(SessionClient.deploy_session(self.id, self.worker.id))
-                    log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'[{self.worker.name}]'))
+                    log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'{self.worker.name}'))
                     def stop_log_task(future):
                         log_task.cancel()
 
@@ -296,7 +293,6 @@ class Session():
 
                     return deploy_task.result()
                 else:
-                    # print(f'[Maya]', Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL)
                     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL, prefix='mayalabs')
                     return
             asyncio.run(async_wrapper())
