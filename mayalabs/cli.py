@@ -4,7 +4,7 @@ from .mayalabs import auth
 
 def cli():
     """
-    Something
+    Main function for the mayalabs CLI.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("function_name", help="The function to execute")
@@ -25,16 +25,17 @@ def instruct(command):
     auth.api_key = "mayakey-$2a$10$QBppphtMME9aDjeVYi3Ije/m18tYBhcQsqFqeOm7qtiYQeEu1hTOW"
 
     def on_message(message):
-        print(message['recipe'])
+        recipe = message['recipe']
+        print(recipe)
         if message['metadata']['status'] == 'complete':
-            print('Recipe generation complete.')
-            # show_post_instruct_options()
+            print('Recipe generation complete.\n')
+            show_post_instruct_options(recipe=recipe)
 
     session = Session.new(script='')
     print('Generating...\n')
     session.instruct(prompt=command, from_scratch=True, on_message=on_message)
 
-def show_post_instruct_options():
+def show_post_instruct_options(recipe):
     """
     Show the actions available after instruct response is completed.
     """
@@ -55,12 +56,17 @@ def show_post_instruct_options():
             break
         elif choice == "3":
             # TODO: implement the Cancel option
-            print("Cancelling...")
-            break
+            print("Canceled.")
+            exit()
+            # break
         elif choice == "4":
             # TODO: implement the Save to .nl option
             print("Saving to .nl...")
-            break
+            with open("output.nl", "w", encoding='utf-8') as output_file:
+                output_file.write(recipe)
+            print('Saved to output.nl file.')
+            exit()
+            # break
         else:
             print("Invalid choice. Please try again.")
 
