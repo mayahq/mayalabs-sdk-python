@@ -103,9 +103,8 @@ class PacTask:
                         if self.type == "GENERATE":
                             msg = get_message(data)
                         elif self.type == 'TALK':
-                            print(msg)
+                            pass
 
-                        print(msg)
                         if msg is None:
                             continue
                         if msg['status'] == 'error':
