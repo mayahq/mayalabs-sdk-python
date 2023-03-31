@@ -3,6 +3,7 @@ from .session import Session
 from .mayalabs import auth
 from .function import Function
 from .utils.name_gen import get_random_name
+from colorama import Fore, Style
 
 def cli():
     """
@@ -34,13 +35,18 @@ def instruct(command, from_scratch, session_id):
     if session_id is None:
         session = Session.new(script='')
         session_id = session._id
-        print('Generating...\n')
+        print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     else:
         session = Session.get(session_id=session_id)
         session_id = session._id
-        print('Modifying...\n')
+        print(Style.BRIGHT + Fore.CYAN + 'Modifying...\n' + Style.RESET_ALL)
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
     print(recipe)
+    if from_scratch:
+        print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
+    else:
+        print(Style.BRIGHT + Fore.GREEN + 'Modification successful.\n' + Style.RESET_ALL)
+
     show_post_instruct_options(recipe=recipe, session_id=session_id)
 
 
@@ -52,27 +58,25 @@ def show_post_instruct_options(recipe, session_id):
         print("1. Deploy as function")
         print("2. Modify")
         print("3. Save to .nl\n")
-        choice = input("Select an option and press Enter: ")
+        choice = input(Style.BRIGHT + Fore.BLUE + 'Select an option and press Enter: ' + Style.RESET_ALL)
 
         if choice == "1":
-            print("Deploying as function...")
+            print(Style.BRIGHT + Fore.CYAN + 'Deploying as function...\n' + Style.RESET_ALL)
             random_name = "SDK:" + get_random_name()
             function = Function.create(name=random_name, script=recipe)
             function.deploy()
-            print('Deployed.')
             exit()
         elif choice == "2":
-            new_command = input("How do you want to modify this program? ")
+            new_command = input(Style.BRIGHT + Fore.BLUE + 'How do you want to modify this program? ' + Style.RESET_ALL)
             instruct(command=new_command, from_scratch=False, session_id=session_id)
             break
         elif choice == "3":
-            print("Saving to .nl...")
             with open("output.nl", "w", encoding='utf-8') as output_file:
                 output_file.write(recipe)
-            print('Saved to output.nl file.')
+            print(Style.BRIGHT + Fore.CYAN + 'Saved to output.nl file.' + Style.RESET_ALL)
             exit()
         else:
-            print("Invalid choice. Please try again.")
+            print(Style.BRIGHT + Fore.RED + 'Invalid choice. Please try again.' + Style.RESET_ALL)
 
 # if __name__ == "__main__":
     # parser = argparse.ArgumentParser()
