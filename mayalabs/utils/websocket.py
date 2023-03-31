@@ -75,12 +75,19 @@ class WebsocketListener:
 
                 if msg_format == 'Object':
                     content = json.loads(content)
-                nodeId = event['data']['id']
-                log(
-                    LOG_COLOR + f'Received {logLevel} message from node {nodeId}: {content}' + Style.RESET_ALL, 
-                    prefix=log_prefix,
-                    prefix_color=prefix_color
-                )
+                try:
+                    nodeId = event['data']['id']
+                    log(
+                        LOG_COLOR + f'Received {logLevel} message from node {nodeId}: {content}' + Style.RESET_ALL, 
+                        prefix=log_prefix,
+                        prefix_color=prefix_color
+                    )
+                except Exception as err:
+                    log(
+                        LOG_COLOR + f'Received {logLevel} : {content}' + Style.RESET_ALL, 
+                        prefix=log_prefix,
+                        prefix_color=prefix_color
+                    )
             
             elif event['topic'] == 'notification/node/added':
                 nodes = event['data']
