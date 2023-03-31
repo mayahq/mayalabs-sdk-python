@@ -153,8 +153,6 @@ class InstructTask(PacTask):
         )
         async def handle_message(message):
             if message['metadata']['status'] == 'complete':
-                # print('Recipe generation complete.\n')
-                # show_post_instruct_options(recipe=recipe, session_id=session_id)
                 await self.websocket.close()
                 return
 

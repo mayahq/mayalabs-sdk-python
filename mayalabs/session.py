@@ -139,7 +139,8 @@ class Session():
         task = InstructTask(self.id, instruction=prompt, from_scratch=from_scratch)
         if on_message is not None:
             task.on_message(on_message)
-        asyncio.run(task.execute())
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(task.execute())
         pass
 
     def generate(self):
