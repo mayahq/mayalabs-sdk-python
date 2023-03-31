@@ -1,6 +1,7 @@
 import argparse
 from .session import Session
 from .mayalabs import auth
+from .function import Function
 
 def cli():
     """
@@ -47,26 +48,27 @@ def show_post_instruct_options(recipe):
         choice = input("Select an option and press Enter: ")
 
         if choice == "1":
-            # TODO: implement the Deploy as function option
+            # To be fixed: https://linear.app/maya-labs/issue/MAY-398/generation-succeeds-in-maya-editor-but-terminal-is-stuck-on-a-log
             print("Deploying as function...")
-            break
+            function = Function.create(name='Function3', script=recipe)
+            function.deploy()
+            output = function.call()
+            print(output)
+            print('Deployed.')
+            exit()
         elif choice == "2":
             # TODO: implement the Modify option
             print("Modifying...")
             break
         elif choice == "3":
-            # TODO: implement the Cancel option
             print("Canceled.")
             exit()
-            # break
         elif choice == "4":
-            # TODO: implement the Save to .nl option
             print("Saving to .nl...")
             with open("output.nl", "w", encoding='utf-8') as output_file:
                 output_file.write(recipe)
             print('Saved to output.nl file.')
             exit()
-            # break
         else:
             print("Invalid choice. Please try again.")
 
