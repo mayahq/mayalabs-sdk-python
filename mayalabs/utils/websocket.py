@@ -40,6 +40,7 @@ class WebsocketListener:
         pass
         self.url = url
         self.handlers = {}
+        self.websocket = None
     
     def on(self, event, handler):
         if event not in self.handlers:

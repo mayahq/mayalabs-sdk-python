@@ -100,30 +100,31 @@ class PacTask:
                         await self.handle_message(data)
 
                         msg = None
-                        if type == "GENERATE":
+                        if self.type == "GENERATE":
                             msg = get_message(data)
-                        elif type == 'TALK':
+                        elif self.type == 'TALK':
                             print(msg)
 
-                    if msg is None:
-                        continue
-                    if msg['status'] == 'error':
-                        # print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
-                        # raise GenerationException('Error occured during generation: ' + msg['message'])
-                        log(
-                            Fore.RED + 'Error during program generation: ' + msg['message'] + Style.RESET_ALL,
-                            prefix='mayalabs',
-                            prefix_color=Fore.BLACK
-                        )
-                    elif msg['status'] == 'success':
-                        break
-                    else:
-                        log(
-                            Fore.CYAN + msg['message'] + Style.RESET_ALL,
-                            prefix='mayalabs',
-                            prefix_color=Fore.BLACK
-                        )
-                        # print('received', data)
+                        print(msg)
+                        if msg is None:
+                            continue
+                        if msg['status'] == 'error':
+                            # print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
+                            # raise GenerationException('Error occured during generation: ' + msg['message'])
+                            log(
+                                Fore.RED + 'Error during program generation: ' + msg['message'] + Style.RESET_ALL,
+                                prefix='mayalabs',
+                                prefix_color=Fore.BLACK
+                            )
+                        elif msg['status'] == 'success':
+                            break
+                        else:
+                            log(
+                                Fore.CYAN + msg['message'] + Style.RESET_ALL,
+                                prefix='mayalabs',
+                                prefix_color=Fore.BLACK
+                            )
+                            # print('received', data)
                     
         except asyncio.CancelledError:
             self.websocket.close()

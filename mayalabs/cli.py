@@ -55,10 +55,8 @@ def show_post_instruct_options(recipe, session_id):
 
         if choice == "1":
             print("Deploying as function...")
-            function = Function.create(name='Function66', script=recipe)
+            function = Function.create(name='Function69', script=recipe)
             function.deploy()
-            output = function.call()
-            print(output)
             print('Deployed.')
             exit()
         elif choice == "2":
