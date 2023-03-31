@@ -29,10 +29,6 @@ def instruct(command, from_scratch, session_id):
     def on_message(message, task):
         nonlocal recipe
         recipe = message['recipe']
-        # print(recipe)
-        # if message['metadata']['status'] == 'complete':
-            # print('Recipe generation complete.\n')
-            # return
 
     if session_id is None:
         session = Session.new(script='')
