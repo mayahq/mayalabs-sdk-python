@@ -39,9 +39,8 @@ def instruct(command, from_scratch, session_id):
             print(Style.BRIGHT + 'export MAYA_API_KEY="YOUR_API_KEY"' + Style.RESET_ALL)
         print(Style.DIM + r"Remember to escape '$' signs with a backslash (\)" + Style.RESET_ALL)
         exit()
-    # auth.api_key = "mayakey-$2a$10$QBppphtMME9aDjeVYi3Ije/m18tYBhcQsqFqeOm7qtiYQeEu1hTOW"
-    auth.api_key = api_key
 
+    auth.api_key = api_key
     recipe = ""
     def on_message(message, task):
         nonlocal recipe
