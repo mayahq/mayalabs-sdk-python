@@ -234,6 +234,7 @@ class Session():
             hash.update(self.script.encode())
             received_script = hash.hexdigest()
             with concurrent.futures.ThreadPoolExecutor() as exec:
+                result_2 = exec.submit(self.check_worker_start)
                 if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
                     if sessions is None:
                         sessions = {}
@@ -251,16 +252,16 @@ class Session():
                         with open(MAYA_CACHE_FILE, "w") as f:
                             f.write(sessions_str)
                             f.close()
-                        log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
+                        if tmp == "":
+                            log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
+                        else:
+                            log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Generating program' + Style.RESET_ALL, prefix='mayalabs')
                         sessions[self.id] = tmp
                     future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                     future_1.result()
                     log(Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
                 else:
                     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
-                # future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
-                result_2 = exec.submit(self.check_worker_start)
-                result_1 = future_1.result()
                 result_2.result()
                 # report all tasks done
             
@@ -311,7 +312,6 @@ class Session():
 
     def update(self):
         response = SessionClient.get_session(self.id)
-        print(response)
         self.parse_obj(response['response'])
 
     def to_string(self):
