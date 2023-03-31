@@ -28,14 +28,19 @@ def instruct(command, from_scratch, session_id):
     Executes a command provided with the -c option.
     """
     api_key = os.environ.get('MAYA_API_KEY')
-    print(api_key)
-    print(platform.system())
-    if api_key == None:
-        print('You have not provided an API Key.')
-        print('Please set MAYA_API_KEY in your environment variables by typing the following in your terminal:')
-        print('export MAYA_API_KEY=YOUR_API_KEY')
-    exit()
-    auth.api_key = "mayakey-$2a$10$QBppphtMME9aDjeVYi3Ije/m18tYBhcQsqFqeOm7qtiYQeEu1hTOW"
+    sys_platform = platform.system()
+    if api_key is None:
+        print(Style.BRIGHT + Fore.RED + 'You have not provided an API Key.' + Style.RESET_ALL)
+        if sys_platform == 'Windows':
+            print('You can set it by running the following in your PowerShell:\n')
+            print(Style.BRIGHT + 'setx MAYA_API_KEY "YOUR_API_KEY"' + Style.RESET_ALL)
+        else:
+            print('You can set it by running the following in your terminal:\n')
+            print(Style.BRIGHT + 'export MAYA_API_KEY="YOUR_API_KEY"' + Style.RESET_ALL)
+        print(Style.DIM + r"Remember to escape '$' signs with a backslash (\)" + Style.RESET_ALL)
+        exit()
+    # auth.api_key = "mayakey-$2a$10$QBppphtMME9aDjeVYi3Ije/m18tYBhcQsqFqeOm7qtiYQeEu1hTOW"
+    auth.api_key = api_key
 
     recipe = ""
     def on_message(message, task):
