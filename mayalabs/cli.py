@@ -55,9 +55,9 @@ def show_post_instruct_options(recipe, session_id):
     Show the actions available after instruct response is completed.
     """
     while True:
-        print("1. Deploy as function")
-        print("2. Modify")
-        print("3. Save to .nl\n")
+        print(Style.BRIGHT + '1.' + Style.RESET_ALL + ' Deploy as function')
+        print(Style.BRIGHT + '2.' + Style.RESET_ALL + ' Modify')
+        print(Style.BRIGHT + '3.' + Style.RESET_ALL + ' Save to .nl\n')
         choice = input(Style.BRIGHT + Fore.BLUE + 'Select an option and press Enter: ' + Style.RESET_ALL)
 
         if choice == "1":
