@@ -53,8 +53,8 @@ def get_message(pac_message):
             'message': 'Something went wrong'
         }
 
-def empty_function(placeholder):
-    pass        
+async def empty_function(placeholder):
+    return 1   
 
 
 class PacTask:
@@ -125,7 +125,7 @@ class PacTask:
                         )
                         # print('received', data)
                     
-        except asyncio.CancelledError():
+        except asyncio.CancelledError:
             self.websocket.close()
             pass
 
