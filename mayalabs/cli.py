@@ -1,9 +1,11 @@
+import os
+import platform
 import argparse
+from colorama import Fore, Style
 from .session import Session
 from .mayalabs import auth
 from .function import Function
 from .utils.name_gen import get_random_name
-from colorama import Fore, Style
 
 def cli():
     """
@@ -25,6 +27,14 @@ def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
+    api_key = os.environ.get('MAYA_API_KEY')
+    print(api_key)
+    print(platform.system())
+    if api_key == None:
+        print('You have not provided an API Key.')
+        print('Please set MAYA_API_KEY in your environment variables by typing the following in your terminal:')
+        print('export MAYA_API_KEY=YOUR_API_KEY')
+    exit()
     auth.api_key = "mayakey-$2a$10$QBppphtMME9aDjeVYi3Ije/m18tYBhcQsqFqeOm7qtiYQeEu1hTOW"
 
     recipe = ""
