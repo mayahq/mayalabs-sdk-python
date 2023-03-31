@@ -18,7 +18,7 @@ Get the Maya Labs API key from the Settings > Developer [section](https://app.ma
 export MAYA_API_KEY = "mayakey-..."
 ```
 
-Or set mayalabs.api_key to its value:
+Or set `mayalabs.api_key` to its value:
 
 ```
 from mayalabs import Function
@@ -44,17 +44,17 @@ function.call({ "term" : "Dr. Homi Bhabha"})
 # finds and outputs a summary of the first matching wiki page
 ```
 
-This
+PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
 
 ## Command Line Usage
 
-We have an early preview of iterative script generation using our CLI. Try :
+Today, script need to be manually written step-by-step, but we are offering early WIP preview of iterative script generation via our CLI. Try running:
 
 ```
 $ mayalabs instruct -c 'fetch Name and Email from gsheet, write function to merge all columns, and return data'
 ```
 
-And then use the generated function as you wish.
+And then use the generated script as function.
 
 ## Development
 
@@ -64,7 +64,7 @@ To test and develop natural language functions iteratively, just set environment
 os.environ["MAYA_ENVIRONMENT"] = "development"
 ```
 
-This ensures Maya's program synthesis engine only incremental generates and deploys changes you make to the script, instead of deploying from scratch.
+This ensures our program synthesis engine only incremental generates and deploys changes you make to the script, instead of deploying from scratch.
 
 ## Requirements
 
