@@ -16,10 +16,10 @@ def cli():
     if function_name == "instruct" and not command:
         print("Please provide a command with the -c flag")
     elif function_name == "instruct" and command:
-        instruct(command=command)
+        instruct(command=command, from_scratch=True, session_id=None)
 
 
-def instruct(command):
+def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
@@ -30,13 +30,19 @@ def instruct(command):
         print(recipe)
         if message['metadata']['status'] == 'complete':
             print('Recipe generation complete.\n')
-            show_post_instruct_options(recipe=recipe)
+            show_post_instruct_options(recipe=recipe, session_id=session_id)
+            return
 
-    session = Session.new(script='')
+    if session_id is None:
+        session = Session.new(script='')
+        session_id = session._id
+    else:
+        session = Session.get(session_id=session_id)
+        session_id = session._id
     print('Generating...\n')
-    session.instruct(prompt=command, from_scratch=True, on_message=on_message)
+    session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
 
-def show_post_instruct_options(recipe):
+def show_post_instruct_options(recipe, session_id):
     """
     Show the actions available after instruct response is completed.
     """
@@ -48,17 +54,18 @@ def show_post_instruct_options(recipe):
         choice = input("Select an option and press Enter: ")
 
         if choice == "1":
-            # To be fixed: https://linear.app/maya-labs/issue/MAY-398/generation-succeeds-in-maya-editor-but-terminal-is-stuck-on-a-log
             print("Deploying as function...")
-            function = Function.create(name='Function3', script=recipe)
+            function = Function.create(name='Function66', script=recipe)
             function.deploy()
             output = function.call()
             print(output)
             print('Deployed.')
             exit()
         elif choice == "2":
-            # TODO: implement the Modify option
-            print("Modifying...")
+            new_command = input("Enter new command: ")
+            # The instruct function should be called again. With the command provided as a parameter and from_scratch set to False.
+            # This should work because a new function instance should be created and the execution should go over to that
+            instruct(command=new_command, from_scratch=False, session_id=session_id)
             break
         elif choice == "3":
             print("Canceled.")
