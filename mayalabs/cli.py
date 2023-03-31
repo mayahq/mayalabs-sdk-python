@@ -2,6 +2,7 @@ import argparse
 from .session import Session
 from .mayalabs import auth
 from .function import Function
+from .utils.name_gen import get_random_name
 
 def cli():
     """
@@ -55,7 +56,8 @@ def show_post_instruct_options(recipe, session_id):
 
         if choice == "1":
             print("Deploying as function...")
-            function = Function.create(name='Function69', script=recipe)
+            random_name = "SDK:" + get_random_name()
+            function = Function.create(name=random_name, script=recipe)
             function.deploy()
             print('Deployed.')
             exit()
