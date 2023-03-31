@@ -25,12 +25,13 @@ def instruct(command, from_scratch, session_id):
     """
     auth.api_key = "mayakey-$2a$10$QBppphtMME9aDjeVYi3Ije/m18tYBhcQsqFqeOm7qtiYQeEu1hTOW"
 
-    def on_message(message):
+    def on_message(message, task):
         recipe = message['recipe']
         print(recipe)
         if message['metadata']['status'] == 'complete':
             print('Recipe generation complete.\n')
-            show_post_instruct_options(recipe=recipe, session_id=session_id)
+            # show_post_instruct_options(recipe=recipe, session_id=session_id)
+            # task.websocket.close()
             return
 
     if session_id is None:
@@ -41,6 +42,7 @@ def instruct(command, from_scratch, session_id):
         session_id = session._id
     print('Generating...\n')
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
+    print('I am here!!!')
 
 def show_post_instruct_options(recipe, session_id):
     """

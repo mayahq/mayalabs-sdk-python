@@ -53,6 +53,9 @@ def get_message(pac_message):
             'message': 'Something went wrong'
         }
 
+def empty_function(placeholder):
+    pass        
+
 
 class PacTask:
     @authenticate
@@ -62,40 +65,45 @@ class PacTask:
         self.api_key = api_key
         self.done_future = asyncio.Future()
         self.handlers = []
+        self.websocket = None
+        self.handle_message = empty_function
 
     def on_message(self, handler):
         self.handlers.append(handler)
         pass
 
     async def execute(self):
-        connection_id = uuid.uuid4()
-        url = f"{api_ws_url}?connId={connection_id}&apiKey={self.api_key}"
-        
-        async with websockets.connect(url) as socket:
-            task_id = uuid.uuid4()
+        try:
+            connection_id = uuid.uuid4()
+            url = f"{api_ws_url}?connId={connection_id}&apiKey={self.api_key}"
+            
+            async with websockets.connect(url) as socket:
+                self.websocket = socket
+                task_id = uuid.uuid4()
 
-            message = {
-                "task_id": str(task_id),
-                "type": self.type,
-                "data": self.opts,
-            }
-            await socket.send(json.dumps(message))
+                message = {
+                    "task_id": str(task_id),
+                    "type": self.type,
+                    "data": self.opts,
+                }
+                await socket.send(json.dumps(message))
 
-            async for message in socket:
-                msg_object = json.loads(json.loads(message))
-                if msg_object["task_id"] == str(task_id):
-                    data = msg_object["data"]
-                    if isinstance(data, str):
-                        data = json.loads(data)
+                async for message in socket:
+                    msg_object = json.loads(json.loads(message))
+                    if msg_object["task_id"] == str(task_id):
+                        data = msg_object["data"]
+                        if isinstance(data, str):
+                            data = json.loads(data)
 
-                    for handler in self.handlers:
-                        handler(data)
+                        for handler in self.handlers:
+                            handler(data, self)
+                        await self.handle_message(data)
 
-                    msg = None
-                    if type == "GENERATE":
-                        msg = get_message(data)
-                    elif type == 'TALK':
-                        print(msg)
+                        msg = None
+                        if type == "GENERATE":
+                            msg = get_message(data)
+                        elif type == 'TALK':
+                            print(msg)
 
                     if msg is None:
                         continue
@@ -117,7 +125,9 @@ class PacTask:
                         )
                         # print('received', data)
                     
-                    # self.done_future.set_result(data)
+        except asyncio.CancelledError():
+            self.websocket.close()
+            pass
 
     async def done(self):
         await self.done_future
@@ -141,4 +151,11 @@ class InstructTask(PacTask):
                 "from_scratch": from_scratch,
             },
         )
+        async def handle_message(message):
+            if message['metadata']['status'] == 'complete':
+                # print('Recipe generation complete.\n')
+                # show_post_instruct_options(recipe=recipe, session_id=session_id)
+                await self.websocket.close()
+                return
 
+        self.handle_message = handle_message
