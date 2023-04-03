@@ -204,11 +204,11 @@ class Session():
             if self.worker.status != "STARTED":
                 log("Starting worker: ", self.worker.name, prefix='mayalabs')
                 self.worker.start()
-            log(
-                Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL,
-                prefix=self.worker.name,
-                prefix_color=Fore.WHITE
-            )
+            # log(
+            #     Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL,
+            #     prefix=self.worker.name,
+            #     prefix_color=self.worker.prefix_color
+            # )
             
             sessions = {}
             try:
@@ -253,13 +253,13 @@ class Session():
                             f.write(sessions_str)
                             f.close()
                         if tmp == "":
-                            log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
+                            log(Style.BRIGHT + Fore.CYAN + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
                         else:
-                            log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Generating program' + Style.RESET_ALL, prefix='mayalabs')
+                            log(Style.BRIGHT + Fore.CYAN + 'Generating program' + Style.RESET_ALL, prefix='mayalabs')
                         sessions[self.id] = tmp
                     future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                     future_1.result()
-                    log(Style.BRIGHT + Fore.GREEN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
+                    log(Style.BRIGHT + Fore.CYAN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
                 else:
                     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
                 result_2.result()
@@ -277,26 +277,51 @@ class Session():
                     log(
                         Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL,
                         prefix = self.worker.name,
-                        prefix_color = Fore.WHITE
+                        prefix_color = self.worker.prefix_color
                     )
                     await asyncio.gather(deploy_task, log_task)
                     log(
-                        Style.BRIGHT + Fore.GREEN + 'Deploy successful.' + Style.RESET_ALL,
+                        Style.BRIGHT + Fore.CYAN + 'Deploy successful.' + Style.RESET_ALL,
                         prefix = self.worker.name,
-                        prefix_color = Fore.WHITE
-                    )
-                    log(
-                        Fore.GREEN + 'Access the function at:' + Style.RESET_ALL, 
-                        "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
-                        prefix = self.worker.name,
-                        prefix_color = Fore.WHITE
+                        prefix_color = self.worker.prefix_color
                     )
 
                     return deploy_task.result()
                 else:
                     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL, prefix='mayalabs')
                     return
+            
             asyncio.run(async_wrapper())
+
+            problems = self.worker.get_flow_problems()
+            if len(problems) > 0:
+                log(
+                    Fore.YELLOW + Style.BRIGHT + 'Found some missing requirements:' + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = self.worker.prefix_color
+                )
+                for p in problems:
+                    # solve()  // hehe AGI
+                    field_name, node_id, node_type = p['field_name'], p['node_id'], p['node_type']
+                    message = f'* Missing field {field_name} on node {node_id} (type: {node_type})'
+                    log(
+                        Fore.YELLOW + message + Style.RESET_ALL,
+                        prefix = self.worker.name,
+                        prefix_color = self.worker.prefix_color
+                    )
+                log(
+                    Fore.YELLOW + Style.BRIGHT + 'To run this function, configure these requirements at the link below' + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = self.worker.prefix_color
+                )
+
+            log(
+                Fore.GREEN + 'Access the function in the app at:' + Style.RESET_ALL, 
+                "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
+                prefix = self.worker.name,
+                prefix_color = self.worker.prefix_color
+            )
+            # asyncio.run(async_wrapper())
             
         else:
             raise Exception("Error: Could not find worker") 

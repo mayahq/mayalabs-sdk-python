@@ -33,7 +33,7 @@ class Worker:
         self.status : str = None
         self.session_id : str = None
         self.ws_client : WebsocketListener = None
-        self.prefix_color = random.choice(colors)
+        self.prefix_color = Fore.WHITE
 
     def _init_from_api_response(self, response):
         self.name = response['name']
@@ -83,6 +83,63 @@ class Worker:
         else:
             raise Exception("Worker ID is not set")
         
+    async def _async_get_flow_problems(self):
+        client = WorkerClient()
+        results = await asyncio.gather(
+            client.get_worker_flows(worker_url=self.url),
+            client.get_required_fields(worker_url=self.url)
+        )
+
+        flows = results[0]
+        reqs = results[1]
+        problems = []
+
+        for node in flows:
+            node_type = node.get('type', '_')
+            if node_type not in reqs:
+                continue
+
+            nodereqs = reqs[node_type]
+            for req in nodereqs:
+                field_name = req['name']
+                field_type = req.get('type', None)
+
+                if field_type and field_type not in ['str', 'bool', 'num', 'string', 'boolean', 'number', 'json']:
+                # Field is a config node
+                    current_value = node[field_name]
+                    found = False
+                    for cnode in flows:
+                        if cnode['id'] == current_value:
+                            found = True
+                            break
+
+                    if not found:
+                        problems.append({
+                            'node_type': node_type,
+                            'config_node': True,
+                            'config_node_type': field_type,
+                            'field_name': field_name,
+                            'node_id': node['id']
+                        })
+                    continue
+
+                if (field_name not in node) or (node[field_name] == ''):
+                    problems.append({
+                        'node_type': node_type,
+                        'config_node': False,
+                        'field_name': field_name,
+                        'node_id': node['id']
+                    })
+
+        return problems
+
+    def get_flow_problems(self):
+        problems = asyncio.run(
+            self._async_get_flow_problems()
+        )
+
+        return problems
+        
     @authenticate
     def attach_session(self, session_id, api_key=None):
         request = {
@@ -105,6 +162,20 @@ class Worker:
                 f'session_id = {session_id}, worker_id = {self.id}'
             ]
             raise APIException(format_error_log(error_log))
+        
+    @authenticate
+    def test(self, module_name, api_key = None):
+        request = {
+            # 'url': f"{self.url}/nodes?module={module_name}",
+            'url': f"{self.url}/flows",
+            'method': "get",
+            'headers': {
+                'Authorization': 'Bearer ' + api_key,
+            },
+        }
+
+        response = requests.request(**request)
+        print(response.text)
 
     def call(self, msg : dict):
         if self.id is None:
@@ -366,4 +437,21 @@ class WorkerClient:
             async with session.post(f"{worker_url}/send-maya-message", json=msg) as response:
                 response_json = await response.json()
                 return response_json
-    
+            
+    @staticmethod
+    @authenticate
+    async def get_worker_flows(worker_url, api_key=None):
+        msg = {}
+        async with aiohttp.ClientSession(headers={ 'Authorization': f'Bearer {api_key}' }) as session:
+            async with session.get(f"{worker_url}/flows", json=msg) as response:
+                response_json = await response.json()
+                return response_json
+            
+    @staticmethod
+    @authenticate
+    async def get_required_fields(worker_url, api_key=None):
+        msg = {}
+        async with aiohttp.ClientSession(headers={ 'Authorization': f'Bearer {api_key}' }) as session:
+            async with session.get(f"{worker_url}/required-fields", json=msg) as response:
+                response_json = await response.json()
+                return response_json
