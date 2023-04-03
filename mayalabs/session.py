@@ -296,14 +296,15 @@ class Session():
             problems = self.worker.get_flow_problems()
             if len(problems) > 0:
                 log(
-                    Fore.YELLOW + Style.BRIGHT + 'Found some missing requirements:' + Style.RESET_ALL,
+                    Fore.YELLOW + Style.BRIGHT + f'Found {len(problems)} missing requirement(s):' + Style.RESET_ALL,
                     prefix = self.worker.name,
                     prefix_color = self.worker.prefix_color
                 )
                 for p in problems:
                     # solve()  // hehe AGI
                     field_name, node_id, node_type = p['field_name'], p['node_id'], p['node_type']
-                    message = f'* Missing field {field_name} on node {node_id} (type: {node_type})'
+                    # message = f'* Missing field {field_name} on node {node_id} (type: {node_type})'
+                    message = f'* [{node_id}] Missing field {field_name} on node with type: {node_type}'
                     log(
                         Fore.YELLOW + message + Style.RESET_ALL,
                         prefix = self.worker.name,
