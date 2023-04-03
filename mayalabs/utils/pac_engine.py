@@ -136,8 +136,10 @@ class PacTask:
 class GenerateTask(PacTask):
     def __init__(self, session_id: str):
         super().__init__(
-            type="GENERATE",
-            opts={"session_id": session_id},
+            type="GENERATE",            opts={
+            "session_id": session_id,
+            "repositories": []
+            },
         )
 
 
@@ -149,6 +151,7 @@ class InstructTask(PacTask):
                 "session_id": session_id,
                 "instruction": instruction,
                 "from_scratch": from_scratch,
+                "repositories": []
             },
         )
         async def handle_message(message):
