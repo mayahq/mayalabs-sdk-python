@@ -113,9 +113,7 @@ class SessionClient:
                 'x-api-key': api_key,
             }
         }
-        print("🚀 ~ file: session.py:103 ~ request:", request)
         response = requests.request(**request)
-        print("🚀 ~ file: session.py:117 ~ response:", response.status_code)
         if response.status_code == 200:
             return response.status_code
         else:
