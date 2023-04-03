@@ -1,7 +1,7 @@
 import os
 import mayalabs
 
-mayalabs.auth.api_key = "<API_KEY_HERE>"
+mayalabs.api_key = "<API_KEY_HERE>"
 
 
 script = """

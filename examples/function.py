@@ -1,6 +1,6 @@
 import mayalabs
 
-mayalabs.auth.api_key = "<API_KEY_HERE>"
+mayalabs.api_key = "<API_KEY_HERE>"
 
 script = """
 1. inject default
