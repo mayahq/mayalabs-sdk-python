@@ -1,4 +1,5 @@
 import requests
+from requests import HTTPError
 import sys
 import aiohttp
 import asyncio
@@ -95,6 +96,30 @@ class SessionClient:
         }
         response = requests.request(**request)
         return response.json()
+    
+    @staticmethod
+    @authenticate
+    def change_session(session_id, script, api_key=None):
+        request = {
+            'url': f"{api_base_url}/pac/v1/session/change",
+            'method': "post",
+            'json': {
+                "session_id": session_id,
+                "raw": script,
+                "register_change": True
+
+            },
+            'headers': {
+                'x-api-key': api_key,
+            }
+        }
+        print("🚀 ~ file: session.py:103 ~ request:", request)
+        response = requests.request(**request)
+        print("🚀 ~ file: session.py:117 ~ response:", response.status_code)
+        if response.status_code == 200:
+            return response.status_code
+        else:
+            raise HTTPError("Failed to update script")
 
     @authenticate
     async def deploy_session(session_id, workspace_id, api_key=None):
@@ -255,8 +280,9 @@ class Session():
                         with open(MAYA_CACHE_FILE, "w") as f:
                             f.write(sessions_str)
                             f.close()
-                        if tmp == "":
-                            log(Style.BRIGHT + Fore.CYAN + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
+                        if tmp != "":
+                            log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
+                            self.change()
                         else:
                             log(Style.BRIGHT + Fore.CYAN + 'Generating program' + Style.RESET_ALL, prefix='mayalabs')
                         sessions[self.id] = tmp
@@ -334,6 +360,11 @@ class Session():
         # Implement this method
         response = SessionClient.delete_session(self.id)
         return print(response)
+    
+    def change(self):
+        # Implement this method
+        SessionClient.change_session(session_id=self.id, script=self.script)
+        return
 
     def parse_obj(self, obj):
         self.id = obj['session_id']
