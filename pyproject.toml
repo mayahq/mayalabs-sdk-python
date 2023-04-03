@@ -28,6 +28,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages]
 find = {}
 
+[project.scripts]
+mayalabs = "mayalabs.cli:cli"
+
 [project.urls]
 homepage = "https://mayalabs.io"
 repository = "https://github.com/mayahq/mayalabs-sdk-python"

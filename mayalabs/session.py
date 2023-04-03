@@ -134,10 +134,13 @@ class Session():
         session.parse_obj(response['response'])
         return session
     
-    def instruct(self, prompt, from_scratch=True):
+    def instruct(self, prompt, from_scratch=True, on_message=None):
         # Implement this method
-        task = InstructTask(self.id, prompt, from_scratch=from_scratch)
-        task.execute(prompt)
+        task = InstructTask(self.id, instruction=prompt, from_scratch=from_scratch)
+        if on_message is not None:
+            task.on_message(on_message)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(task.execute())
         pass
 
     def generate(self):
