@@ -12,6 +12,7 @@ def return_error(err):
 def authenticate(func):
     def wrapped_function(*args, **kwargs):
         api_key = default_api_key()
+        print("API KEY:", api_key)
         if not api_key:
             error_log = ['No API key provided.', 'Please provide an API key using mayalabs.api_key and try again.']
             raise AuthException(format_error_log(error_log))
