@@ -37,15 +37,13 @@ class Function:
                 session_id = existing_worker.session_id if existing_worker.session_id else None
                 log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
             except Exception as err:
-                log('[Maya]', Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
+                log(Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
                 existing_worker = Worker.create(name=name, alias=name)
             try:
                 if session_id is not None:
                     existing_session = Session.get(session_id=session_id)
                     existing_session.script = script
-                # print('[Maya]', Fore.YELLOW + 'Found existing session. Reusing.' + Style.RESET_ALL)
             except Exception as err:
-                # print('[Maya]', Fore.RED + 'Failed to fetch associated session, creating new' + Style.RESET_ALL)
                 existing_session = Session.new(script=script)
             func = Function(
                 name=name,
@@ -53,7 +51,6 @@ class Function:
                 init=False
             )
             try:
-                # print('[Maya]', Fore.YELLOW + 'Attaching .' + Style.RESET_ALL)
                 existing_worker.attach_session(session_id=existing_session.id)
             except Exception as err:
                 log(Fore.RED + f'Failed to attach session to worker [{existing_worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
@@ -139,7 +136,6 @@ class Function:
                 f"Received {type(payload).__name__}, expected a dictionary."]
             raise IntegrityException(format_error_log(error_log))
 
-        # print('[Maya]', Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL)
         log(Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL, prefix='mayalabs')
         self.worker.start(wait=True)
         return self.worker.call(msg = { **payload, **kwargs })

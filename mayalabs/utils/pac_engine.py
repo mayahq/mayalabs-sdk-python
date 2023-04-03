@@ -84,8 +84,6 @@ class PacTask:
                     msg = get_message(data)
 
                     if msg['status'] == 'error':
-                        # print('[Maya]', Fore.RED + 'There was an error during program generation: ' + msg['message'] + Style.RESET_ALL)
-                        # raise GenerationException('Error occured during generation: ' + msg['message'])
                         log(
                             Fore.RED + 'Error during program generation: ' + msg['message'] + Style.RESET_ALL,
                             prefix='mayalabs',

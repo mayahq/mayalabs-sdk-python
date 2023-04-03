@@ -23,7 +23,6 @@ deploy_events = [
     # 'event-log/#'
 ]
 
-# maya_log_prefix = Fore.MAGENTA + '[Maya]' + Style.RESET_ALL
 maya_log_prefix = 'mayalabs'
 
 def rewrite_last_log_line(text):
