@@ -37,7 +37,8 @@ def get_api_key():
         if 'MAYA_API_KEY' in file_json:
             api_key = file_json['MAYA_API_KEY']
         else:
-            api_key = input('Please enter your API key: ')
+            print(Style.BRIGHT + Fore.BLUE + 'Please paste your API key.' + Style.RESET_ALL)
+            api_key = input('You can get one from https://app.mayalabs.io/settings/developers: \n')
             file_json['MAYA_API_KEY'] = api_key
             f.seek(0)  # move the file pointer to the beginning of the file
             f.write(json.dumps(file_json))  # write the updated JSON object to the file
