@@ -1,11 +1,14 @@
 import os
 import platform
+import json
 import argparse
 from colorama import Fore, Style
 from .session import Session
 from .mayalabs import auth
 from .function import Function
 from .utils.name_gen import get_random_name
+
+MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
 def cli():
     """
@@ -23,24 +26,29 @@ def cli():
         instruct(command=command, from_scratch=True, session_id=None)
 
 
+def get_api_key():
+    """
+    Get the API key from the user or the cache file.
+    """
+    api_key = None
+    with open(MAYA_CACHE_FILE, "r+") as f:
+        file_content = f.read()
+        file_json = json.loads(file_content)
+        if 'MAYA_API_KEY' in file_json:
+            api_key = file_json['MAYA_API_KEY']
+        else:
+            api_key = input('Please enter your API key: ')
+            file_json['MAYA_API_KEY'] = api_key
+            f.seek(0)  # move the file pointer to the beginning of the file
+            f.write(json.dumps(file_json))  # write the updated JSON object to the file
+        f.close()
+    return api_key
+
 def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
-    api_key = os.environ.get('MAYA_API_KEY')
-    sys_platform = platform.system()
-    if api_key is None:
-        print(Style.BRIGHT + Fore.RED + 'You have not provided an API Key.' + Style.RESET_ALL)
-        if sys_platform == 'Windows':
-            print('You can set it by running the following in your PowerShell:\n')
-            print(Style.BRIGHT + 'setx MAYA_API_KEY "YOUR_API_KEY"' + Style.RESET_ALL)
-        else:
-            print('You can set it by running the following in your terminal:\n')
-            print(Style.BRIGHT + 'export MAYA_API_KEY="YOUR_API_KEY"' + Style.RESET_ALL)
-        print(Style.DIM + r"Remember to escape '$' signs with a backslash (\)" + Style.RESET_ALL)
-        exit()
-
-    auth.api_key = api_key
+    auth.api_key = get_api_key()
     recipe = ""
     def on_message(message, task):
         nonlocal recipe
