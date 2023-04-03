@@ -4,9 +4,9 @@ import json
 import argparse
 from colorama import Fore, Style
 from .session import Session
-from .mayalabs import auth
 from .function import Function
 from .utils.name_gen import get_random_name
+import mayalabs
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -49,7 +49,7 @@ def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
-    auth.api_key = get_api_key()
+    mayalabs.api_key = get_api_key()
     recipe = ""
     def on_message(message, task):
         nonlocal recipe
