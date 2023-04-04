@@ -196,7 +196,7 @@ class Worker:
 
             call_task.add_done_callback(stop_log_task)
 
-            log(Style.BRIGHT + Fore.CYAN + 'Executing program on worker.\n' + Style.RESET_ALL, prefix='mayalabs')
+            log(Style.BRIGHT + Fore.CYAN + 'Running program on worker.\n' + Style.RESET_ALL, prefix='mayalabs')
             await asyncio.gather(call_task, log_task)
 
             return call_task, log_task

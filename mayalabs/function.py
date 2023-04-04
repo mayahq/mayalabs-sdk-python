@@ -136,7 +136,7 @@ class Function:
                 f"Received {type(payload).__name__}, expected a dictionary."]
             raise IntegrityException(format_error_log(error_log))
 
-        log(Fore.CYAN + 'Making sure Function is online' + Style.RESET_ALL, prefix='mayalabs')
+        log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
         self.worker.start(wait=True)
         return self.worker.call(msg = { **payload, **kwargs })
     

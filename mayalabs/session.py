@@ -288,7 +288,7 @@ class Session():
                             log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
                             self.change()
                         else:
-                            log(Style.BRIGHT + Fore.CYAN + 'Generating program' + Style.RESET_ALL, prefix='mayalabs')
+                            log(Style.BRIGHT + Fore.CYAN + 'Generating program...' + Style.RESET_ALL, prefix='mayalabs')
                         sessions[self.id] = tmp
                     future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
                     future_1.result()
@@ -308,7 +308,7 @@ class Session():
 
                     deploy_task.add_done_callback(stop_log_task)
                     log(
-                        Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies.' + Style.RESET_ALL,
+                        Style.BRIGHT + Fore.CYAN + 'Deploying session to worker. Setting up dependencies...' + Style.RESET_ALL,
                         prefix = self.worker.name,
                         prefix_color = self.worker.prefix_color
                     )
@@ -350,7 +350,7 @@ class Session():
                 )
 
             log(
-                Fore.GREEN + 'Access the function in the app at:' + Style.RESET_ALL, 
+                Fore.GREEN + 'View/modify the program graph here:' + Style.RESET_ALL, 
                 "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
                 prefix = self.worker.name,
                 prefix_color = self.worker.prefix_color
