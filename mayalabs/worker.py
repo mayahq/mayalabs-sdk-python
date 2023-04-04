@@ -243,10 +243,6 @@ class WorkerClient:
             request = {
                 'url': f"{api_base}/app/v2/brains/{worker_id}",
                 'method': "get",
-                'json': {
-                    'workspaceId': worker_id,
-                    'alias': alias
-                },
                 'headers': {
                     'x-api-key': api_key,
                 },
@@ -255,9 +251,6 @@ class WorkerClient:
             request = {
                 'url': f"{api_base}/app/v2/brains/{worker_id}",
                 'method': "get",
-                'json': {
-                    'workspaceId': worker_id,
-                },
                 'headers': {
                     'x-api-key': api_key,
                 },

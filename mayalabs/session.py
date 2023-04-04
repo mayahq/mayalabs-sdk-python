@@ -46,7 +46,6 @@ class SessionClient:
         request = {
             'url': f"{api_base}/pac/v1/session/{session_id}",
             'method': "get",
-            'json': {},
             'headers': {
                 'x-api-key': api_key,
             }
@@ -78,7 +77,6 @@ class SessionClient:
         request = {
             'url': f"{api_base}/pac/v1/sessions",
             'method': "get",
-            'json': {},
             'headers': {
                 'x-api-key': api_key,
             }
