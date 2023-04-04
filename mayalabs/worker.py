@@ -435,17 +435,7 @@ class WorkerClient:
     async def call_worker(worker_url, msg, api_key=None):
         async with aiohttp.ClientSession(headers={ 'x-api-key': api_key }) as session:
             async with session.post(f"{worker_url}/send-maya-message", json=msg) as response:
-                try:
-                    response_json = await response.json()
-                except:
-                    text = ''
-                    try: text = await response.text()
-                    except: text = ''
-
-                    return {
-                        'error': True,
-                        'detail': text
-                    }
+                response_json = await response.json()
                 return response_json
             
     @staticmethod
