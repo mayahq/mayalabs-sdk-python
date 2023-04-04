@@ -77,8 +77,8 @@ All feedback and bug reports welcome! Report in the [issues section](https://git
 
 
 ## Roadmap
-[ ] Cleaner logs and exception handling
-[ ] Dependency configuration UX improvement
-[ ] Import skill repositories for reusing skills created by user or present in store
-[ ] Create and call downstream auto-deployed functions
-[ ] Allow multi-profile and team profile access
+- [ ] Cleaner logs and exception handling
+- [ ] Dependency configuration UX improvement
+- [ ] Import skill repositories for reusing skills created by user or present in store
+- [ ] Create and call downstream auto-deployed functions
+- [ ] Allow multi-profile and team profile access
