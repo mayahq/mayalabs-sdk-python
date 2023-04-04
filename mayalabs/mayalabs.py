@@ -3,7 +3,7 @@ import click
 from pathlib import Path
 from .exceptions import AuthException
 from .utils.logging import format_error_log
-from .utils.auth import default_api_key
+from .utils.defaults import default_api_key
 
 
 def return_error(err):

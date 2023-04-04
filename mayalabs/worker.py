@@ -7,8 +7,8 @@ from urllib.parse import urlparse
 import traceback
 from .utils.poll import poll
 from .utils.websocket import WebsocketListener
+from .utils.defaults import default_api_base_url
 import time
-from .consts import api_base_url, api_ws_url, backend_base_url
 from .mayalabs import authenticate
 from .utils.log import log
 from colorama import init, Fore, Back, Style
@@ -142,8 +142,9 @@ class Worker:
         
     @authenticate
     def attach_session(self, session_id, api_key=None):
+        api_base = default_api_base_url()
         request = {
-            'url': f"{backend_base_url}/v2/brains/linkSessionToRuntime",
+            'url': f"{api_base}/app/v2/brains/linkSessionToRuntime",
             'method': "post",
             'json': {
                 'workspaceId': self.id,
@@ -237,9 +238,10 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def get_worker(worker_id, alias=None, api_key=None) -> Worker:
+        api_base = default_api_base_url()
         if alias:
             request = {
-                'url': f"{backend_base_url}/v2/brains/{worker_id}",
+                'url': f"{api_base}/app/v2/brains/{worker_id}",
                 'method': "get",
                 'json': {
                     'workspaceId': worker_id,
@@ -251,7 +253,7 @@ class WorkerClient:
             }
         else:
             request = {
-                'url': f"{backend_base_url}/v2/brains/{worker_id}",
+                'url': f"{api_base}/app/v2/brains/{worker_id}",
                 'method': "get",
                 'json': {
                     'workspaceId': worker_id,
@@ -267,8 +269,9 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def get_worker_by_alias(alias, api_key=None) -> Worker:
+        api_base = default_api_base_url()
         request = {
-            'url': f"{backend_base_url}/v2/brains/getByAlias/{alias}",
+            'url': f"{api_base}/app/v2/brains/getByAlias/{alias}",
             'method': "get",
             'headers': {
                 'x-api-key': api_key,
@@ -286,8 +289,9 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def search_worker_by_name(self, name, api_key=None) -> Worker:
+        api_base = default_api_base_url()
         request = {
-            'url': f"{backend_base_url}/v2/brains/search?name={name}",
+            'url': f"{api_base}/app/v2/brains/search?name={name}",
             'method': 'get',
             'headers': {
                 'x-api-key': api_key
@@ -308,9 +312,9 @@ class WorkerClient:
         if not worker_name:
             error_log = ['No worker name provided.', 'Please provide a worker name and try again.']
             raise IntegrityException(format_error_log(error_log))
-
+        api_base = default_api_base_url()
         create_request = {
-            'url': f"{backend_base_url}/v2/brains",
+            'url': f"{api_base}/app/v2/brains",
             'method': "post",
             'json': {
                 'name': worker_name,
@@ -344,8 +348,9 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def start_worker(worker_id, auto_shutdown_behaviour=None, wait=False, api_key=None) -> Worker:
+        api_base = default_api_base_url()
         start_request = {
-            'url': f"{backend_base_url}/v2/brains/start",
+            'url': f"{api_base}/app/v2/brains/start",
             'method': 'post',
             'json': {
                 '_id': worker_id
@@ -388,8 +393,9 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def stop_worker(worker_id, wait=False, api_key=None) -> Worker:
+        api_base = default_api_base_url()
         stop_request = {
-            'url': f"{backend_base_url}/v2/brains/stop",
+            'url': f"{api_base}/app/v2/brains/stop",
             'method': 'post',
             'json': {
                 '_id': worker_id
@@ -418,8 +424,9 @@ class WorkerClient:
     @staticmethod
     @authenticate
     def delete_worker(worker_id, api_key=None):
+        api_base = default_api_base_url()
         request = {
-            'url': f"{backend_base_url}/v2/brains/{worker_id}",
+            'url': f"{api_base}/app/v2/brains/{worker_id}",
             'method': "delete",
             'json': {},
             'headers': {

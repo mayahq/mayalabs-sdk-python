@@ -6,7 +6,7 @@ from typing import Dict, Any
 from .log import log
 import os
 from ..mayalabs import authenticate
-from ..consts import api_base_url, api_ws_url
+from .defaults import default_api_ws_url
 from colorama import Fore, Style
 from ..exceptions import GenerationException
 import traceback
@@ -75,6 +75,7 @@ class PacTask:
     async def execute(self):
         try:
             connection_id = uuid.uuid4()
+            api_ws_url = default_api_ws_url()
             url = f"{api_ws_url}?connId={connection_id}&apiKey={self.api_key}"
             
             async with websockets.connect(url) as socket:

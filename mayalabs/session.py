@@ -11,9 +11,9 @@ from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
 from .utils.websocket import WebsocketListener, deploy_events
 from .utils.log import log
+from .utils.defaults import default_api_base_url
 import asyncio
 from time import sleep
-from .consts import api_base_url, api_ws_url
 from .mayalabs import authenticate
 from colorama import init, Fore, Back, Style
 from .exceptions import IntegrityException
@@ -42,8 +42,9 @@ class SessionClient:
         Returns:
             _type_: _description_
         """
+        api_base = default_api_base_url()
         request = {
-            'url': f"{api_base_url}/pac/v1/session/{session_id}",
+            'url': f"{api_base}/pac/v1/session/{session_id}",
             'method': "get",
             'json': {},
             'headers': {
@@ -56,8 +57,9 @@ class SessionClient:
     @staticmethod
     @authenticate
     def create_session(from_script="", api_key=None) -> 'Session':
+        api_base = default_api_base_url()
         request = {
-            'url': f"{api_base_url}/pac/v1/session/new",
+            'url': f"{api_base}/pac/v1/session/new",
             'method': "post",
             'json': {
                 'from_recipe': from_script
@@ -72,8 +74,9 @@ class SessionClient:
     @staticmethod
     @authenticate
     def list_sessions(api_key=None):
+        api_base = default_api_base_url()
         request = {
-            'url': f"{api_base_url}/pac/v1/sessions",
+            'url': f"{api_base}/pac/v1/sessions",
             'method': "get",
             'json': {},
             'headers': {
@@ -86,8 +89,9 @@ class SessionClient:
     @staticmethod
     @authenticate
     def delete_session(session_id, api_key=None):
+        api_base = default_api_base_url()
         request = {
-            'url': f"{api_base_url}/pac/v1/session/{session_id}",
+            'url': f"{api_base}/pac/v1/session/{session_id}",
             'method': "delete",
             'json': {},
             'headers': {
@@ -100,8 +104,9 @@ class SessionClient:
     @staticmethod
     @authenticate
     def change_session(session_id, script, api_key=None):
+        api_base = default_api_base_url()
         request = {
-            'url': f"{api_base_url}/pac/v1/session/change",
+            'url': f"{api_base}/pac/v1/session/change",
             'method': "post",
             'json': {
                 "session_id": session_id,
@@ -125,8 +130,9 @@ class SessionClient:
             'session_id': session_id,
             'workspace_id' : workspace_id,
         }
+        api_base = default_api_base_url()
         async with aiohttp.ClientSession(headers={'x-api-key': api_key}) as session:
-            async with session.post(f'{api_base_url}/pac/v1/session/deploy', json=data) as response:
+            async with session.post(f'{api_base}/pac/v1/session/deploy', json=data) as response:
                 response_json = await response.json()
                 return response_json
 
