@@ -73,3 +73,12 @@ This ensures our program synthesis engine only incremental generates and deploys
 ## Issues
 
 All feedback and bug reports welcome! Report in the [issues section](https://github.com/mayahq/mayalabs-sdk-python/issues), or mail us at humans@mayalabs.io.
+
+
+
+## Roadmap
+[ ] Cleaner logs and exception handling
+[ ] Dependency configuration UX improvement
+[ ] Import skill repositories for reusing skills created by user or present in store
+[ ] Create and call downstream auto-deployed functions
+[ ] Allow multi-profile and team profile access
