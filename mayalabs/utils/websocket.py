@@ -118,7 +118,8 @@ class WebsocketListener:
                     message = await websocket.recv()
                     self.handle_events(log_prefix, prefix_color, json.loads(message))
         except asyncio.CancelledError:
-            await self.websocket.close()
+            if self.websocket and self.websocket.open:
+                await self.websocket.close()
         except websockets.exceptions.ConnectionClosedError:
             log(Fore.RED + 'Connection closed unexpectedly by Function', prefix=log_prefix, prefix_color=prefix_color)
             raise Exception('Connection closed unexpectedly by Function')
