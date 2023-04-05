@@ -27,12 +27,12 @@ mayalabs.api_key = "<MAYA_API_KEY>"
 
 script = """
 1. trigger on receive
-2. scrape wikipedia for {{term}}
-3. create a summary in 200 words
+2. research {{topic}} on wikipedia
+3. extract title and summary from tabular data
 4. send response back
 """
 
-function = Function.create(name="Scrape", script="script")
+function = Function.create(name="Scrape", script=script)
 
 function.deploy()
 # Generating program...
@@ -41,7 +41,7 @@ function.deploy()
 # Deployed!
 
 function.call({ "term" : "Dr. Homi Bhabha"})
-# finds and outputs a summary of the first matching wiki page
+# finds and outputs title and summary from wikipedia results
 ```
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
