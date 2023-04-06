@@ -53,6 +53,50 @@ def get_message(pac_message):
             'message': 'Something went wrong'
         }
 
+def get_generation_id(pac_message):
+    try:
+        if pac_message['status'] and pac_message['status'] == 'complete':
+            return {
+                'status': 'success',
+                'message': 'Generation successful'
+            }
+        elif 'error' in pac_message and pac_message['error'] == True:
+            msg = pac_message['msg']
+            if not msg:
+                msg = 'Something went wrong'
+            return {
+                'status': 'error',
+                'message': msg
+            }
+        elif 'metadata' in pac_message and 'steps' in pac_message:
+            generated_step_id = pac_message['metadata']['generated_step_id']
+            generated_step = pac_message['steps'][generated_step_id]
+
+            step_prefix = generated_step['prefix']
+            generation_id = generated_step['generation_id']
+            generation_error = generated_step['error']
+            step_text = generated_step['text']
+            if step_prefix[-1] == '.':
+                step_prefix = step_prefix[:-1]
+
+            if generated_step.get('error', False):
+                print(pac_message)
+                return {
+                    'status': 'error',
+                    'message': f'Could not generate step [{generation_id}][{step_prefix}] ({step_text + "" if generation_error else generation_error})'
+                }
+
+            return {
+                'status': 'progress',
+                'message': f'Generated step [{generation_id}][{step_prefix}]: {step_text}'
+            }
+    except Exception as e:
+        traceback.print_exc()
+        return {
+            'status': 'error',
+            'message': 'Something went wrong'
+        }
+
 async def empty_function(placeholder):
     return 1   
 
@@ -102,7 +146,7 @@ class PacTask:
 
                         msg = None
                         if self.type == "GENERATE":
-                            msg = get_message(data)
+                            msg = get_generation_id(data)
                         elif self.type == 'TALK':
                             pass
 
