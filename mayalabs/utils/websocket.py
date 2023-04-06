@@ -54,11 +54,12 @@ class WebsocketListener:
             if event['topic'] == 'nodeexecstatus':
                 if (event['data']['status'] == 'running'):
                     nodeId = event['data']['nodeId']
-                    log(
-                        Fore.CYAN + f'Running node: {nodeId}' + Style.RESET_ALL,
-                        prefix=log_prefix,
-                        prefix_color=prefix_color
-                    )
+                    # TODO add logs based on global log level
+                    # log(
+                    #     Fore.CYAN + f'Running node: {nodeId}' + Style.RESET_ALL,
+                    #     prefix=log_prefix,
+                    #     prefix_color=prefix_color
+                    # )
             
             elif event['topic'] == 'debug':
                 msg_format = event['data']['format']
