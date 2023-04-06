@@ -55,7 +55,7 @@ PAC-1 takes in steps written in English, writes & assembles a discrete program g
 - [Custom Dashboards](/EXAMPLES.md#custom-dashboards)
 - [Data Transformation](/EXAMPLES.md#data-transformation)
 - [Platform Bots](/EXAMPLES.md#platform-bots)
-- [Complex Processes](/EXAMPLES.md#complex-processes)
+- [Business Processes](/EXAMPLES.md#business-processes)
 - [Long-term memory](/EXAMPLES.md#long-term-memory)
 - [Division of labour](/EXAMPLES.md#division-of-labour)
   - [Parallelization](/EXAMPLES.md#parallelization)

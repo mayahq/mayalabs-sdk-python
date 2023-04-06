@@ -11,7 +11,7 @@ The PAC-1 natural language interpreter can assemble natural language programs ac
 - [Custom Dashboards](#custom-dashboards)
 - [Data Transformation](#data-transformation)
 - [Platform Bots](#platform-bots)
-- [Complex Processes](#complex-processes)
+- [Business Processes](#business-processes)
 - [Long-term memory](#long-term-memory)
 - [Division of labour](#division-of-labour)
   - [Parallelization](#parallelization)
