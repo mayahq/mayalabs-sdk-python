@@ -282,7 +282,7 @@ class Session():
                         with open(MAYA_CACHE_FILE, "w") as f:
                             f.write(sessions_str)
                             f.close()
-                        if tmp != "":
+                        if tmp != "" and tmp != received_script:
                             log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
                             self.change()
                         else:
