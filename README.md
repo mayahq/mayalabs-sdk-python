@@ -49,17 +49,17 @@ PAC-1 takes in steps written in English, writes & assembles a discrete program g
 ## Use Cases
 
 - [If...Then Conditionals and Looping](/EXAMPLES.md#ifthen-conditionals-and-looping)
-- [Custom Functions](#custom-functions)
-- [Web Scrapers](#web-scrapers)
-- [Repeating Workflows](#repeating-workflows)
-- [Custom Dashboards](#custom-dashboards)
-- [Data Transformation](#data-transformation)
-- [Platform Bots](#platform-bots)
-- [Complex Processes](#complex-processes)
-- [Long-term memory](#long-term-memory)
-- [Division of labour](#division-of-labour)
-  - [Parallelization](#parallelization)
-  - [Concurrency](#concurrency)
+- [Custom Functions](/EXAMPLES.md#custom-functions)
+- [Web Scrapers](/EXAMPLES.md#web-scrapers)
+- [Repeating Workflows](/EXAMPLES.md#repeating-workflows)
+- [Custom Dashboards](/EXAMPLES.md#custom-dashboards)
+- [Data Transformation](/EXAMPLES.md#data-transformation)
+- [Platform Bots](/EXAMPLES.md#platform-bots)
+- [Complex Processes](/EXAMPLES.md#complex-processes)
+- [Long-term memory](/EXAMPLES.md#long-term-memory)
+- [Division of labour](/EXAMPLES.md#division-of-labour)
+  - [Parallelization](/EXAMPLES.md#parallelization)
+  - [Concurrency](/EXAMPLES.md#concurrency)
 
 ## Command Line Usage
 
