@@ -80,7 +80,6 @@ def get_generation_id(pac_message):
                 step_prefix = step_prefix[:-1]
 
             if generated_step.get('error', False):
-                print(pac_message)
                 return {
                     'status': 'error',
                     'message': f'Could not generate step [{generation_id}][{step_prefix}] ({step_text + "" if generation_error else generation_error})'
