@@ -5,17 +5,17 @@ The PAC-1 natural language interpreter can assemble natural language programs ac
 ## Index
 
 - [If...Then Conditionals and Looping](#ifthen-conditionals-and-looping)
-- Custom Functions
-- Web Scrapers
-- Repeating Workflows
-- Custom Dashboards
-- Data Transformation
-- Platform Bots
-- Complex Business Processes
-- Long-term memory
-- Division of labour
-  - Parallelization
-  - Concurrency
+- [Custom Functions](#custom-functions)
+- [Web Scrapers](#web-scrapers)
+- [Repeating Workflows](#repeating-workflows)
+- [Custom Dashboards](#custom-dashboards)
+- [Data Transformation](#data-transformation)
+- [Platform Bots](#platform-bots)
+- [Complex Processes](#complex-processes)
+- [Long-term memory](#long-term-memory)
+- [Division of labour](#division-of-labour)
+  - [Parallelization](#parallelization)
+  - [Concurrency](#concurrency)
 
 ---
 
@@ -128,7 +128,7 @@ A Reddit bot that filters and sends messages to a Slack bot.
 2. send to channel #alerts on slack
 ```
 
-### Long Business Processes
+### Complex Processes
 
 PAC-1 can be taught and interpret to scripts of arbitrary complexity and length, extending to complex business processes.
 

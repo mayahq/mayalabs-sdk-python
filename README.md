@@ -46,6 +46,21 @@ function.call({ "term" : "Dr. Homi Bhabha"})
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
 
+## Use Cases
+
+- [If...Then Conditionals and Looping](/EXAMPLES.md#ifthen-conditionals-and-looping)
+- [Custom Functions](#custom-functions)
+- [Web Scrapers](#web-scrapers)
+- [Repeating Workflows](#repeating-workflows)
+- [Custom Dashboards](#custom-dashboards)
+- [Data Transformation](#data-transformation)
+- [Platform Bots](#platform-bots)
+- [Complex Processes](#complex-processes)
+- [Long-term memory](#long-term-memory)
+- [Division of labour](#division-of-labour)
+  - [Parallelization](#parallelization)
+  - [Concurrency](#concurrency)
+
 ## Command Line Usage
 
 Today, script need to be manually written step-by-step, but we are offering early WIP preview of iterative script generation via our CLI. Try running:
