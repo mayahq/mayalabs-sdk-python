@@ -2,7 +2,7 @@
 
 The Maya Labs Python SDK provides easy async access to our PAC-1 program synthesis engine, with a CLI to instruct and generate programs from instructions in natural language.
 
-Check out the [examples](/examples) folder for use cases, and read more about PAC-1 on our [blog](https://mayalabs.io/pac-1).
+Read more about PAC-1 on our [blog](https://mayalabs.io/pac-1).
 
 ## Installation
 
