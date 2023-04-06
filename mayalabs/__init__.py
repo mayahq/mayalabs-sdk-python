@@ -8,3 +8,4 @@ import os
 
 api_key = os.environ.get("MAYA_API_KEY")
 api_base = os.environ.get("MAYA_API_BASE", "https://api.mayalabs.io")
+log_level = os.environ.get("MAYA_LOG_LEVEL", "info")

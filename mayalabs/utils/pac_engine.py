@@ -6,7 +6,7 @@ from typing import Dict, Any
 from .log import log
 import os
 from ..mayalabs import authenticate
-from .defaults import default_api_ws_url
+from .defaults import default_api_ws_url, default_log_level
 from colorama import Fore, Style
 from ..exceptions import GenerationException
 import traceback
@@ -71,7 +71,8 @@ def get_generation_id(pac_message):
         elif 'metadata' in pac_message and 'steps' in pac_message:
             generated_step_id = pac_message['metadata']['generated_step_id']
             generated_step = pac_message['steps'][generated_step_id]
-
+            session_id = pac_message['session_id']
+            step_id = pac_message['metadata']
             step_prefix = generated_step['prefix']
             generation_id = generated_step['generation_id']
             generation_error = generated_step['error']
@@ -80,10 +81,17 @@ def get_generation_id(pac_message):
                 step_prefix = step_prefix[:-1]
 
             if generated_step.get('error', False):
-                return {
-                    'status': 'error',
-                    'message': f'Could not generate step [{generation_id}][{step_prefix}] ({step_text + "" if generation_error else generation_error})'
-                }
+                if default_log_level() == "debug":
+                    return {
+                        'status': 'error',
+                        'message': f'Could not generate step [{step_id}][{session_id}]-[{step_prefix}] ({step_text + generation_error})'
+                    }
+                elif default_log_level() == "info":
+                    return {
+                        'status': 'error',
+                        'message': f'Could not generate step [{step_prefix}] ({step_text})'
+                    }
+
 
             return {
                 'status': 'progress',
