@@ -4,7 +4,7 @@ The PAC-1 natural language interpreter can assemble natural language programs ac
 
 ## Index
 
-- If...Then Conditionals and Looping
+- [If...Then Conditionals and Looping](#ifthen-conditionals-and-looping)
 - Custom Functions
 - Web Scrapers
 - Repeating Workflows
