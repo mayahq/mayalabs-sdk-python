@@ -14,8 +14,8 @@ The PAC-1 natural language interpreter can assemble natural language programs ac
 - [Business Processes](#business-processes)
 - [Long-term memory](#long-term-memory)
 - [Division of labour](#division-of-labour)
-  - [Parallelization](#parallelization)
-  - [Concurrency](#concurrency)
+- [Parallelization](#parallelization)
+- [Concurrency](#concurrency)
 
 ---
 
@@ -24,13 +24,15 @@ The PAC-1 natural language interpreter can assemble natural language programs ac
 A simple if...then else switch, with a loop written in English.
 
 ```
-1. set {{payload}} to 0
-2. add 1 to {{payload}}
-3. print {{payload}}
-4. if {{payload}} is less than 20
-    - 4.1. go to step 2
-5. else if {{payload}} is more than 20
-    - 4.2. print {{payload}}
+1. trigger on receive message
+2. set {{payload}} to '{"num": 29}'
+3. add 1 to {{payload.num}}
+4. print {{payload.num}}
+5. if {{payload.num}} is less than 36
+    - 5.1. go to step 3
+6. else if {{payload.num}} is more than 36
+    - 6.1. print {{payload.num}}
+7. respond back with {{payload}}
 ```
 
 ### Custom Functions
