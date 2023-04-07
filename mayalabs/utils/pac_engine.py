@@ -72,7 +72,7 @@ def get_generation_id(pac_message):
             generated_step_id = pac_message['metadata']['generated_step_id']
             generated_step = pac_message['steps'][generated_step_id]
             session_id = pac_message['session_id']
-            step_id = pac_message['metadata']
+            step_id = pac_message['metadata'].get('generated_step_id', "")
             step_prefix = generated_step['prefix']
             generation_id = generated_step['generation_id']
             generation_error = generated_step['error']
@@ -84,7 +84,7 @@ def get_generation_id(pac_message):
                 if default_log_level() == "debug":
                     return {
                         'status': 'error',
-                        'message': f'Could not generate step [{step_id}][{session_id}]-[{step_prefix}] ({step_text + generation_error})'
+                        'message': f'Could not generate step [{session_id}][{step_id}]-[{step_prefix}] ({step_text + generation_error})'
                     }
                 elif default_log_level() == "info":
                     return {
@@ -92,11 +92,16 @@ def get_generation_id(pac_message):
                         'message': f'Could not generate step [{step_prefix}] ({step_text})'
                     }
 
-
-            return {
-                'status': 'progress',
-                'message': f'Generated step [{generation_id}][{step_prefix}]: {step_text}'
-            }
+            if default_log_level() == "debug":
+                return {
+                    'status': 'progress',
+                    'message': f'Generated step [{session_id}][{step_id}]-[{step_prefix}]: {step_text}'
+                }
+            else:
+                return {
+                    'status': 'progress',
+                    'message': f'Generated step [{step_prefix}]: {step_text}'
+                }
     except Exception as e:
         traceback.print_exc()
         return {
