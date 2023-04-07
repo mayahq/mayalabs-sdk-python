@@ -85,11 +85,22 @@ class Worker:
         
     async def _async_get_flow_problems(self):
         client = WorkerClient()
-        results = await asyncio.gather(
-            client.get_worker_flows(worker_url=self.url),
-            client.get_required_fields(worker_url=self.url)
-        )
+        results = []
+        for _ in range(100):
+            try:
+                results = await asyncio.gather(
+                    client.get_worker_flows(worker_url=self.url),
+                    client.get_required_fields(worker_url=self.url)
+                )
+                break
+            except:
+                await asyncio.sleep(2)
+                # Runtime might be down for a second or two because of the new deploy
+            
 
+        if len(results) == 0:
+            raise APIException('An unexpected error occured and the function is down')
+        
         flows = results[0]
         reqs = results[1]
         problems = []
