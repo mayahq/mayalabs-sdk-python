@@ -37,14 +37,17 @@ class Function:
                 session_id = existing_worker.session_id if existing_worker.session_id else None
                 log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
             except Exception as err:
+                session_id = None
                 log(Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
                 existing_worker = Worker.create(name=name, alias=name)
             try:
                 if session_id is not None:
                     existing_session = Session.get(session_id=session_id)
                     existing_session.script = script
+                else:
+                    existing_session = Session.new(script=script)
             except Exception as err:
-                existing_session = Session.new(script=script)
+                raise err
             func = Function(
                 name=name,
                 script=script,
