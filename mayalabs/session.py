@@ -11,7 +11,7 @@ from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
 from .utils.websocket import WebsocketListener, deploy_events
 from .utils.log import log
-from .utils.defaults import default_api_base_url
+from .utils.defaults import default_api_base_url, default_log_level
 import asyncio
 from time import sleep
 from .mayalabs import authenticate
@@ -335,7 +335,7 @@ class Session():
                     # solve()  // hehe AGI
                     field_name, node_id, node_type = p['field_name'], p['node_id'], p['node_type']
                     # message = f'* Missing field {field_name} on node {node_id} (type: {node_type})'
-                    message = f'* [{node_id}] Missing field {field_name} on node with type: {node_type}'
+                    message = f'* [{node_id}] Missing field {field_name} on node with type: {node_type}' if default_log_level()=="debug" else f'* Missing field {field_name} on node with type: {node_type}'
                     log(
                         Fore.YELLOW + message + Style.RESET_ALL,
                         prefix = self.worker.name,
