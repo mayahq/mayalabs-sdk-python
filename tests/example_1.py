@@ -2,6 +2,7 @@ import pytest
 import mayalabs
 import os
 
+mayalabs.api_key = os.environ.get("MAYA_API_KEY")
 
 script = """
 1. trigger on receive message
