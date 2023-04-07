@@ -13,7 +13,7 @@ script = """
     - 5.1. go to step 3
 6. else if {{payload.num}} is more than 36
     - 6.1. print {{payload.num}}
-8. respond back with {{payload}}
+7. respond back with {{payload}}
     """
 def test_if_condition_with_loop():
     os.environ['MAYA_ENVIRONMENT'] = "development"
