@@ -40,13 +40,19 @@ function.deploy()
 # Installing dependencies...
 # Deployed!
 
-output = function.call({"topic": "Dr. Homi Bhabha"})
+output = function.call({"topic": "Dr. Vikram Sarabhai"})
 print(output)
 # finds and outputs title and summary from wikipedia results
 
 ```
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
+
+To call the function with a different value, just initialize the function like this (remove the `.create`, but keep the same `name`) in the code above : 
+
+```
+function = mayalabs.Function(name="Scrape1", script=script)
+```
 
 ## Use Cases
 
