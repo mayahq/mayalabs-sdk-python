@@ -180,6 +180,8 @@ class Session():
     async def generate_async(self):
         task = GenerateTask(self.id)
         await task.execute()
+        res = SessionClient.get_session(session_id=self.id)
+        self.parse_obj(res['response'])
         pass
 
     def check_worker_start(self):
