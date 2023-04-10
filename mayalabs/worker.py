@@ -359,7 +359,8 @@ class WorkerClient:
             if 'errorObject' in responseData and responseData['errorObject']['type'] == 'RESOURCE_ERROR':
                 error_log = [
                     'Unable to create function.', 
-                    'This may be because you already have a function with this name.'
+                    'This may be because you already have a function with this name.',
+                    'Run <function>.clear() or delete it from the Web interface at https://app.mayalabs.io/'.
                 ]
                 raise ResourceException(format_error_log(error_log))
 
