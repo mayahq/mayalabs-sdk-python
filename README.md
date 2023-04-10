@@ -23,16 +23,16 @@ Or set `mayalabs.api_key` to its value:
 ```
 import mayalabs
 
-mayalabs.api_key = "<MAYA_API_KEY>"
+mayalabs.api_key = "mayakey-$2a$10$Fk0gE5S8XA9D2Lyyns8Ia.cTQaZLXIELnobp1RtA.p9NxIILpBii2"
 
 script = """
 1. trigger on receive
 2. research {{topic}} on wikipedia
-3. extract title and summary from tabular data
-4. send response back
+3. extract 'title' and 'summary' from tabular data
+3. send response back
 """
 
-function = mayalabs.Function.create(name="Scrape", script=script)
+function = mayalabs.Function.create(name="Scrape1", script=script)
 
 function.deploy()
 # Generating program...
@@ -40,8 +40,10 @@ function.deploy()
 # Installing dependencies...
 # Deployed!
 
-function.call({ "topic" : "Dr. Homi Bhabha"})
+output = function.call({"topic": "Dr. Homi Bhabha"})
+print(output)
 # finds and outputs title and summary from wikipedia results
+
 ```
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
