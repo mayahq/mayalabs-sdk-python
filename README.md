@@ -21,7 +21,7 @@ export MAYA_API_KEY = "mayakey-..."
 Or set `mayalabs.api_key` to its value:
 
 ```
-from mayalabs import Function
+import mayalabs
 
 mayalabs.api_key = "<MAYA_API_KEY>"
 
@@ -32,7 +32,7 @@ script = """
 4. send response back
 """
 
-function = Function.create(name="Scrape", script=script)
+function = mayalabs.Function.create(name="Scrape", script=script)
 
 function.deploy()
 # Generating program...
@@ -40,7 +40,7 @@ function.deploy()
 # Installing dependencies...
 # Deployed!
 
-function.call({ "term" : "Dr. Homi Bhabha"})
+function.call({ "topic" : "Dr. Homi Bhabha"})
 # finds and outputs title and summary from wikipedia results
 ```
 
