@@ -1,4 +1,4 @@
-# Maya Labs SDK
+# Maya Labs : Program machines using natural language.
 
 The Maya Labs Python SDK provides easy async access to our PAC-1 program synthesis engine, with a CLI to instruct and generate programs from instructions in natural language.
 
@@ -9,6 +9,10 @@ Read more about PAC-1 on our [blog](https://mayalabs.io/pac-1).
 ```
 pip install --upgrade mayalabs
 ```
+## Preview
+
+https://user-images.githubusercontent.com/8736797/230947440-2403762d-a14b-4b00-8fbe-bd803ab24028.mp4
+
 
 ## Usage
 
@@ -97,6 +101,7 @@ This ensures our program synthesis engine only incremental generates and deploys
 
 All feedback and bug reports welcome! Report in the [issues section](https://github.com/mayahq/mayalabs-sdk-python/issues), or mail us at humans@mayalabs.io.
 
+Full list of capabilities and limits [here] (https://docs.mayalabs.io/capabilities-and-limits).
 
 
 ## Roadmap
