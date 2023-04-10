@@ -56,12 +56,11 @@ class WebsocketListener:
                     content = step['content']
 
                     self.current_prefix = prefix
-                    if default_log_level() == "debug":
-                        log(
-                            Fore.CYAN + f'Running node: {nodeId}' + Style.RESET_ALL,
-                            prefix=log_prefix,
-                            prefix_color=prefix_color
-                        )
+                    log(
+                        Fore.CYAN + f'Running step {prefix.strip()} {content}' + Style.RESET_ALL,
+                        prefix=log_prefix,
+                        prefix_color=prefix_color
+                    )
             
             elif event['topic'] == 'debug':
                 msg_format = event['data']['format']

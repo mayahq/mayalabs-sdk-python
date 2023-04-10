@@ -360,7 +360,7 @@ class WorkerClient:
                 error_log = [
                     'Unable to create function.', 
                     'This may be because you already have a function with this name.',
-                    'Run <function>.clear() or delete it from the Web interface at https://app.mayalabs.io/'.
+                    'Run <function>.clear() or delete it from the Web interface at https://app.mayalabs.io/'
                 ]
                 raise ResourceException(format_error_log(error_log))
 
