@@ -178,7 +178,7 @@ PAC-1 can generating programs to selectively call its own API - in this case it'
 
 ```
 // A command to store any document in a persistent database for later recall.
-1. store {{payload}} in native memory
+1. store {{info}} in native memory
 
 // Commands to search and ask questions from the stored documents, like this:
 1. search native memory for 'emailing templates'
