@@ -1,4 +1,4 @@
-# Maya Labs SDK : Program machines, using natural language
+# Maya Labs : Program machines using natural language.
 
 The Maya Labs Python SDK provides easy async access to our PAC-1 program synthesis engine, with a CLI to instruct and generate programs from instructions in natural language.
 
