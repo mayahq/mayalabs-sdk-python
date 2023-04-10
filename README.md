@@ -32,7 +32,7 @@ script = """
 1. trigger on receive
 2. research {{topic}} on wikipedia
 3. extract 'title' and 'summary' from tabular data
-3. send response back
+4. send response back
 """
 
 function = mayalabs.Function.create(name="Scrape1", script=script)
