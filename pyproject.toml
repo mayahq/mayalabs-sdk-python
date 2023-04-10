@@ -34,3 +34,8 @@ mayalabs = "mayalabs.cli:cli"
 [project.urls]
 homepage = "https://mayalabs.io"
 repository = "https://github.com/mayahq/mayalabs-sdk-python"
+
+[project.optional-dependencies]
+test=[
+  "pytest==7.2.1"
+]

@@ -257,7 +257,7 @@ class Worker:
         parts = origin.split('.')
         env = parts[2]
 
-        app_subdomain = 'devapp' if env == 'dev' else 'app'
+        app_subdomain = 'devapp' if "dev" in parts else 'app'
         return f'https://{app_subdomain}.mayalabs.io/edit?id={self.id}'
 
 

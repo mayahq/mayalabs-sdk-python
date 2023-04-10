@@ -4,6 +4,7 @@ import json
 from colorama import init, Fore, Style
 from .log import log
 from ..mayalabs import authenticate
+from .defaults import default_log_level
 
 init()
 
@@ -54,13 +55,13 @@ class WebsocketListener:
                     prefix = step['prefix']
                     content = step['content']
 
-                    log(
-                        Fore.CYAN + f'Running step {prefix.strip()} {content}' + Style.RESET_ALL,
-                        prefix=log_prefix,
-                        prefix_color=prefix_color
-                    )
-
                     self.current_prefix = prefix
+                    if default_log_level() == "debug":
+                        log(
+                            Fore.CYAN + f'Running node: {nodeId}' + Style.RESET_ALL,
+                            prefix=log_prefix,
+                            prefix_color=prefix_color
+                        )
             
             elif event['topic'] == 'debug':
                 msg_format = event['data']['format']

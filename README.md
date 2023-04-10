@@ -2,7 +2,7 @@
 
 The Maya Labs Python SDK provides easy async access to our PAC-1 program synthesis engine, with a CLI to instruct and generate programs from instructions in natural language.
 
-Check out the [examples](/examples) folder for use cases, and read more about PAC-1 on our [blog](https://mayalabs.io/pac-1).
+Read more about PAC-1 on our [blog](https://mayalabs.io/pac-1).
 
 ## Installation
 
@@ -45,6 +45,21 @@ function.call({ "term" : "Dr. Homi Bhabha"})
 ```
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
+
+## Use Cases
+
+- [If...Then Conditionals and Looping](/EXAMPLES.md#ifthen-conditionals-and-looping)
+- [Custom Functions](/EXAMPLES.md#custom-functions)
+- [Web Scrapers](/EXAMPLES.md#web-scrapers)
+- [Repeating Workflows](/EXAMPLES.md#repeating-workflows)
+- [Custom Dashboards](/EXAMPLES.md#custom-dashboards)
+- [Data Transformation](/EXAMPLES.md#data-transformation)
+- [Platform Bots](/EXAMPLES.md#platform-bots)
+- [Business Processes](/EXAMPLES.md#business-processes)
+- [Long-term memory](/EXAMPLES.md#long-term-memory)
+- [Division of labour](/EXAMPLES.md#division-of-labour)
+  - [Parallelization](/EXAMPLES.md#parallelization)
+  - [Concurrency](/EXAMPLES.md#concurrency)
 
 ## Command Line Usage
 
