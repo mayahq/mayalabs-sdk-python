@@ -122,12 +122,11 @@ Which can be changed into an interactive dashboard by adding three lines in betw
 
 ### Platform Bots
 
-A Reddit bot that filters and sends messages to a Slack bot.
+A simple Discord bot.
 
 ```
-1. search subreddit r/dankmemes for 'automation', order by top daily
-2. filter out all messages that include ["BOTS", "AMA"]
-2. send to channel #alerts on slack
+1. listen for Discord messages in channel ID '1093884054216134708'
+2. send 'Okay, thanks!' to Channel ID '1093884054216134708' in Discord
 ```
 
 ### Complex Processes
