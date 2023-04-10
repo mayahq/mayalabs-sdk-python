@@ -26,7 +26,7 @@ Or set `mayalabs.api_key` to its value:
 ```
 import mayalabs
 
-mayalabs.api_key = "mayakey-$2a$10$Fk0gE5S8XA9D2Lyyns8Ia.cTQaZLXIELnobp1RtA.p9NxIILpBii2"
+mayalabs.api_key = "mayakey-..."
 
 script = """
 1. trigger on receive
