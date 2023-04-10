@@ -1,8 +1,7 @@
 import asyncio
 import websockets
 import json
-import sys
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore, Style
 from .log import log
 from ..mayalabs import authenticate
 
