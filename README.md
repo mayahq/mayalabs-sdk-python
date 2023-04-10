@@ -101,7 +101,7 @@ This ensures our program synthesis engine only incremental generates and deploys
 
 All feedback and bug reports welcome! Report in the [issues section](https://github.com/mayahq/mayalabs-sdk-python/issues), or mail us at humans@mayalabs.io.
 
-Full list of capabilities and limits [here] (https://docs.mayalabs.io/capabilities-and-limits).
+Full list of capabilities and limits [here](https://docs.mayalabs.io/capabilities-and-limits).
 
 
 ## Roadmap
