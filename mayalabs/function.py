@@ -138,7 +138,7 @@ class Function:
 
         log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
         self.worker.start(wait=True)
-        return self.worker.call(msg = { **payload, **kwargs })
+        return self.worker.call(msg = { **payload, **kwargs }, session=self.session)
     
     def __call__(self, payload = {}) -> Dict:
         """

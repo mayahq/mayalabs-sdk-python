@@ -25,40 +25,43 @@ deploy_events = [
 
 maya_log_prefix = 'mayalabs'
 
-def rewrite_last_log_line(text):
-    sys.stdout.write('\r')
-    print(text)
-
-def add_line_to_log(text):
-    last_line = sys.stdout.readlines()[-1]
-    sys.stdout.write('\r')
-
-
 class WebsocketListener:
     def __init__(self, url):
         pass
         self.url = url
         self.handlers = {}
         self.websocket = None
+        self.current_prefix = ''
     
     def on(self, event, handler):
         if event not in self.handlers:
             self.handlers[event] = []
         self.handlers[event].append(handler)
 
-    def handle_events(self, log_prefix, prefix_color, events):
+    def handle_events(self, log_prefix, prefix_color, events, node_step_map={}):
         for event in events:
             if (not isinstance(event, dict)) or ('topic' not in event):
                 return
             
             if event['topic'] == 'nodeexecstatus':
+                # print('event', json.dumps(event))
                 if (event['data']['status'] == 'running'):
                     nodeId = event['data']['nodeId']
+
+                    step = node_step_map.get(nodeId, None)
+                    if step is None: continue
+                    if step['prefix'] == self.current_prefix: continue
+
+                    prefix = step['prefix']
+                    content = step['content']
+
                     log(
-                        Fore.CYAN + f'Running node: {nodeId}' + Style.RESET_ALL,
+                        Fore.CYAN + f'Running step {prefix.strip()} {content}' + Style.RESET_ALL,
                         prefix=log_prefix,
                         prefix_color=prefix_color
                     )
+
+                    self.current_prefix = prefix
             
             elif event['topic'] == 'debug':
                 msg_format = event['data']['format']
@@ -101,22 +104,48 @@ class WebsocketListener:
                     prefix_color=prefix_color
                 )
 
-
-
                 
     @authenticate
-    async def start_listener(self, events=execution_events, log_prefix=maya_log_prefix, api_key=None, prefix_color=Fore.WHITE):
+    async def start_listener(
+        self, 
+        events=execution_events, 
+        log_prefix=maya_log_prefix, 
+        api_key=None, 
+        prefix_color=Fore.WHITE,
+        session = None,
+        on_connect: asyncio.Event = None
+    ):
+        node_step_map = {}
+        if session:
+            steps = session.steps
+            stitched_flow = session.stitched_flow
+
+            for node in stitched_flow:
+                id = node.get('id', None)
+                step_id = node.get('_step_id', None)
+
+                if not id or not step_id: continue
+
+                node_step_map[id] = {
+                    'prefix': steps[step_id]['prefix'],
+                    'content': steps[step_id]['text']
+                }
+
+        self.current_prefix = ''
+
         try:
             async with websockets.connect(self.url) as websocket:
                 self.websocket = websocket
                 await websocket.send(json.dumps({ 'auth': api_key }))
                 await websocket.recv()
 
-                for event in events:
-                    await websocket.send(json.dumps({ 'subscribe': event }))
+                if on_connect: on_connect.set()
+
                 while True:
                     message = await websocket.recv()
-                    self.handle_events(log_prefix, prefix_color, json.loads(message))
+                    self.handle_events(log_prefix, prefix_color, json.loads(message), node_step_map=node_step_map)
+
+
         except asyncio.CancelledError:
             if self.websocket and self.websocket.open:
                 await self.websocket.close()

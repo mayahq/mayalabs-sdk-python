@@ -3,6 +3,7 @@ import requests
 import asyncio
 import aiohttp
 import json
+import time
 from urllib.parse import urlparse
 import traceback
 from .utils.poll import poll
@@ -189,7 +190,7 @@ class Worker:
         response = requests.request(**request)
         print(response.text)
 
-    def call(self, msg : dict):
+    def call(self, msg : dict, session=None):
         if self.id is None:
             raise Exception("Worker ID is not set")
         if self.url is None:
@@ -198,21 +199,37 @@ class Worker:
         # loop = asyncio.get_event_loop()
 
         async def async_wrapper():
-            call_task = asyncio.create_task(WorkerClient.call_worker(worker_url=self.url, msg=msg))
-            log_task = asyncio.create_task(self.ws_client.start_listener(log_prefix=self.name, prefix_color=self.prefix_color))
+            log(Style.BRIGHT + Fore.CYAN + 'Running program on worker.' + Style.RESET_ALL, prefix='mayalabs')
 
-        
+            on_connect = asyncio.Event()
+
+            log_task = asyncio.create_task(
+                self.ws_client.start_listener(
+                    log_prefix=self.name, 
+                    prefix_color=self.prefix_color,
+                    on_connect=on_connect,
+                    session=session
+                )
+            )
+
+            await on_connect.wait()
+
+            call_task = asyncio.create_task(WorkerClient.call_worker(worker_url=self.url, msg=msg))
+
+            
             def stop_log_task(future):
-                log_task.cancel()
+                async def _canceller():
+                    await asyncio.sleep(0.2) # Let the last of the logs print, just in case they happen too fast
+                    log_task.cancel()
+                asyncio.create_task(_canceller())
 
             call_task.add_done_callback(stop_log_task)
 
-            log(Style.BRIGHT + Fore.CYAN + 'Running program on worker.\n' + Style.RESET_ALL, prefix='mayalabs')
             await asyncio.gather(call_task, log_task)
 
             return call_task, log_task
 
-        call_task, log_task = asyncio.run(async_wrapper())
+        call_task, _ = asyncio.run(async_wrapper())
         return call_task.result()
 
     @classmethod

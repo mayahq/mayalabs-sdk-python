@@ -9,7 +9,7 @@ import concurrent.futures
 from .utils.pac_engine import GenerateTask, InstructTask
 from .worker import WorkerClient, Worker
 from .utils.name_gen import get_random_name
-from .utils.websocket import WebsocketListener, deploy_events
+from .utils.websocket import deploy_events
 from .utils.log import log
 from .utils.defaults import default_api_base_url
 import asyncio
@@ -140,6 +140,8 @@ class Session():
         self.engine = engine
         self.script = ""
         self.worker : Worker = None
+        self.steps = {}
+        self.stitched_flow = []
 
     @classmethod
     def new(cls, script=None):
@@ -371,6 +373,8 @@ class Session():
     def parse_obj(self, obj):
         self.id = obj['session_id']
         self.script = obj['recipe']
+        self.steps = obj['steps']
+        self.stitched_flow = obj['stitched_flow']
 
     def update(self):
         response = SessionClient.get_session(self.id)
