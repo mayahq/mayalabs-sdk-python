@@ -1,12 +1,11 @@
 import os
-import platform
 import json
 import argparse
 from colorama import Fore, Style
+import mayalabs
 from .session import Session
 from .function import Function
 from .utils.name_gen import get_random_name
-import mayalabs
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -110,14 +109,6 @@ def show_post_instruct_options(recipe, session_id):
             exit()
         else:
             print(Style.BRIGHT + Fore.RED + 'Invalid choice. Please try again.' + Style.RESET_ALL)
-
-# if __name__ == "__main__":
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("function_name", help="The function to execute")
-    # parser.add_argument("-c", "--command", help="The command to pass to function")
-    # args = parser.parse_args()
-    # command = args.command
-    # instruct(command=command)
 
 def set_key(api_key):
     "Sets the API key provided using the -k option."
