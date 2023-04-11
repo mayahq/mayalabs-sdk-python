@@ -125,7 +125,6 @@ def set_key(api_key):
 def whoami():
     "Display information about the user."
     url = f"{default_api_base_url()}/app/v2/profiles/whoami"
-    print(url)
     payload={}
     api_key = get_api_key(prompt_if_missing=False)
     if api_key:
@@ -135,4 +134,5 @@ def whoami():
         name_value = response_dict["name"]
         print(name_value)
     else:
-        print("You have not provided an API key. What you doing bruhhHhhh?")
+        print(Style.BRIGHT + Fore.RED + 'You have not provided an API key.' + Style.RESET_ALL)
+        print("You can set the API key using mayalabs set -k '<YOUR_API_KEY>'")
