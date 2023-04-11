@@ -17,14 +17,19 @@ def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument("function_name", help="The function to execute")
     parser.add_argument("-c", "--command", help="The command to pass to function")
+    parser.add_argument("-k", "--key", help="The API Key to use")
     args = parser.parse_args()
     command = args.command
+    key = args.key
     function_name = args.function_name
     if function_name == "instruct" and not command:
         print("Please provide a command with the -c flag")
     elif function_name == "instruct" and command:
         instruct(command=command, from_scratch=True, session_id=None)
-
+    elif function_name == "set" and not key:
+        print("Please provide the API key with the -k flag")
+    elif function_name == "set" and key:
+        set_key(api_key=key)
 
 def get_api_key():
     """
@@ -113,3 +118,10 @@ def show_post_instruct_options(recipe, session_id):
     # args = parser.parse_args()
     # command = args.command
     # instruct(command=command)
+
+def set_key(api_key):
+    "Sets the API key provided using the -k option."
+    file_json = {"MAYA_API_KEY": api_key}
+    with open(MAYA_CACHE_FILE, "w+", encoding='UTF-8') as f:
+        f.write(json.dumps(file_json))
+        f.close()
