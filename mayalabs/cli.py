@@ -31,18 +31,23 @@ def get_api_key():
     Get the API key from the user or the cache file.
     """
     api_key = None
-    with open(MAYA_CACHE_FILE, "r+") as f:
-        file_content = f.read()
-        file_json = json.loads(file_content)
-        if 'MAYA_API_KEY' in file_json:
-            api_key = file_json['MAYA_API_KEY']
-        else:
-            print(Style.BRIGHT + Fore.BLUE + 'Please paste your API key.' + Style.RESET_ALL)
-            api_key = input('You can get one from https://app.mayalabs.io/settings/developers: \n')
-            file_json['MAYA_API_KEY'] = api_key
-            f.seek(0)  # move the file pointer to the beginning of the file
-            f.write(json.dumps(file_json))  # write the updated JSON object to the file
-        f.close()
+    need_api_key = True
+    if os.path.exists(MAYA_CACHE_FILE):
+        with open(MAYA_CACHE_FILE, "r+", encoding='UTF-8') as f:
+            file_content = f.read()
+            file_json = json.loads(file_content)
+            if 'MAYA_API_KEY' in file_json:
+                api_key = file_json['MAYA_API_KEY']
+                need_api_key = False
+
+    if need_api_key:
+        print(Style.BRIGHT + Fore.BLUE + 'Please paste your API key.' + Style.RESET_ALL)
+        api_key = input('You can get one from https://app.mayalabs.io/settings/developers: \n')
+        file_json = {"MAYA_API_KEY": api_key}
+        with open(MAYA_CACHE_FILE, "w+", encoding='UTF-8') as f:
+            f.write(json.dumps(file_json))
+            f.close()
+
     return api_key
 
 def instruct(command, from_scratch, session_id):
