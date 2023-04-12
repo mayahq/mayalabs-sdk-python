@@ -97,12 +97,6 @@ def instruct(command, from_scratch, session_id):
     clear_terminal()
     print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
-
-    # if from_scratch:
-    #     print(Style.BRIGHT + Fore.GREEN + '\nGeneration successful.\n' + Style.RESET_ALL)
-    # else:
-    #     print(Style.BRIGHT + Fore.GREEN + '\nModification successful.\n' + Style.RESET_ALL)
-
     show_post_instruct_options(recipe=recipe, session_id=session_id)
 
 
