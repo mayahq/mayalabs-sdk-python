@@ -71,7 +71,6 @@ def instruct(command, from_scratch, session_id):
         recipe = message['recipe']
         clear_terminal()
         print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
-        # print(recipe)
         lines = recipe.split('\n')
         num_lines = len(lines)
 
@@ -81,30 +80,28 @@ def instruct(command, from_scratch, session_id):
             if i < num_lines - 1:
                 time.sleep(0.5)
 
+        if message['metadata']['status'] == 'complete':
+            clear_terminal()
+            if from_scratch:
+                print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
+            else:
+                print(Style.BRIGHT + Fore.GREEN + 'Modification successful.\n' + Style.RESET_ALL)
+            print(recipe)
+
     if session_id is None:
         session = Session.new(script='')
         session_id = session._id
-        # print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     else:
         session = Session.get(session_id=session_id)
         session_id = session._id
-        # print(Style.BRIGHT + Fore.CYAN + 'Modifying...\n' + Style.RESET_ALL)
     clear_terminal()
     print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
 
-    # lines = recipe.split('\n')
-    # num_lines = len(lines)
-
-    # for i, line in enumerate(lines):
-    #     print(line)
-    #     if i < num_lines - 1:
-    #         time.sleep(1)
-
-    if from_scratch:
-        print(Style.BRIGHT + Fore.GREEN + '\nGeneration successful.\n' + Style.RESET_ALL)
-    else:
-        print(Style.BRIGHT + Fore.GREEN + '\nModification successful.\n' + Style.RESET_ALL)
+    # if from_scratch:
+    #     print(Style.BRIGHT + Fore.GREEN + '\nGeneration successful.\n' + Style.RESET_ALL)
+    # else:
+    #     print(Style.BRIGHT + Fore.GREEN + '\nModification successful.\n' + Style.RESET_ALL)
 
     show_post_instruct_options(recipe=recipe, session_id=session_id)
 
