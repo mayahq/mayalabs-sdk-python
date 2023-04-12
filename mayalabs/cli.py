@@ -69,24 +69,29 @@ def instruct(command, from_scratch, session_id):
     def on_message(message, task):
         nonlocal recipe
         recipe = message['recipe']
+        clear_terminal()
+        print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
+        print(recipe)
 
     if session_id is None:
         session = Session.new(script='')
         session_id = session._id
-        print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
+        # print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     else:
         session = Session.get(session_id=session_id)
         session_id = session._id
-        print(Style.BRIGHT + Fore.CYAN + 'Modifying...\n' + Style.RESET_ALL)
+        # print(Style.BRIGHT + Fore.CYAN + 'Modifying...\n' + Style.RESET_ALL)
+    clear_terminal()
+    print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
 
-    lines = recipe.split('\n')
-    num_lines = len(lines)
+    # lines = recipe.split('\n')
+    # num_lines = len(lines)
 
-    for i, line in enumerate(lines):
-        print(line)
-        if i < num_lines - 1:
-            time.sleep(1)
+    # for i, line in enumerate(lines):
+    #     print(line)
+    #     if i < num_lines - 1:
+    #         time.sleep(1)
 
     if from_scratch:
         print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
@@ -160,3 +165,6 @@ def whoami():
     else:
         print(Style.BRIGHT + Fore.RED + 'You have not provided an API key.' + Style.RESET_ALL)
         print("You can set the API key using mayalabs set -k '<YOUR_API_KEY>'")
+
+def clear_terminal():
+    os.system('cls' if os.name=='nt' else 'clear')
