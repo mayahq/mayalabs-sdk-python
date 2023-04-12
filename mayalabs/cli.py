@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import argparse
 import requests
 from colorama import Fore, Style
@@ -78,7 +79,15 @@ def instruct(command, from_scratch, session_id):
         session_id = session._id
         print(Style.BRIGHT + Fore.CYAN + 'Modifying...\n' + Style.RESET_ALL)
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
-    print(recipe)
+
+    lines = recipe.split('\n')
+    num_lines = len(lines)
+
+    for i, line in enumerate(lines):
+        print(line)
+        if i < num_lines - 1:
+            time.sleep(1)
+
     if from_scratch:
         print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
     else:
