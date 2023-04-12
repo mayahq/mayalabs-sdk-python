@@ -70,6 +70,7 @@ def instruct(command, from_scratch, session_id):
         nonlocal recipe
         recipe = message['recipe']
         clear_terminal()
+        print(Style.BRIGHT + Fore.YELLOW + command + Style.RESET_ALL + '\n')
         print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
         lines = recipe.split('\n')
         num_lines = len(lines)
@@ -95,6 +96,7 @@ def instruct(command, from_scratch, session_id):
         session = Session.get(session_id=session_id)
         session_id = session._id
     clear_terminal()
+    print(Style.BRIGHT + Fore.YELLOW + command + Style.RESET_ALL + '\n')
     print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
     show_post_instruct_options(recipe=recipe, session_id=session_id)
