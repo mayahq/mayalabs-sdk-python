@@ -118,9 +118,24 @@ def show_post_instruct_options(recipe, session_id):
 def set_key(api_key):
     "Sets the API key provided using the -k option."
     file_json = {"MAYA_API_KEY": api_key}
-    with open(MAYA_CACHE_FILE, "w+", encoding='UTF-8') as f:
-        f.write(json.dumps(file_json))
-        f.close()
+
+    # Check if file exists
+    if os.path.isfile(MAYA_CACHE_FILE):
+        # Read existing data
+        with open(MAYA_CACHE_FILE, "r", encoding='UTF-8') as f:
+            data = json.load(f)
+            f.close()
+        # Update data
+        data["MAYA_API_KEY"] = api_key
+        # Write back to file
+        with open(MAYA_CACHE_FILE, "w", encoding='UTF-8') as f:
+            f.write(json.dumps(data))
+            f.close()
+    else:
+        # Create new file
+        with open(MAYA_CACHE_FILE, "w", encoding='UTF-8') as f:
+            f.write(json.dumps(file_json))
+            f.close()
 
 def whoami():
     "Display information about the user."
