@@ -71,7 +71,15 @@ def instruct(command, from_scratch, session_id):
         recipe = message['recipe']
         clear_terminal()
         print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
-        print(recipe)
+        # print(recipe)
+        lines = recipe.split('\n')
+        num_lines = len(lines)
+
+        for i, line in enumerate(lines):
+            if line:
+                print(line)
+            if i < num_lines - 1:
+                time.sleep(0.5)
 
     if session_id is None:
         session = Session.new(script='')
@@ -94,9 +102,9 @@ def instruct(command, from_scratch, session_id):
     #         time.sleep(1)
 
     if from_scratch:
-        print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.GREEN + '\nGeneration successful.\n' + Style.RESET_ALL)
     else:
-        print(Style.BRIGHT + Fore.GREEN + 'Modification successful.\n' + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.GREEN + '\nModification successful.\n' + Style.RESET_ALL)
 
     show_post_instruct_options(recipe=recipe, session_id=session_id)
 
