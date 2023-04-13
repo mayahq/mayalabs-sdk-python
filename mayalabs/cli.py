@@ -9,6 +9,7 @@ from .session import Session
 from .function import Function
 from .utils.name_gen import get_random_name
 from .utils.defaults import default_api_base_url
+from halo import Halo
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -66,11 +67,13 @@ def instruct(command, from_scratch, session_id):
     # to be used if testing using devapp
     # mayalabs.api_base = "https://api.dev.mayalabs.io"
     recipe = ""
+    initial_spinner = Halo(text='Generating', text_color='cyan', spinner='dots')
     def on_message(message, task):
+        initial_spinner.stop()
         nonlocal recipe
         recipe = message['recipe']
         clear_terminal()
-        print(Style.BRIGHT + Fore.YELLOW + command + Style.RESET_ALL + '\n')
+        print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
         print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
         lines = recipe.split('\n')
         num_lines = len(lines)
@@ -83,6 +86,7 @@ def instruct(command, from_scratch, session_id):
 
         if message['metadata']['status'] == 'complete':
             clear_terminal()
+            print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
             if from_scratch:
                 print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
             else:
@@ -96,8 +100,8 @@ def instruct(command, from_scratch, session_id):
         session = Session.get(session_id=session_id)
         session_id = session._id
     clear_terminal()
-    print(Style.BRIGHT + Fore.YELLOW + command + Style.RESET_ALL + '\n')
-    print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
+    print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
+    initial_spinner.start()
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
     show_post_instruct_options(recipe=recipe, session_id=session_id)
 
