@@ -74,7 +74,11 @@ function = mayalabs.Function(name="Scrape1", script=script)
 
 ## Command Line Usage
 
-Today, script need to be manually written step-by-step, but we are offering early WIP preview of iterative script generation via our CLI. Try running:
+Today, script need to be manually written step-by-step, but we are offering early WIP preview of iterative script generation via our CLI.
+
+https://user-images.githubusercontent.com/52493077/231783300-f70a75da-a9e0-4128-b4dd-2916d4e8dca4.mp4
+
+Try running:
 
 ```
 $ mayalabs instruct -c 'fetch Name and Email from gsheet, write function to merge all columns, and return data'
