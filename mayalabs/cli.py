@@ -1,12 +1,13 @@
 import os
-import platform
 import json
 import argparse
+import requests
 from colorama import Fore, Style
+import mayalabs
 from .session import Session
 from .function import Function
 from .utils.name_gen import get_random_name
-import mayalabs
+from .utils.defaults import default_api_base_url
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -17,16 +18,23 @@ def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument("function_name", help="The function to execute")
     parser.add_argument("-c", "--command", help="The command to pass to function")
+    parser.add_argument("-k", "--key", help="The API Key to use")
     args = parser.parse_args()
     command = args.command
+    key = args.key
     function_name = args.function_name
     if function_name == "instruct" and not command:
         print("Please provide a command with the -c flag")
     elif function_name == "instruct" and command:
         instruct(command=command, from_scratch=True, session_id=None)
+    elif function_name == "set" and not key:
+        print("Please provide the API key with the -k flag")
+    elif function_name == "set" and key:
+        set_key(api_key=key)
+    elif function_name == "whoami":
+        whoami()
 
-
-def get_api_key():
+def get_api_key(prompt_if_missing):
     """
     Get the API key from the user or the cache file.
     """
@@ -40,21 +48,22 @@ def get_api_key():
                 api_key = file_json['MAYA_API_KEY']
                 need_api_key = False
 
-    if need_api_key:
+    if need_api_key and prompt_if_missing:
         print(Style.BRIGHT + Fore.BLUE + 'Please paste your API key.' + Style.RESET_ALL)
         api_key = input('You can get one from https://app.mayalabs.io/settings/developers: \n')
         file_json = {"MAYA_API_KEY": api_key}
         with open(MAYA_CACHE_FILE, "w+", encoding='UTF-8') as f:
             f.write(json.dumps(file_json))
             f.close()
-
     return api_key
 
 def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
-    mayalabs.api_key = get_api_key()
+    mayalabs.api_key = get_api_key(prompt_if_missing=True)
+    # to be used if testing using devapp
+    # mayalabs.api_base = "https://api.dev.mayalabs.io"
     recipe = ""
     def on_message(message, task):
         nonlocal recipe
@@ -106,10 +115,39 @@ def show_post_instruct_options(recipe, session_id):
         else:
             print(Style.BRIGHT + Fore.RED + 'Invalid choice. Please try again.' + Style.RESET_ALL)
 
-# if __name__ == "__main__":
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("function_name", help="The function to execute")
-    # parser.add_argument("-c", "--command", help="The command to pass to function")
-    # args = parser.parse_args()
-    # command = args.command
-    # instruct(command=command)
+def set_key(api_key):
+    "Sets the API key provided using the -k option."
+    file_json = {"MAYA_API_KEY": api_key}
+
+    # Check if file exists
+    if os.path.isfile(MAYA_CACHE_FILE):
+        # Read existing data
+        with open(MAYA_CACHE_FILE, "r", encoding='UTF-8') as f:
+            data = json.load(f)
+            f.close()
+        # Update data
+        data["MAYA_API_KEY"] = api_key
+        # Write back to file
+        with open(MAYA_CACHE_FILE, "w", encoding='UTF-8') as f:
+            f.write(json.dumps(data))
+            f.close()
+    else:
+        # Create new file
+        with open(MAYA_CACHE_FILE, "w", encoding='UTF-8') as f:
+            f.write(json.dumps(file_json))
+            f.close()
+
+def whoami():
+    "Display information about the user."
+    url = f"{default_api_base_url()}/app/v2/profiles/whoami"
+    payload={}
+    api_key = get_api_key(prompt_if_missing=False)
+    if api_key:
+        headers = { 'X-API-KEY': api_key }
+        response = requests.request("GET", url, headers=headers, data=payload)
+        response_dict = json.loads(response.text)
+        name_value = response_dict["name"]
+        print(name_value)
+    else:
+        print(Style.BRIGHT + Fore.RED + 'You have not provided an API key.' + Style.RESET_ALL)
+        print("You can set the API key using mayalabs set -k '<YOUR_API_KEY>'")
