@@ -68,9 +68,11 @@ def instruct(command, from_scratch, session_id):
     # to be used if testing using devapp
     # mayalabs.api_base = "https://api.dev.mayalabs.io"
     recipe = ""
+    initial_spinner_text = 'Generating...'
     if not from_scratch:
         print('')
-    initial_spinner = Halo(text='Generating', text_color='cyan', spinner='dots')
+        initial_spinner_text = 'Modifying...'
+    initial_spinner = Halo(text=initial_spinner_text, text_color='cyan', spinner='dots')
     line_spinner = Halo(spinner='dots')
     def on_message(message, task):
         initial_spinner.stop()
