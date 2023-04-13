@@ -68,13 +68,14 @@ def instruct(command, from_scratch, session_id):
     # mayalabs.api_base = "https://api.dev.mayalabs.io"
     recipe = ""
     initial_spinner = Halo(text='Generating', text_color='cyan', spinner='dots')
+    line_spinner = Halo(spinner='dots')
     def on_message(message, task):
         initial_spinner.stop()
+        line_spinner.stop()
         nonlocal recipe
         recipe = message['recipe']
         clear_terminal()
         print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
-        print(Style.BRIGHT + Fore.CYAN + 'Generating...\n' + Style.RESET_ALL)
         lines = recipe.split('\n')
         num_lines = len(lines)
 
@@ -84,14 +85,17 @@ def instruct(command, from_scratch, session_id):
             if i < num_lines - 1:
                 time.sleep(0.5)
 
+        line_spinner.start()
+
         if message['metadata']['status'] == 'complete':
+            line_spinner.stop()
             clear_terminal()
             print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
+            print(recipe)
             if from_scratch:
                 print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
             else:
                 print(Style.BRIGHT + Fore.GREEN + 'Modification successful.\n' + Style.RESET_ALL)
-            print(recipe)
 
     if session_id is None:
         session = Session.new(script='')
