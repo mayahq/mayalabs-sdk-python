@@ -10,6 +10,7 @@ from .function import Function
 from .utils.name_gen import get_random_name
 from .utils.defaults import default_api_base_url
 from halo import Halo
+from simple_term_menu import TerminalMenu
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -110,16 +111,16 @@ def instruct(command, from_scratch, session_id):
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
     show_post_instruct_options(recipe=recipe, session_id=session_id)
 
-
 def show_post_instruct_options(recipe, session_id):
     """
     Show the actions available after instruct response is completed.
     """
+    menu_entries = ["Deploy as function", "Modify", "Save to .nl"]
+    menu_cursor_style = ("fg_cyan", "bold")
+    terminal_menu = TerminalMenu(menu_entries=menu_entries, menu_cursor_style=menu_cursor_style)
     while True:
-        print(Style.BRIGHT + '1.' + Style.RESET_ALL + ' Deploy as function')
-        print(Style.BRIGHT + '2.' + Style.RESET_ALL + ' Modify')
-        print(Style.BRIGHT + '3.' + Style.RESET_ALL + ' Save to .nl\n')
-        choice = input(Style.BRIGHT + Fore.BLUE + 'Select an option and press Enter: ' + Style.RESET_ALL)
+        menu_entry_index = terminal_menu.show()
+        choice = str(menu_entry_index + 1)
 
         if choice == "1":
             print(Style.BRIGHT + Fore.CYAN + 'Deploying as function...\n' + Style.RESET_ALL)
