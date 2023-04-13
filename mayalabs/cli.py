@@ -81,9 +81,9 @@ def instruct(command, from_scratch, session_id):
 
         for i, line in enumerate(lines):
             if line:
+                if i < num_lines - 1:
+                    time.sleep(0.4)
                 print(line)
-            if i < num_lines - 1:
-                time.sleep(0.5)
 
         if message['metadata']['status'] == 'complete':
             line_spinner.stop()
