@@ -8,6 +8,8 @@ dependencies = [
     "websockets",
     "click",
     "colorama",
+    "halo",
+    "simple-term-menu",
     "aiohttp>=3.6,<4.0"
 ]
 requires-python = ">=3.6"
