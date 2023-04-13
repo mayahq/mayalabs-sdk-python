@@ -190,7 +190,7 @@ def print_user_command(command):
     Prints the command entered by the user in a box.
     """
     box_height = 2
-    header = 'Instruction'
+    header = ' Instruction '
     header_len = len(header)
     box_width = len(command) + 4
 
@@ -199,7 +199,7 @@ def print_user_command(command):
     top_lines = remaining_height // 2
     bottom_lines = remaining_height - top_lines
 
-    print("╭" + header + "─" * (box_width - header_len) + "╮")
+    print("╭" + "─" + header + "─" * (box_width - header_len - 1) + "╮")
     for i in range(top_lines):
         print("│  " + " " * (box_width - 4) + "  │")
     print("│  " + command.center(box_width - 4) + "  │")
