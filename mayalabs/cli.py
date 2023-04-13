@@ -76,7 +76,7 @@ def instruct(command, from_scratch, session_id):
         recipe = message['recipe']
         modified_recipe = remove_stars_and_newlines(recipe)
         clear_terminal()
-        print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
+        print_user_command(command=command)
 
         if message['metadata']['delivery'] == 'stream':
             print(modified_recipe)
@@ -89,7 +89,7 @@ def instruct(command, from_scratch, session_id):
         if message['metadata']['status'] == 'complete':
             line_spinner.stop()
             clear_terminal()
-            print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
+            print_user_command(command=command)
             print(modified_recipe + '\n')
             if from_scratch:
                 print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
@@ -105,7 +105,7 @@ def instruct(command, from_scratch, session_id):
         session = Session.get(session_id=session_id)
         session_id = session._id
     clear_terminal()
-    print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
+    print_user_command(command=command)
     initial_spinner.start()
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
     show_post_instruct_options(recipe=recipe, session_id=session_id)
@@ -181,6 +181,16 @@ def clear_terminal():
 
 def remove_stars_and_newlines(string):
     """
-    Removes the (*) characters from a multi-line string.
+    Removes the (*), trailing whitespace and newline characters from a multi-line string.
     """
     return string.replace("(*)", "").strip()
+
+def print_user_command(command):
+    """
+    Prints the command entered by the user.
+    """
+    segregator = '-'
+    segregator_length = len(command)
+    print(segregator * segregator_length)
+    print(Style.BRIGHT + command + Style.RESET_ALL)
+    print(segregator * segregator_length + '\n')
