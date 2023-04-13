@@ -85,8 +85,6 @@ def instruct(command, from_scratch, session_id):
             if i < num_lines - 1:
                 time.sleep(0.5)
 
-        line_spinner.start()
-
         if message['metadata']['status'] == 'complete':
             line_spinner.stop()
             clear_terminal()
@@ -96,6 +94,8 @@ def instruct(command, from_scratch, session_id):
                 print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
             else:
                 print(Style.BRIGHT + Fore.GREEN + 'Modification successful.\n' + Style.RESET_ALL)
+        else:
+            line_spinner.start()
 
     if session_id is None:
         session = Session.new(script='')
