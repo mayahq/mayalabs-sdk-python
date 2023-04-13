@@ -68,6 +68,8 @@ def instruct(command, from_scratch, session_id):
     # to be used if testing using devapp
     # mayalabs.api_base = "https://api.dev.mayalabs.io"
     recipe = ""
+    if not from_scratch:
+        print('')
     initial_spinner = Halo(text='Generating', text_color='cyan', spinner='dots')
     line_spinner = Halo(spinner='dots')
     def on_message(message, task):
@@ -76,8 +78,9 @@ def instruct(command, from_scratch, session_id):
         nonlocal recipe
         recipe = message['recipe']
         modified_recipe = remove_stars_and_newlines(recipe)
-        clear_terminal()
-        print_user_command(command=command)
+        if from_scratch:
+            clear_terminal()
+            print_user_command(command=command)
 
         if message['metadata']['delivery'] == 'stream':
             print(modified_recipe)
@@ -89,13 +92,14 @@ def instruct(command, from_scratch, session_id):
 
         if message['metadata']['status'] == 'complete':
             line_spinner.stop()
-            clear_terminal()
-            print_user_command(command=command)
-            print(modified_recipe + '\n')
             if from_scratch:
-                print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
+                clear_terminal()
+                print_user_command(command=command)
+            if from_scratch:
+                print(modified_recipe)
+                print(Style.BRIGHT + Fore.GREEN + '\nGeneration successful.\n' + Style.RESET_ALL)
             else:
-                print(Style.BRIGHT + Fore.GREEN + 'Modification successful.\n' + Style.RESET_ALL)
+                print(Style.BRIGHT + Fore.GREEN + '\nModification successful.\n' + Style.RESET_ALL)
         else:
             line_spinner.start()
 
@@ -105,8 +109,9 @@ def instruct(command, from_scratch, session_id):
     else:
         session = Session.get(session_id=session_id)
         session_id = session._id
-    clear_terminal()
-    print_user_command(command=command)
+    if from_scratch:
+        clear_terminal()
+        print_user_command(command=command)
     initial_spinner.start()
     session.instruct(prompt=command, from_scratch=from_scratch, on_message=on_message)
     show_post_instruct_options(recipe=recipe, session_id=session_id)
