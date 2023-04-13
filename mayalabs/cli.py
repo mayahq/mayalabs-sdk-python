@@ -187,10 +187,25 @@ def remove_stars_and_newlines(string):
 
 def print_user_command(command):
     """
-    Prints the command entered by the user.
+    Prints the command entered by the user in a box.
     """
-    segregator = '-'
-    segregator_length = len(command)
-    print(segregator * segregator_length)
-    print(Style.BRIGHT + command + Style.RESET_ALL)
-    print(segregator * segregator_length + '\n')
+    box_height = 2
+    header = 'Instruction'
+    header_len = len(header)
+    box_width = len(command) + 4
+
+    # Calculate the number of blank lines above and below the command
+    remaining_height = box_height - 2
+    top_lines = remaining_height // 2
+    bottom_lines = remaining_height - top_lines
+
+    print("╭" + header + "─" * (box_width - header_len) + "╮")
+    for i in range(top_lines):
+        print("│  " + " " * (box_width - 4) + "  │")
+    print("│  " + command.center(box_width - 4) + "  │")
+    for i in range(bottom_lines):
+        print("│  " + " " * (box_width - 4) + "  │")
+    print("╰" + "─" * box_width + "╯")
+
+
+
