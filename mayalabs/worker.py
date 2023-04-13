@@ -1,5 +1,6 @@
 import os
 import requests
+from requests.exceptions import SSLError
 import asyncio
 import aiohttp
 import json
@@ -76,6 +77,9 @@ class Worker:
 
     def clear(self):
         pass
+
+    def get_health(self):
+        return WorkerClient.get_worker_health(worker_url=self.url)
 
     def update(self):
         if self.id is not None:
@@ -466,6 +470,7 @@ class WorkerClient:
             async with session.post(f"{worker_url}/send-maya-message", json=msg) as response:
                 try:
                     response_json = await response.json()
+                    print("🚀 ~ file: worker.py:469 ~ response_json:", response_json)
                 except:
                     text = ''
                     try: text = await response.text()
@@ -494,3 +499,18 @@ class WorkerClient:
             async with session.get(f"{worker_url}/required-fields", json=msg) as response:
                 response_json = await response.json()
                 return response_json
+
+    @staticmethod
+    def get_worker_health(worker_url):
+        # print(f"{worker_url}/health")
+        try:
+            response = requests.get(f"{worker_url}/health")
+            return response
+        except Exception as err:
+            if type(err) == SSLError:
+                response = {
+                    "status_code": 404
+                }
+                return response
+            else:
+                raise err

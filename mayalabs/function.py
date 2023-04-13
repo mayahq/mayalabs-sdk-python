@@ -139,9 +139,18 @@ class Function:
                 f"Received {type(payload).__name__}, expected a dictionary."]
             raise IntegrityException(format_error_log(error_log))
 
-        log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
-        self.worker.start(wait=True)
-        return self.worker.call(msg = { **payload, **kwargs }, session=self.session)
+        # logic to check if a worker is awake before actually making a call
+        if self.worker.status == "STARTED":
+            worker_health = self.worker.get_health()
+            if worker_health.status_code != 200:
+                log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
+                self.worker.start(wait=True)
+        elif self.worker.status == "STOPPED" or self.worker.status == "PENDING":
+            log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
+            self.worker.start(wait=True)
+        # call worker with argument
+        response = self.worker.call(msg = { **payload, **kwargs }, session=self.session)
+        return response
     
     def __call__(self, payload = {}) -> Dict:
         """
