@@ -74,22 +74,23 @@ def instruct(command, from_scratch, session_id):
         line_spinner.stop()
         nonlocal recipe
         recipe = message['recipe']
+        modified_recipe = recipe.strip()
         clear_terminal()
         print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
-        lines = recipe.split('\n')
-        num_lines = len(lines)
 
-        for i, line in enumerate(lines):
-            if line:
-                if i < num_lines - 1:
-                    time.sleep(0.4)
+        if message['metadata']['delivery'] == 'stream':
+            print(modified_recipe)
+        else:
+            lines = modified_recipe.split('\n')
+            for line in lines:
+                time.sleep(0.4)
                 print(line)
 
         if message['metadata']['status'] == 'complete':
             line_spinner.stop()
             clear_terminal()
             print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
-            print(recipe)
+            print(modified_recipe + '\n')
             if from_scratch:
                 print(Style.BRIGHT + Fore.GREEN + 'Generation successful.\n' + Style.RESET_ALL)
             else:
