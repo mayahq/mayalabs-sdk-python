@@ -74,7 +74,7 @@ def instruct(command, from_scratch, session_id):
         line_spinner.stop()
         nonlocal recipe
         recipe = message['recipe']
-        modified_recipe = recipe.strip()
+        modified_recipe = remove_stars_and_newlines(recipe)
         clear_terminal()
         print(Style.BRIGHT + command + Style.RESET_ALL + '\n')
 
@@ -178,3 +178,9 @@ def whoami():
 
 def clear_terminal():
     os.system('cls' if os.name=='nt' else 'clear')
+
+def remove_stars_and_newlines(string):
+    """
+    Removes the (*) characters from a multi-line string.
+    """
+    return string.replace("(*)", "").strip()
