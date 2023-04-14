@@ -470,7 +470,6 @@ class WorkerClient:
             async with session.post(f"{worker_url}/send-maya-message", json=msg) as response:
                 try:
                     response_json = await response.json()
-                    print("🚀 ~ file: worker.py:469 ~ response_json:", response_json)
                 except:
                     text = ''
                     try: text = await response.text()
