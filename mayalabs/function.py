@@ -11,13 +11,13 @@ import asyncio, os
 
 class Function:
     # @authenticate
-    def __init__(self, name, create=False, script=None, deploy=False):
+    def __init__(self, name, create=True, script=None, deploy=False):
         """Initailize remote Maya function. A Maya function is a managed compute, storage and network
         infrastructure on which business logic defined gets deployed and executed
 
         Args:
             name (str, required): unique name of the function, this should be unique for your profile.
-            create (bool, optional): A True value attempts to create function of the provided name. It raises exception if a function of same name already exists. Defaults to False.
+            create (bool, optional): A True value attempts to create function of the provided name. It raises exception if a function of same name already exists. Defaults to True.
             script (str, optional): Step by step sequence of business logic to deploy and execute on the function. Defaults to None.
             deploy (bool, option): A True value would require providing a script and immediately attempts deploy of the business logic. Default to False. 
         """
