@@ -38,14 +38,14 @@ class Function:
 
     # @staticmethod
     def get_or_create(self, name, create, script, deploy):
-            # log(Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL, prefix='mayalabs')
+        if create:
+            log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in your production environments\nThe function name are unique within your profile and create=True may raise exception if an existing function of same name exists on your profile', prefix='[WARN]')
         try:
             existing_worker = Worker.get_by_alias(alias=name)
             session_id = existing_worker.session_id if existing_worker.session_id else None
             log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
         except Exception as err:
             if create:
-                log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in production\nThe function name are unique for your profile and create=True will error out if an existing function of same name exists on your profile', prefix='[WARN]')
                 session_id = None
                 log(Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
                 existing_worker = Worker.create(name=name, alias=name)
