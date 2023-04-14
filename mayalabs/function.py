@@ -39,7 +39,7 @@ class Function:
     # @staticmethod
     def _get_or_create(self, name, create, script, deploy):
         if create:
-            log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in your production environments\nThe function name are unique within your profile and create=True may raise exception if an existing function of same name exists on your profile', prefix='[WARN]')
+            log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in your production environments', prefix='[WARN]')
         try:
             existing_worker = Worker.get_by_alias(alias=name)
             session_id = existing_worker.session_id if existing_worker.session_id else None
