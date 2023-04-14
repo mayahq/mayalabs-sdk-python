@@ -180,11 +180,11 @@ class Function:
         if self.worker is not None:
             self.worker.delete()
 
-    def update(self, script=None):
-        """_summary_
-
+    def update(self, script: str):
+        """Updates the business logic on the function and deploys it. Such deployment is irreversible, use with caution.
         Args:
-            script (str): Step by step sequence of business logic to deploy and execute on the function. Defaults to None.
+            script (str): Step by step sequence of business logic to deploy and execute on the function.
         """
         self.session.script = script
+        self.session.change()
         self.session._deploy(worker_id=self.worker.id, update=True)
