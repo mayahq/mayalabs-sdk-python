@@ -365,7 +365,7 @@ class Session():
     def delete(self):
         # Implement this method
         response = SessionClient.delete_session(self.id)
-        return print(response)
+        return response
     
     def change(self):
         # Implement this method

@@ -178,7 +178,12 @@ class Function:
         if self.session is not None:
             self.session.delete()
         if self.worker is not None:
-            self.worker.delete()
+            log(Fore.YELLOW + f'Deleting function [{self.worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
+            try:
+                self.worker.delete()
+                log(Fore.YELLOW + f'Function [{self.worker.alias}] successfully deleted' + Style.RESET_ALL, prefix='mayalabs')
+            except Exception as err:
+                log(Fore.RED + f'Failed to delete function [{self.worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
 
     def update(self, script: str):
         """Updates the business logic on the function and deploys it. Such deployment is irreversible, use with caution.
