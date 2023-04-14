@@ -211,7 +211,7 @@ class Session():
         )
         return
 
-    def deploy(self, worker_id=None):
+    def _deploy(self, worker_id=None, update=False):
         # Implement this method
         # print(worker_id)
         def run_asyncio_coroutine(coroutine):
@@ -244,65 +244,65 @@ class Session():
             #     prefix_color=self.worker.prefix_color
             # )
             
-            sessions = {}
-            try:
-                with open(MAYA_CACHE_FILE, "r") as f:
-                    file_content = f.read()
-                    try:
-                        sessions = json.loads(file_content)
-                    except Exception as err:
-                        print(err)
-                        sessions = None
-                    f.close()
-            except FileNotFoundError:
-                with open(MAYA_CACHE_FILE, "w+") as f:
-                    f.write("{}")
-                    f.seek(0)
-                    file_content = f.read()
-                    try:
-                        sessions = json.loads(file_content)
-                    except Exception as err:
-                        print(err)
-                        sessions = None
-                    f.close()
-            hash.update(self.script.encode())
-            received_script = hash.hexdigest()
+            # sessions = {}
+            # try:
+            #     with open(MAYA_CACHE_FILE, "r") as f:
+            #         file_content = f.read()
+            #         try:
+            #             sessions = json.loads(file_content)
+            #         except Exception as err:
+            #             print(err)
+            #             sessions = None
+            #         f.close()
+            # except FileNotFoundError:
+            #     with open(MAYA_CACHE_FILE, "w+") as f:
+            #         f.write("{}")
+            #         f.seek(0)
+            #         file_content = f.read()
+            #         try:
+            #             sessions = json.loads(file_content)
+            #         except Exception as err:
+            #             print(err)
+            #             sessions = None
+            #         f.close()
+            # hash.update(self.script.encode())
+            # received_script = hash.hexdigest()
             with concurrent.futures.ThreadPoolExecutor() as exec:
                 result_2 = exec.submit(self.check_worker_start)
-                if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
-                    if sessions is None:
-                        sessions = {}
-                        sessions[self.id] = received_script
-                        sessions_str = json.dumps(sessions)
-                        with open(MAYA_CACHE_FILE, "w") as f:
-                            f.write(sessions_str)
-                            f.close()
-                        sessions = None
-                        log(Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL, prefix='mayalabs')
-                    elif self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
-                        tmp = sessions[self.id] if self.id in sessions.keys() else ""
-                        sessions[self.id] = received_script
-                        sessions_str = json.dumps(sessions)
-                        with open(MAYA_CACHE_FILE, "w") as f:
-                            f.write(sessions_str)
-                            f.close()
-                        if tmp != "" and tmp != received_script:
-                            log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
-                            self.change()
-                        else:
-                            log(Style.BRIGHT + Fore.CYAN + 'Generating program...' + Style.RESET_ALL, prefix='mayalabs')
-                        sessions[self.id] = tmp
-                    future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
-                    future_1.result()
-                    log(Style.BRIGHT + Fore.CYAN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
-                else:
-                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
+                # if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
+                #     if sessions is None:
+                #         sessions = {}
+                #         sessions[self.id] = received_script
+                #         sessions_str = json.dumps(sessions)
+                #         with open(MAYA_CACHE_FILE, "w") as f:
+                #             f.write(sessions_str)
+                #             f.close()
+                #         sessions = None
+                #         log(Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL, prefix='mayalabs')
+                #     elif self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
+                #         tmp = sessions[self.id] if self.id in sessions.keys() else ""
+                #         sessions[self.id] = received_script
+                #         sessions_str = json.dumps(sessions)
+                #         with open(MAYA_CACHE_FILE, "w") as f:
+                #             f.write(sessions_str)
+                #             f.close()
+                #         if tmp != "" and tmp != received_script:
+                #             log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
+                #             self.change()
+                #         else:
+                log(Style.BRIGHT + Fore.CYAN + 'Generating program...' + Style.RESET_ALL, prefix='mayalabs')
+                        # sessions[self.id] = tmp
+                future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
+                future_1.result()
+                log(Style.BRIGHT + Fore.CYAN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
+                # else:
+                #     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
                 result_2.result()
                 # report all tasks done
             
             # loop = asyncio.get_event_loop()
             async def async_wrapper():
-                if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
+                if update:
                     deploy_task = asyncio.create_task(SessionClient.deploy_session(self.id, self.worker.id))
                     log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'{self.worker.name}'))
                     def stop_log_task(future):
@@ -323,7 +323,7 @@ class Session():
 
                     return deploy_task.result()
                 else:
-                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping deploy' + Style.RESET_ALL, prefix='mayalabs')
+                    log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Update set to false. Skipping deploy' + Style.RESET_ALL, prefix='mayalabs')
                     return
             
             asyncio.run(async_wrapper())

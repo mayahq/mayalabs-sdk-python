@@ -11,13 +11,20 @@ import asyncio, os
 
 class Function:
     # @authenticate
-    def __init__(self, name, script = None, init = True):
+    def __init__(self, name, create=False, script=None, deploy=False):
+        """Initailize remote Maya function. A Maya function is a managed compute, storage and network
+        infrastructure on which business logic defined gets deployed and executed
+
+        Args:
+            name (str, required): unique name of the function, this should be unique for your profile.
+            create (bool, optional): A True value attempts to create function of the provided name. It raises exception if a function of same name already exists. Defaults to False.
+            script (str, optional): Step by step sequence of business logic to deploy and execute on the function. Defaults to None.
+            deploy (bool, option): A True value would require providing a script and immediately attempts deploy of the business logic. Default to False. 
+        """
         self.name : str = name
-        self.script : str = script
         self.worker : Worker = None
         self.session : Session = None
-        if init:
-            self.init()
+        self.get_or_create(name=self.name, create=create, script=script, deploy=deploy)
 
     @staticmethod
     def exists(name):
@@ -28,90 +35,94 @@ class Function:
         
         return True
 
-    @staticmethod
-    def create(name, script):
-        if os.environ.get("MAYA_ENVIRONMENT") == "development":
-            log(Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL, prefix='mayalabs')
-            try:
-                existing_worker = Worker.get_by_alias(alias=name)
-                session_id = existing_worker.session_id if existing_worker.session_id else None
-                log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
-            except Exception as err:
+
+    # @staticmethod
+    def get_or_create(self, name, create, script, deploy):
+            # log(Style.BRIGHT + Fore.YELLOW + 'DEVELOPMENT MODE' + Style.RESET_ALL, prefix='mayalabs')
+        try:
+            existing_worker = Worker.get_by_alias(alias=name)
+            session_id = existing_worker.session_id if existing_worker.session_id else None
+            log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
+        except Exception as err:
+            if create:
+                log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in production\nThe function name are unique for your profile and create=True will error out if an existing function of same name exists on your profile', prefix='[WARN]')
                 session_id = None
                 log(Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
                 existing_worker = Worker.create(name=name, alias=name)
-            try:
-                if session_id is not None:
-                    existing_session = Session.get(session_id=session_id)
-                    existing_session.script = script
-                else:
-                    existing_session = Session.new(script=script)
-            except Exception as err:
-                raise err
-            func = Function(
-                name=name,
-                script=script,
-                init=False
-            )
-            try:
-                existing_worker.attach_session(session_id=existing_session.id)
-            except Exception as err:
-                log(Fore.RED + f'Failed to attach session to worker [{existing_worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
-                raise err
-            func.worker = existing_worker
-            func.session = existing_session
-            return func
-        else:
-            func = Function(
-                name=name,
-                script=script,
-                init=False
-            )
-
-            worker = None
-            worker = Worker.create(name=name, alias=name)
-
-            session = None
-            try:
-                session = Session.new(script=script)
-                worker.attach_session(session_id=session.id)
-            except:
-                raise Exception('Failed to create a new session for the worker')
-            
-            func.worker = worker
-            func.session = session
-
-            return func
-
-    def init(self, api_key=None):
-        """
-        Initializes the function.
-        Checks if the worker exists. If not, creates a new worker.
-        Pass an api_key to override default and use a different profile.
-        """
-        if self.name is None:
-            raise Exception("No name provided in the argument `name`")
-
-        try:
-            # check if the worker exists    
-            if api_key is None:
-                self.worker = WorkerClient().get_worker_by_alias(self.name)
             else:
-                self.worker = WorkerClient().get_worker_by_alias(self.name, api_key=api_key)
-
-            if self.worker:
-                if self.worker.session_id:
-                    try:
-                        self.session = Session.get(session_id=self.worker.session_id)
-                        self.script = self.session.script
-                    except Exception as e:
-                        print("Session not found. Error:", e)
-                        raise e
+                log(Fore.RED + f'Could not find function [{name}] on your profile' + Style.RESET_ALL, prefix='mayalabs')
+                raise Exception(f'Could not find function [{name}] on your profile')
+        try:
+            if session_id is not None:
+                existing_session = Session.get(session_id=session_id)
+            else:
+                existing_session = Session.new()
+            if script is not None:
+                    existing_session.script = script
+                    if deploy:
+                        self.deploy()
         except Exception as err:
-            print("Worker not found.")
             raise err
+        try:
+            existing_worker.attach_session(session_id=existing_session.id)
+        except Exception as err:
+            log(Fore.RED + f'Failed to attach session to worker [{existing_worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
+            raise err
+        self.worker = existing_worker
+        self.session = existing_session
+        # return func
+        # else:
+        #     func = Function(
+        #         name=name,
+        #         script=script,
+        #         init=False
+        #     )
 
-    def deploy(self):
+        #     worker = None
+        #     worker = Worker.create(name=name, alias=name)
+
+        #     session = None
+        #     try:
+        #         session = Session.new(script=script)
+        #         worker.attach_session(session_id=session.id)
+        #     except:
+        #         raise Exception('Failed to create a new session for the worker')
+            
+        #     func.worker = worker
+        #     func.session = session
+
+        #     return func
+   
+    # @authenticate
+    # def init(self, api_key=None):
+    #     """
+    #     Initializes the function.
+    #     Checks if the worker exists. If not, creates a new worker.
+    #     Pass an api_key to override default and use a different profile.
+    #     """
+    #     if self.name is None:
+    #         raise Exception("No name provided in the argument `name`")
+
+    #     try:
+    #         # check if the worker exists    
+    #         if api_key is None:
+    #             raise Exception("No api_key set, get your API Key from https://app.mayalabs.io/settings/developers/")
+    #         else:
+    #             self = self.get_or_create()
+
+    #         if self.worker:
+    #             if self.worker.session_id:
+    #                 try:
+    #                     self.session = Session.get(session_id=self.worker.session_id)
+    #                     self.script = self.session.script
+    #                 except Exception as e:
+    #                     print("Session not found. Error:", e)
+    #                     raise e
+    #     except Exception as err:
+    #         print("Worker not found.")
+    #         raise err
+
+    def deploy(self, update=False):
         """
         Deploys the function serverlessly.
         Creates a new session from script and deploys session to a worker.
@@ -125,7 +136,7 @@ class Function:
         if self.worker is None:
             self.worker = Worker.new(name=self.name, alias=self.name)
 
-        self.session.deploy(worker_id=self.worker.id)
+        self.session._deploy(worker_id=self.worker.id, update=update)
 
     def call(self, payload = {}, **kwargs) -> Dict:
         """
@@ -160,7 +171,7 @@ class Function:
         """
         return self.call(payload=payload)
     
-    def clear(self):
+    def delete(self):
         """
         Deletes the function by deleteing the associated session and the worker.
         """
@@ -168,3 +179,12 @@ class Function:
             self.session.delete()
         if self.worker is not None:
             self.worker.delete()
+
+    def update(self, script=None):
+        """_summary_
+
+        Args:
+            script (str): Step by step sequence of business logic to deploy and execute on the function. Defaults to None.
+        """
+        self.session.script = script
+        self.session._deploy(worker_id=self.worker.id, update=True)
