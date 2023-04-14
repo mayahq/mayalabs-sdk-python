@@ -24,7 +24,7 @@ class Function:
         self.name : str = name
         self.worker : Worker = None
         self.session : Session = None
-        self.get_or_create(name=self.name, create=create, script=script, deploy=deploy)
+        self._get_or_create(name=self.name, create=create, script=script, deploy=deploy)
 
     @staticmethod
     def exists(name):
@@ -37,7 +37,7 @@ class Function:
 
 
     # @staticmethod
-    def get_or_create(self, name, create, script, deploy):
+    def _get_or_create(self, name, create, script, deploy):
         if create:
             log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in your production environments\nThe function name are unique within your profile and create=True may raise exception if an existing function of same name exists on your profile', prefix='[WARN]')
         try:
