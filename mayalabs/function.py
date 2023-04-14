@@ -60,7 +60,7 @@ class Function:
             if script is not None:
                     existing_session.script = script
                     if deploy:
-                        self.deploy()
+                        self.deploy(update=True)
         except Exception as err:
             raise err
         try:
