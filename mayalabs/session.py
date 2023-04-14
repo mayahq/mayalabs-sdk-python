@@ -145,13 +145,13 @@ class Session():
 
     @classmethod
     def new(cls, script=None):
-        if not isinstance(script, str):
-            error_log = [
-                "Argument must be a string.",
-                f"Received {type(script).__name__}, expected a string."]
-            raise IntegrityException(format_error_log(error_log))
+        # if not isinstance(script, str):
+        #     error_log = [
+        #         "Argument must be a string.",
+        #         f"Received {type(script).__name__}, expected a string."]
+        #     raise IntegrityException(format_error_log(error_log))
          
-        response = SessionClient.create_session(from_script=script)
+        response = SessionClient.create_session()
         session = cls()
         session.parse_obj(response['response'])
         return session
