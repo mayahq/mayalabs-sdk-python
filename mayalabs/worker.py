@@ -36,6 +36,8 @@ class Worker:
         self.session_id : str = None
         self.ws_client : WebsocketListener = None
         self.prefix_color = Fore.WHITE
+        self.lock: bool = False
+        self._reuse: bool = False
 
     def _init_from_api_response(self, response):
         self.name = response['name']
@@ -247,6 +249,8 @@ class Worker:
         worker.session_id = obj.get('sessionId', None)
         worker_ws_url = worker.url.replace('https', 'wss') + '/comms'
         worker.ws_client = WebsocketListener(url=worker_ws_url)
+        worker.lock = obj.get('lock', False)
+        worker._reuse = obj.get('reuse', False)
         return worker
     
     @classmethod
@@ -513,3 +517,22 @@ class WorkerClient:
                 return response
             else:
                 raise err
+    @staticmethod
+    @authenticate       
+    def lock_worker(worker_id, api_key=None):
+        api_base = default_api_base_url()
+        request = {
+                'url': f"{api_base}/app/v2/brains/{worker_id}",
+                'method': "put",
+                'headers': {
+                    'x-api-key': api_key,
+                },
+                'json': {
+                    "lock": True
+                }
+            }
+        try:
+            response = requests.request(**request)
+            return response
+        except Exception as e:
+            raise e
