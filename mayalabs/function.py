@@ -11,19 +11,19 @@ import asyncio, os
 
 class Function:
     # @authenticate
-    def __init__(self, name, create=True, script=None, deploy=False):
+    def __init__(self, name, script=None, deploy=False):
         """Initailize remote Maya function. A Maya function is a managed compute, storage and network
         infrastructure on which business logic defined gets deployed and executed
 
         Args:
             name (str, required): unique name of the function, this should be unique for your profile.
-            create (bool, optional): A True value attempts to create function of the provided name. It raises exception if a function of same name already exists. Defaults to True.
             script (str, optional): Step by step sequence of business logic to deploy and execute on the function. Defaults to None.
             deploy (bool, option): A True value would require providing a script and immediately attempts deploy of the business logic. Default to False. 
         """
         self.name : str = name
         self.worker : Worker = None
         self.session : Session = None
+        self.script: str = None
         self._get_or_create(name=self.name, create=create, script=script, deploy=deploy)
 
     @staticmethod
@@ -38,19 +38,14 @@ class Function:
 
     # @staticmethod
     def _get_or_create(self, name, create, script, deploy):
-        if create:
-            log(Fore.LIGHTRED_EX + f'it is not recommended to initialize Function with create=True in your production environments', prefix='[WARN]')
         try:
-            existing_worker = Worker.get_by_alias(alias=name)
+            existing_worker = Worker.create(name=name, alias=name)
             session_id = existing_worker.session_id if existing_worker.session_id else None
-            log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
-        except Exception as err:
-            if create:
-                session_id = None
-                log(Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
-                existing_worker = Worker.create(name=name, alias=name)
+            if existing_worker._reuse:
+                log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
             else:
-                log(Fore.RED + f'Could not find function [{name}] on your profile' + Style.RESET_ALL, prefix='mayalabs')
+                log(Fore.YELLOW + f'Creating new [{name}]' + Style.RESET_ALL, prefix='mayalabs')
+        except Exception as err:
                 raise Exception(f'Could not find function [{name}] on your profile')
         try:
             if session_id is not None:
@@ -70,57 +65,6 @@ class Function:
             raise err
         self.worker = existing_worker
         self.session = existing_session
-        # return func
-        # else:
-        #     func = Function(
-        #         name=name,
-        #         script=script,
-        #         init=False
-        #     )
-
-        #     worker = None
-        #     worker = Worker.create(name=name, alias=name)
-
-        #     session = None
-        #     try:
-        #         session = Session.new(script=script)
-        #         worker.attach_session(session_id=session.id)
-        #     except:
-        #         raise Exception('Failed to create a new session for the worker')
-            
-        #     func.worker = worker
-        #     func.session = session
-
-        #     return func
-   
-    # @authenticate
-    # def init(self, api_key=None):
-    #     """
-    #     Initializes the function.
-    #     Checks if the worker exists. If not, creates a new worker.
-    #     Pass an api_key to override default and use a different profile.
-    #     """
-    #     if self.name is None:
-    #         raise Exception("No name provided in the argument `name`")
-
-    #     try:
-    #         # check if the worker exists    
-    #         if api_key is None:
-    #             raise Exception("No api_key set, get your API Key from https://app.mayalabs.io/settings/developers/")
-    #         else:
-    #             self = self.get_or_create()
-
-    #         if self.worker:
-    #             if self.worker.session_id:
-    #                 try:
-    #                     self.session = Session.get(session_id=self.worker.session_id)
-    #                     self.script = self.session.script
-    #                 except Exception as e:
-    #                     print("Session not found. Error:", e)
-    #                     raise e
-    #     except Exception as err:
-    #         print("Worker not found.")
-    #         raise err
 
     def deploy(self, update=False):
         """
@@ -185,11 +129,20 @@ class Function:
             except Exception as err:
                 log(Fore.RED + f'Failed to delete function [{self.worker.alias}]' + Style.RESET_ALL, prefix='mayalabs')
 
-    def update(self, script: str):
+    def update(self, script: str, override_lock=False):
         """Updates the business logic on the function and deploys it. Such deployment is irreversible, use with caution.
         Args:
             script (str): Step by step sequence of business logic to deploy and execute on the function.
+            override_lock (bool, optional): A True value overrides lock state of function and updates it. Defaults to False.
         """
         self.session.script = script
-        self.session.change()
-        self.session._deploy(worker_id=self.worker.id, update=True)
+        if not self.worker.lock or override_lock:
+            log(Fore.LIGHTMAGENTA_EX + f'Updating a function is irreversible.' + Style.RESET_ALL, prefix='mayalabs')
+            log(Fore.LIGHTMAGENTA_EX + f'Run function.lock() to prevent updates in production.' + Style.RESET_ALL, prefix='mayalabs')
+            self.session.change()
+            self.session._deploy(worker_id=self.worker.id, update=True)
+        else:
+            if not self.worker.lock:
+                raise Exception("The function is locked for updates")
+            else:
+                raise Exception("Override function lock was set to False")
