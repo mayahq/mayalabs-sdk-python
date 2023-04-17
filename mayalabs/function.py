@@ -40,6 +40,7 @@ class Function:
     def _get_or_create(self, name, script, deploy):
         try:
             existing_worker = Worker.create(name=name, alias=name)
+            print("🚀 ~ file: function.py:43 ~ existing_worker:", existing_worker._reuse)
             session_id = existing_worker.session_id if existing_worker.session_id else None
             if existing_worker._reuse:
                 log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
