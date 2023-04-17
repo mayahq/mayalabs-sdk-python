@@ -152,8 +152,10 @@ class Function:
         lock_worker_response = WorkerClient.lock_worker(worker_id=self.worker.id)
         if lock_worker_response.status_code == 200:
             log(Fore.YELLOW + f'[{self.worker.alias}] locked from deployment' + Style.RESET_ALL, prefix='mayalabs')
+            self.worker.locked = True
             return True
         else:
+            self.worker.locked = True
             return False
         
     def unlock(self) -> bool:
@@ -161,6 +163,8 @@ class Function:
         lock_worker_response = WorkerClient.lock_worker(worker_id=self.worker.id)
         if lock_worker_response.status_code == 200:
             log(Fore.YELLOW + f'[{self.worker.alias}] unlocked for deployment' + Style.RESET_ALL, prefix='mayalabs')
+            self.worker.locked = False
             return True
         else:
+            self.worker.locked = True
             return False
