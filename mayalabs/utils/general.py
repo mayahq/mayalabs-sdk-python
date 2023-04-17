@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict
+from enum import Enum
 
 class StepContainer(BaseModel):
     """
@@ -119,3 +120,8 @@ class StepContainer(BaseModel):
         else:
             return check_child_exists(self.children, child_id)
 
+
+class Force(Enum):
+    normal = "normal"
+    redeploy = "redeploy"
+    regenerate = "regenerate"
