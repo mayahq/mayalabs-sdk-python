@@ -144,7 +144,7 @@ class Session():
         self.worker : Worker = None
         self.steps = {}
         self.stitched_flow = []
-        self.changed = False
+        self.changed = None
 
     @classmethod
     def new(cls, script=None):
