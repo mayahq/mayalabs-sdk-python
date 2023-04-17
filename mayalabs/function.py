@@ -136,13 +136,27 @@ class Function:
             override_lock (bool, optional): A True value overrides lock state of function and updates it. Defaults to False.
         """
         self.session.script = script
-        if not self.worker.lock or override_lock:
+        if not self.worker.locked or override_lock:
             log(Fore.LIGHTMAGENTA_EX + f'Updating a function is irreversible.' + Style.RESET_ALL, prefix='mayalabs')
             log(Fore.LIGHTMAGENTA_EX + f'Run function.lock() to prevent updates in production.' + Style.RESET_ALL, prefix='mayalabs')
             self.session.change()
             self.session._deploy(worker_id=self.worker.id, update=True)
         else:
-            if not self.worker.lock:
+            if not self.worker.locked:
                 raise Exception("The function is locked for updates")
             else:
                 raise Exception("Override function lock was set to False")
+            
+    def lock(self) -> bool:
+        lock_worker_response = WorkerClient.lock_worker(worker_id=self.worker.id)
+        if lock_worker_response.status_code == 200:
+            return True
+        else:
+            return False
+        
+    def unlock(self) -> bool:
+        lock_worker_response = WorkerClient.lock_worker(worker_id=self.worker.id)
+        if lock_worker_response.status_code == 200:
+            return True
+        else:
+            return False
