@@ -24,7 +24,7 @@ class Function:
         self.worker : Worker = None
         self.session : Session = None
         self.script: str = None
-        self._get_or_create(name=self.name, create=create, script=script, deploy=deploy)
+        self._get_or_create(name=self.name, script=script, deploy=deploy)
 
     @staticmethod
     def exists(name):
@@ -37,7 +37,7 @@ class Function:
 
 
     # @staticmethod
-    def _get_or_create(self, name, create, script, deploy):
+    def _get_or_create(self, name, script, deploy):
         try:
             existing_worker = Worker.create(name=name, alias=name)
             session_id = existing_worker.session_id if existing_worker.session_id else None
