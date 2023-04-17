@@ -30,32 +30,27 @@ mayalabs.api_key = "mayakey-..."
 
 script = """
 1. trigger on receive
-2. research {{topic}} on wikipedia
+2. research {{term}} on wikipedia
 3. extract 'title' and 'summary' from tabular data
 4. send response back
 """
 
-function = mayalabs.Function.create(name="Scrape1", script=script)
+function = mayalabs.Function(name="Scrape2")
+# Creating new worker...
 
-function.deploy()
-# Generating program...
+function.update(script=script)
+# Generating program graph...
 # Starting worker...
 # Installing dependencies...
 # Deployed!
 
-output = function.call({"topic": "Dr. Vikram Sarabhai"})
+output = function.call({"term": "Dr. Vikram Sarabhai"})
 print(output)
 # finds and outputs title and summary from wikipedia results
 
 ```
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
-
-To call the function with a different value, just initialize the function like this (remove the `.create`, but keep the same `name`) in the code above : 
-
-```
-function = mayalabs.Function(name="Scrape1", script=script)
-```
 
 ## Use Cases
 
@@ -84,16 +79,6 @@ And then use the generated script as function.
 
 https://user-images.githubusercontent.com/52493077/231979284-a7d1c43d-f6c6-4726-89fe-28e103cd198f.mp4
 
-## Development
-
-To test and develop natural language functions iteratively, just set environment variable `MAYA_ENVIRONMENT` to `development`.
-
-```
-os.environ["MAYA_ENVIRONMENT"] = "development"
-```
-
-This ensures our program synthesis engine only incremental generates and deploys changes you make to the script, instead of deploying from scratch.
-
 ## Requirements
 
 - Python 3.7.1+
@@ -106,7 +91,7 @@ Full list of capabilities and limits [here](https://docs.mayalabs.io/capabilitie
 
 
 ## Roadmap
-- [ ] Cleaner logs and exception handling
+- [x] Cleaner logs and exception handling
 - [ ] Dependency configuration UX improvement
 - [ ] Import skill repositories for reusing skills created by user or present in store
 - [ ] Create and call downstream auto-deployed functions

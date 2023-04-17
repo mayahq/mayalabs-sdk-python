@@ -1,5 +1,6 @@
 import os
 import requests
+from requests.exceptions import SSLError
 import asyncio
 import aiohttp
 import json
@@ -35,6 +36,8 @@ class Worker:
         self.session_id : str = None
         self.ws_client : WebsocketListener = None
         self.prefix_color = Fore.WHITE
+        self.locked: bool = False
+        self._reuse: bool = False
 
     def _init_from_api_response(self, response):
         self.name = response['name']
@@ -76,6 +79,9 @@ class Worker:
 
     def clear(self):
         pass
+
+    def get_health(self):
+        return WorkerClient.get_worker_health(worker_url=self.url)
 
     def update(self):
         if self.id is not None:
@@ -243,6 +249,8 @@ class Worker:
         worker.session_id = obj.get('sessionId', None)
         worker_ws_url = worker.url.replace('https', 'wss') + '/comms'
         worker.ws_client = WebsocketListener(url=worker_ws_url)
+        worker.locked = obj.get('locked', False)
+        worker._reuse = obj.get('reuse', False)
         return worker
     
     @classmethod
@@ -494,3 +502,57 @@ class WorkerClient:
             async with session.get(f"{worker_url}/required-fields", json=msg) as response:
                 response_json = await response.json()
                 return response_json
+
+    @staticmethod
+    def get_worker_health(worker_url):
+        # print(f"{worker_url}/health")
+        try:
+            response = requests.get(f"{worker_url}/health")
+            return response
+        except Exception as err:
+            if type(err) == SSLError:
+                response = {
+                    "status_code": 404
+                }
+                return response
+            else:
+                raise err
+    @staticmethod
+    @authenticate       
+    def lock_worker(worker_id, api_key=None):
+        api_base = default_api_base_url()
+        request = {
+                'url': f"{api_base}/app/v2/brains/{worker_id}",
+                'method': "put",
+                'headers': {
+                    'x-api-key': api_key,
+                },
+                'json': {
+                    "locked": True
+                }
+            }
+        try:
+            response = requests.request(**request)
+            return response
+        except Exception as e:
+            raise e
+        
+    @staticmethod
+    @authenticate       
+    def unlock_worker(worker_id, api_key=None):
+        api_base = default_api_base_url()
+        request = {
+                'url': f"{api_base}/app/v2/brains/{worker_id}",
+                'method': "put",
+                'headers': {
+                    'x-api-key': api_key,
+                },
+                'json': {
+                    "locked": False
+                }
+            }
+        try:
+            response = requests.request(**request)
+            return response
+        except Exception as e:
+            raise e
