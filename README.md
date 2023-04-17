@@ -30,20 +30,21 @@ mayalabs.api_key = "mayakey-..."
 
 script = """
 1. trigger on receive
-2. research {{topic}} on wikipedia
+2. research {{term}} on wikipedia
 3. extract 'title' and 'summary' from tabular data
 4. send response back
 """
 
-function = mayalabs.Function.create(name="Scrape1", script=script)
+function = mayalabs.Function(name="Scrape2")
+# Creating new worker...
 
-function.deploy()
-# Generating program...
+function.update(script=script)
+# Generating program graph...
 # Starting worker...
 # Installing dependencies...
 # Deployed!
 
-output = function.call({"topic": "Dr. Vikram Sarabhai"})
+output = function.call({"term": "Dr. Vikram Sarabhai"})
 print(output)
 # finds and outputs title and summary from wikipedia results
 
