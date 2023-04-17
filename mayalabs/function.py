@@ -40,7 +40,6 @@ class Function:
     def _get_or_create(self, name, script, deploy):
         try:
             existing_worker = Worker.create(name=name, alias=name)
-            print("🚀 ~ file: function.py:43 ~ existing_worker:", existing_worker._reuse)
             session_id = existing_worker.session_id if existing_worker.session_id else None
             if existing_worker._reuse:
                 log(Fore.YELLOW + f'Found existing [{existing_worker.alias}]. Reusing.' + Style.RESET_ALL, prefix='mayalabs')
@@ -137,27 +136,31 @@ class Function:
             override_lock (bool, optional): A True value overrides lock state of function and updates it. Defaults to False.
         """
         self.session.script = script
-        if not self.worker.locked or override_lock:
+        if override_lock:
+            self.session.change()
+            self.session._deploy(worker_id=self.worker.id, update=True)
+        elif not self.worker.locked:
             log(Fore.LIGHTMAGENTA_EX + f'Updating a function is irreversible.' + Style.RESET_ALL, prefix='mayalabs')
             log(Fore.LIGHTMAGENTA_EX + f'Run function.lock() to prevent updates in production.' + Style.RESET_ALL, prefix='mayalabs')
             self.session.change()
             self.session._deploy(worker_id=self.worker.id, update=True)
         else:
-            if not self.worker.locked:
-                raise Exception("The function is locked for updates")
-            else:
-                raise Exception("Override function lock was set to False")
+            raise Exception(f"The function [{self.name}] is locked for updates. Unlock function using function.unlock() or set override_lock to True")
             
     def lock(self) -> bool:
+        log(Fore.YELLOW + f'Locking function [{self.worker.alias}] ...' + Style.RESET_ALL, prefix='mayalabs')
         lock_worker_response = WorkerClient.lock_worker(worker_id=self.worker.id)
         if lock_worker_response.status_code == 200:
+            log(Fore.YELLOW + f'[{self.worker.alias}] locked from deployment' + Style.RESET_ALL, prefix='mayalabs')
             return True
         else:
             return False
         
     def unlock(self) -> bool:
+        log(Fore.YELLOW + f'Unlocking function [{self.worker.alias}] ...' + Style.RESET_ALL, prefix='mayalabs')
         lock_worker_response = WorkerClient.lock_worker(worker_id=self.worker.id)
         if lock_worker_response.status_code == 200:
+            log(Fore.YELLOW + f'[{self.worker.alias}] unlocked for deployment' + Style.RESET_ALL, prefix='mayalabs')
             return True
         else:
             return False
