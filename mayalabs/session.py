@@ -118,7 +118,9 @@ class SessionClient:
         }
         response = requests.request(**request)
         if response.status_code == 200:
-            return response.status_code
+            change_response = response.json()
+            change_status = change_response['response'].get('change_status', {}).get('is_changed', False)
+            return change_status
         else:
             raise HTTPError("Failed to update script")
 
@@ -142,6 +144,7 @@ class Session():
         self.worker : Worker = None
         self.steps = {}
         self.stitched_flow = []
+        self.changed = False
 
     @classmethod
     def new(cls, script=None):
@@ -238,65 +241,18 @@ class Session():
             if self.worker.status != "STARTED":
                 log("Starting worker: ", self.worker.name, prefix='mayalabs')
                 self.worker.start()
-            # log(
-            #     Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL,
-            #     prefix=self.worker.name,
-            #     prefix_color=self.worker.prefix_color
-            # )
-            
-            # sessions = {}
-            # try:
-            #     with open(MAYA_CACHE_FILE, "r") as f:
-            #         file_content = f.read()
-            #         try:
-            #             sessions = json.loads(file_content)
-            #         except Exception as err:
-            #             print(err)
-            #             sessions = None
-            #         f.close()
-            # except FileNotFoundError:
-            #     with open(MAYA_CACHE_FILE, "w+") as f:
-            #         f.write("{}")
-            #         f.seek(0)
-            #         file_content = f.read()
-            #         try:
-            #             sessions = json.loads(file_content)
-            #         except Exception as err:
-            #             print(err)
-            #             sessions = None
-            #         f.close()
-            # hash.update(self.script.encode())
-            # received_script = hash.hexdigest()
             with concurrent.futures.ThreadPoolExecutor() as exec:
                 result_2 = exec.submit(self.check_worker_start)
-                # if sessions is None or self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
-                #     if sessions is None:
-                #         sessions = {}
-                #         sessions[self.id] = received_script
-                #         sessions_str = json.dumps(sessions)
-                #         with open(MAYA_CACHE_FILE, "w") as f:
-                #             f.write(sessions_str)
-                #             f.close()
-                #         sessions = None
-                #         log(Style.BRIGHT + Fore.CYAN + 'Generating program.' + Style.RESET_ALL, prefix='mayalabs')
-                #     elif self.id not in sessions.keys() or (self.id in sessions.keys() and sessions[self.id] != received_script):
-                #         tmp = sessions[self.id] if self.id in sessions.keys() else ""
-                #         sessions[self.id] = received_script
-                #         sessions_str = json.dumps(sessions)
-                #         with open(MAYA_CACHE_FILE, "w") as f:
-                #             f.write(sessions_str)
-                #             f.close()
-                #         if tmp != "" and tmp != received_script:
-                #             log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Found script change. Regenerating program' + Style.RESET_ALL, prefix='mayalabs')
-                #             self.change()
-                #         else:
-                log(Style.BRIGHT + Fore.CYAN + 'Generating program...' + Style.RESET_ALL, prefix='mayalabs')
-                        # sessions[self.id] = tmp
-                future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
-                future_1.result()
-                log(Style.BRIGHT + Fore.CYAN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
-                # else:
-                #     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'No change detected in script. Skipping generation' + Style.RESET_ALL, prefix='mayalabs')
+                if (self.changed or self.changed is None):
+                    if self.changed:
+                        log(Style.BRIGHT + Fore.CYAN + 'Script change detected. Regenerating changes...' + Style.RESET_ALL, prefix='mayalabs')
+                    else:
+                        log(Style.BRIGHT + Fore.CYAN + 'Generating program...' + Style.RESET_ALL, prefix='mayalabs')
+                    future_1 = exec.submit(run_asyncio_coroutine, self.generate_async())
+                    future_1.result()
+                    log(Style.BRIGHT + Fore.CYAN + 'Generation successful.' + Style.RESET_ALL, prefix='mayalabs')
+                else:
+                    log(Style.BRIGHT + Fore.CYAN + 'No change in script. Skipped regeneration' + Style.RESET_ALL, prefix='mayalabs')
                 result_2.result()
                 # report all tasks done
             
@@ -369,7 +325,9 @@ class Session():
     
     def change(self):
         # Implement this method
-        SessionClient.change_session(session_id=self.id, script=self.script)
+        change_response = SessionClient.change_session(session_id=self.id, script=self.script)
+        if change_response:
+            self.changed = change_response
         return
 
     def parse_obj(self, obj):
