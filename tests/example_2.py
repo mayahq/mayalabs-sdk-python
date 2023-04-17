@@ -37,10 +37,9 @@ script = """
 4. send response back
 """
 def test_custom_function_generate():
-    os.environ['MAYA_ENVIRONMENT'] = "development"
 
-    func = mayalabs.Function.create(name='UniqueNewFunc02', script=script)
-    func.deploy()
+    func = mayalabs.Function(name='UniqueNewFunc02')
+    func.update(script=script)
     output = func.call(payload={"data": example_object})
     expected_return = ['id: 1', 'name: Alice', 'position: CEO', 'subordinates.0.id: 2', 'subordinates.0.name: Bob', 'subordinates.0.position: CTO', 'subordinates.0.subordinates.0.id: 4', 'subordinates.0.subordinates.0.name: David', 'subordinates.0.subordinates.0.position: Lead Developer', 'subordinates.1.id: 3', 'subordinates.1.name: Carol', 'subordinates.1.position: CFO']
     assert True if output == expected_return else False

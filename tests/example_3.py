@@ -15,9 +15,8 @@ script = """
 8. send response back
     """
 def test_web_scrape_type_click():
-    os.environ['MAYA_ENVIRONMENT'] = "development"
-    func = mayalabs.Function.create(name='UniqueNewFunc03', script=script)
-    func.deploy()
+    func = mayalabs.Function(name='UniqueNewFunc03')
+    func.update(script=script)
     output = fn.call(payload={
             'url': 'wss://chrome.browserless.io?token=' + os.environ.get('BROWSERLESS_TOKEN', ''),
             'query': 'lionel messi'

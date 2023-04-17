@@ -16,9 +16,8 @@ script = """
 7. respond back with {{payload}}
     """
 def test_if_condition_with_loop():
-    os.environ['MAYA_ENVIRONMENT'] = "development"
-    func = mayalabs.Function.create(name='UniqueNewFunc01', script=script)
-    func.deploy()
+    func = mayalabs.Function(name='UniqueNewFunc01')
+    func.update(script=script)
     output = func.call(payload={"trigger": "this"})
     print(output)
     assert True if output['num'] == 36 else False
