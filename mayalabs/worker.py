@@ -182,19 +182,6 @@ class Worker:
             ]
             raise APIException(format_error_log(error_log))
         
-    @authenticate
-    def test(self, module_name, api_key = None):
-        request = {
-            # 'url': f"{self.url}/nodes?module={module_name}",
-            'url': f"{self.url}/flows",
-            'method': "get",
-            'headers': {
-                'Authorization': 'Bearer ' + api_key,
-            },
-        }
-
-        response = requests.request(**request)
-        print(response.text)
 
     def call(self, msg : dict, session=None):
         if self.id is None:
@@ -459,6 +446,24 @@ class WorkerClient:
             'url': f"{api_base}/app/v2/brains/{worker_id}",
             'method': "delete",
             'json': {},
+            'headers': {
+                'x-api-key': api_key,
+            },
+        }
+
+        response = requests.request(**request)
+        return response.json
+    
+    @staticmethod
+    @authenticate
+    def reset_worker(worker_id, api_key=None):
+        api_base = default_api_base_url()
+        request = {
+            'url': f"{api_base}/app/v2/brains/resetFlows",
+            'method': "post",
+            'json': {
+                'workerId': worker_id
+            },
             'headers': {
                 'x-api-key': api_key,
             },

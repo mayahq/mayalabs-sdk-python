@@ -123,6 +123,26 @@ class Function:
         """
         return self.call(payload=payload)
     
+    def clear(self, session_only=False, worker_only=False):
+        """This method clears the current function of programs and configurations set on it.
+        Args:
+            session_only (bool, optional): A True value clears only the session information i.e. your script shall be regenerated if an update is performed subsequently. Defaults to False.
+            worker_only (bool, optional): A True value will clear the function of its deployment. i.e. a call() operation will be unresponsive without an update() operation preceding it. Defaults to False.
+
+        Raises:
+            e: JSONDecode exception if the service fails to respond successfully for cleaning either of session or worker
+        """
+        try:
+            if session_only:
+                SessionClient.reset_session(session_id=self.session.id)
+            elif worker_only:
+                WorkerClient.reset_worker(worker_id=self.worker.id)
+            else:
+                SessionClient.reset_session(session_id=self.session.id)
+                WorkerClient.reset_worker(worker_id=self.worker.id)
+        except Exception as e:
+            raise e
+    
     def delete(self):
         """
         Deletes the function by deleteing the associated session and the worker.

@@ -101,6 +101,23 @@ class SessionClient:
     
     @staticmethod
     @authenticate
+    def reset_session(session_id, api_key=None):
+        api_base = default_api_base_url()
+        request = {
+            'url': f"{api_base}/pac/v1/session/clear",
+            'method': "post",
+            'json': {
+                'session_id': session_id
+            },
+            'headers': {
+                'x-api-key': api_key,
+            }
+        }
+        response = requests.request(**request)
+        return response.json()
+    
+    @staticmethod
+    @authenticate
     def change_session(session_id, script, api_key=None):
         api_base = default_api_base_url()
         request = {
