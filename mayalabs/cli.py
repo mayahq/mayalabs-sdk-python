@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import time
 import argparse
 import getpass
@@ -198,23 +199,15 @@ def print_user_command(command):
     """
     Prints the command entered by the user in a box.
     """
-    box_height = 2
+    max_width = shutil.get_terminal_size().columns
+
+    command_lines = [command[i:i+max_width-8] for i in range(0, len(command), max_width-8)]
+
     header = ' Instruction '
     header_len = len(header)
-    box_width = len(command) + 4
-
-    # Calculate the number of blank lines above and below the command
-    remaining_height = box_height - 2
-    top_lines = remaining_height // 2
-    bottom_lines = remaining_height - top_lines
+    box_width = max(len(line) for line in command_lines) + 4
 
     print("╭" + "─" + header + "─" * (box_width - header_len - 1) + "╮")
-    for i in range(top_lines):
-        print("│  " + " " * (box_width - 4) + "  │")
-    print("│  " + command.center(box_width - 4) + "  │")
-    for i in range(bottom_lines):
-        print("│  " + " " * (box_width - 4) + "  │")
+    for line in command_lines:
+        print("│  " + line.ljust(box_width - 4) + "  │")
     print("╰" + "─" * box_width + "╯")
-
-
-
