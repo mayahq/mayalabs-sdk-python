@@ -193,7 +193,7 @@ class Session():
         if (self.worker.status and self.worker.status != 'STARTED'):
             status = Fore.RED + 'PENDING' + Style.RESET_ALL
             log(
-                "Worker status:", status,
+                Style.BRIGHT + Fore.CYAN + "Worker status:", status,
                 prefix='mayalabs',
                 prefix_color=Fore.BLACK
             )
@@ -208,7 +208,7 @@ class Session():
 
         started_status = Fore.GREEN + 'STARTED' + Style.RESET_ALL
         log(
-            'Worker status:', started_status,
+            Style.BRIGHT + Fore.CYAN + 'Worker status:', started_status,
             prefix='mayalabs',
             prefix_color=Fore.BLACK
         )
@@ -227,11 +227,11 @@ class Session():
         if worker_id is not None:
             try:
                 self.worker = Worker.get_by_id(worker_id)
-                log("Found worker: ", self.worker.name, prefix='mayalabs')
+                log(Style.BRIGHT + Fore.CYAN + "Found worker: ", self.worker.name, prefix='mayalabs')
             except:
                 raise Exception("Worker not found")
         elif self.worker is None:
-            log("No worker found, creating new worker...", prefix='mayalabs')
+            log(Style.BRIGHT + Fore.CYAN + "No worker found, creating new worker...", prefix='mayalabs')
             random_name = "SDK:" + get_random_name()
             self.worker = WorkerClient.create_worker(worker_name=random_name, alias=random_name)
         else:
@@ -239,7 +239,7 @@ class Session():
         
         if self.worker:
             if self.worker.status != "STARTED":
-                log("Starting worker: ", self.worker.name, prefix='mayalabs')
+                log(Style.BRIGHT + Fore.CYAN + "Starting worker: ", self.worker.name, prefix='mayalabs')
                 self.worker.start()
             with concurrent.futures.ThreadPoolExecutor() as exec:
                 result_2 = exec.submit(self.check_worker_start)
