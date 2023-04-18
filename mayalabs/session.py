@@ -326,10 +326,7 @@ class Session():
     def change(self):
         # Implement this method
         change_response = SessionClient.change_session(session_id=self.id, script=self.script)
-        if change_response:
-            self.changed = change_response
-        else:
-            self.changed = False
+        self.changed = change_response
         return
 
     def parse_obj(self, obj):
