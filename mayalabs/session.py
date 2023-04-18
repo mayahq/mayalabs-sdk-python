@@ -119,7 +119,7 @@ class SessionClient:
         response = requests.request(**request)
         if response.status_code == 200:
             change_response = response.json()
-            change_status = change_response['response'].get('change_status', {}).get('is_changed', False)
+            change_status = change_response.get('change_status', {}).get('is_changed', False)
             return change_status
         else:
             raise HTTPError("Failed to update script")
