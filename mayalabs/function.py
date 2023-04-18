@@ -6,6 +6,7 @@ from .utils.log import log
 from colorama import Fore, Style
 from .exceptions import IntegrityException
 from .utils.logging import format_error_log
+import concurrent.futures
 import random
 import asyncio, os
 
@@ -65,6 +66,7 @@ class Function:
             raise err
         self.worker = existing_worker
         self.session = existing_session
+        self.session.worker = self.worker
 
     def deploy(self, update=False):
         """
@@ -99,10 +101,16 @@ class Function:
             worker_health = self.worker.get_health()
             if worker_health.status_code != 200:
                 log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
-                self.worker.start(wait=True)
+                self.worker.start()
+                with concurrent.futures.ThreadPoolExecutor() as exec:
+                    worker_start_result = exec.submit(self.session.check_worker_start)
+                worker_start_result.result()
         elif self.worker.status == "STOPPED" or self.worker.status == "PENDING":
             log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
-            self.worker.start(wait=True)
+            self.worker.start()
+            with concurrent.futures.ThreadPoolExecutor() as exec:
+                worker_start_result = exec.submit(self.session.check_worker_start)
+            worker_start_result.result()
         # call worker with argument
         response = self.worker.call(msg = { **payload, **kwargs }, session=self.session)
         return response
