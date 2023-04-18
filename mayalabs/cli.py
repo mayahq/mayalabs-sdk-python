@@ -134,8 +134,8 @@ def show_post_instruct_options(recipe, session_id):
         if choice == "1":
             print(Style.BRIGHT + Fore.CYAN + 'Deploying as function...\n' + Style.RESET_ALL)
             random_name = "SDK:" + get_random_name()
-            function = Function.create(name=random_name, script=recipe)
-            function.deploy()
+            function = Function(name=random_name)
+            function.update(script=recipe)
             exit()
         elif choice == "2":
             new_command = input(Style.BRIGHT + Fore.BLUE + 'How do you want to modify this program? ' + Style.RESET_ALL)
