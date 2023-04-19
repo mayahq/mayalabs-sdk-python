@@ -306,10 +306,17 @@ class Session():
             configure_url = self.worker.configure_url_base
             if len(modules_that_need_cfgs) > 0:
                 log(
-                    Fore.YELLOW + Style.BRIGHT + f'You need to authenticate with some services for this program to work' + Style.RESET_ALL,
+                    Fore.YELLOW + Style.BRIGHT + f'The following modules need authentication:' + Style.RESET_ALL,
                     prefix = self.worker.name,
                     prefix_color = self.worker.prefix_color
                 )
+                for module in modules_that_need_cfgs:
+                    name = module['packageName']
+                    log(
+                        Fore.YELLOW + f'* {name}' + Style.RESET_ALL,
+                        prefix = self.worker.name,
+                        prefix_color= self.worker.prefix_color
+                    )
                 module_ids = ','.join([module['id'] for module in modules_that_need_cfgs])
                 configure_url += f'&modules={module_ids}'
 
