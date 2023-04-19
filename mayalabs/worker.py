@@ -254,7 +254,15 @@ class Worker:
 
         app_subdomain = 'devapp' if "dev" in parts else 'app'
         return f'https://{app_subdomain}.mayalabs.io/edit?id={self.id}'
+    
+    @property
+    def configure_url_base(self):
+        url_data = urlparse(self.url)
+        origin = url_data.netloc
+        parts = origin.split('.')
 
+        app_subdomain = 'devapp' if "dev" in parts else 'app'
+        return f'https://{app_subdomain}.mayalabs.io/configure?worker={self.id}'
 
 
 class WorkerClient:

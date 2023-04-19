@@ -299,9 +299,22 @@ class Session():
                     log(Style.BRIGHT + Fore.LIGHTYELLOW_EX + 'Update set to false. Skipping deploy' + Style.RESET_ALL, prefix='mayalabs')
                     return
             
-            asyncio.run(async_wrapper())
-
+            response = asyncio.run(async_wrapper())
             problems = self.worker.get_flow_problems()
+
+            modules_that_need_cfgs = response['data']['modulesThatNeedCfgProfiles']
+            configure_url = self.worker.configure_url_base
+            if len(modules_that_need_cfgs) > 0:
+                log(
+                    Fore.YELLOW + Style.BRIGHT + f'You need to authenticate with some services for this program to work' + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = self.worker.prefix_color
+                )
+                module_ids = ','.join([module['id'] for module in modules_that_need_cfgs])
+                configure_url += f'&modules={module_ids}'
+
+
+
             if len(problems) > 0:
                 log(
                     Fore.YELLOW + Style.BRIGHT + f'Found {len(problems)} missing requirement(s):' + Style.RESET_ALL,
@@ -318,18 +331,31 @@ class Session():
                         prefix = self.worker.name,
                         prefix_color = self.worker.prefix_color
                     )
+                configure_url += '&progIssues=1'
+
+            link = None
+            fixing_needed = False
+            if len(modules_that_need_cfgs) > 0:
+                link = configure_url
+                fixing_needed = True
+            elif len(problems) > 0:
+                link = f'{self.worker.app_url}&progIssues=1'
+                fixing_needed = True
+
+            if fixing_needed:
                 log(
-                    Fore.YELLOW + Style.BRIGHT + 'To run this function, configure these requirements at the link below' + Style.RESET_ALL,
+                    Fore.YELLOW + 'Fix the above problems by going to this link:' + Style.RESET_ALL, 
+                    "\x1B[3m" + link + Style.RESET_ALL,
                     prefix = self.worker.name,
                     prefix_color = self.worker.prefix_color
                 )
-
-            log(
-                Fore.GREEN + 'View/modify the program graph here:' + Style.RESET_ALL, 
-                "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
-                prefix = self.worker.name,
-                prefix_color = self.worker.prefix_color
-            )
+            else:
+                log(
+                    Fore.GREEN + 'View/modify the program graph here:' + Style.RESET_ALL, 
+                    "\x1B[3m" + self.worker.app_url + Style.RESET_ALL,
+                    prefix = self.worker.name,
+                    prefix_color = self.worker.prefix_color
+                )
             # asyncio.run(async_wrapper())
             
         else:
