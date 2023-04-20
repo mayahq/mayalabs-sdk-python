@@ -30,3 +30,6 @@ def default_log_level() -> str:
         return mayalabs.log_level
     else:
         return "info"
+    
+
+dashboard_nodes_list = ['dashboard-button', 'dashboard-table', 'dashboard-richtext', 'dashboard-form', 'dashboard-image', 'dashboard-template', 'dashboard-notification']
