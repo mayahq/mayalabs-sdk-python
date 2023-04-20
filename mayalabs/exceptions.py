@@ -15,3 +15,9 @@ class ExecutionException(Exception):
 
 class GenerationException(Exception):
     pass
+
+class NoDashboardException(Exception):
+    pass
+
+class WebBrowserException(Exception):
+    pass
