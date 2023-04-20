@@ -1,7 +1,16 @@
 # Maya Labs : Program machines using natural language.
 
-The Maya Labs Python SDK provides easy async access to our PAC-1 program synthesis engine, with a CLI to instruct and generate programs from instructions in natural language.
+<p align="left">
+  <a href="https://pypi.org/project/mayalabs">
+    <img src="https://img.shields.io/pypi/v/mayalabs?style=for-the-badge" />
+  </a>
+  <a href="https://mayalabs.io/docs">
+    <img src="https://img.shields.io/badge/Documentation-blue?logo=GitBook&logoColor=white&style=for-the-badge" />
+  </a>
+</p>
+<br>
 
+The Maya Labs Python SDK provides easy async access to our PAC-1 program synthesis engine, with a CLI to instruct and generate programs from instructions in natural language.
 
 ## Installation
 
@@ -51,6 +60,8 @@ print(output)
 ```
 
 PAC-1 takes in steps written in English, writes & assembles a discrete program graph, and deploys ready-to-use software on our compute infrastructure, that you can call within your code. You can set up missing dependencies / visualize the flow of logic by following the link to flow-based editor it provides after deployment.
+
+Check our [documentation]("https://mayalabs.io/docs") for more usage and tutorials.
 
 ## Use Cases
 
