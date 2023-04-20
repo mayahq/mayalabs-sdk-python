@@ -92,7 +92,7 @@ Full list of capabilities and limits [here](https://docs.mayalabs.io/capabilitie
 
 ## Roadmap
 - [x] Cleaner logs and exception handling
-- [ ] Dependency configuration UX improvement
+- [x] Dependency configuration UX improvement
 - [ ] Import skill repositories for reusing skills created by user or present in store
 - [ ] Create and call downstream auto-deployed functions
 - [ ] Allow multi-profile and team profile access
