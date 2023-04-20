@@ -19,7 +19,8 @@ pip install --upgrade mayalabs
 ```
 ## Preview
 
-https://user-images.githubusercontent.com/8736797/230947440-2403762d-a14b-4b00-8fbe-bd803ab24028.mp4
+
+https://user-images.githubusercontent.com/9352128/233431048-d847dc9a-7f6e-4bb0-a69f-a793f835e239.mp4
 
 
 ## Usage
