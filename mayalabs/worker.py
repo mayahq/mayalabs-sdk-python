@@ -157,6 +157,10 @@ class Worker:
         )
 
         return problems
+    
+    def get_flow(self):
+        flow = WorkerClient.get_worker_flows_sync(self.url)
+        return flow
         
     @authenticate
     def attach_session(self, session_id, api_key=None):
@@ -254,6 +258,16 @@ class Worker:
 
         app_subdomain = 'devapp' if "dev" in parts else 'app'
         return f'https://{app_subdomain}.mayalabs.io/edit?id={self.id}'
+    
+    @property
+    def dash_url(self):
+        url_data = urlparse(self.url)
+        origin = url_data.netloc
+        parts = origin.split('.')
+        env = parts[2]
+
+        app_subdomain = 'devapp' if "dev" in parts else 'app'
+        return f'https://{app_subdomain}.mayalabs.io/workers/ui?id={self.id}&version=2'
     
     @property
     def configure_url_base(self):
@@ -506,6 +520,12 @@ class WorkerClient:
             async with session.get(f"{worker_url}/flows", json=msg) as response:
                 response_json = await response.json()
                 return response_json
+            
+    @staticmethod
+    @authenticate
+    def get_worker_flows_sync(worker_url, api_key=None):
+        response = requests.get(f"{worker_url}/flows", headers={"Accept": "application/json", "Authorization": f"Bearer {api_key}"}, json={})
+        return response.json()
             
     @staticmethod
     @authenticate
