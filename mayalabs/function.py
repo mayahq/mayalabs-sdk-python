@@ -1,17 +1,16 @@
 from mayalabs import Session
 from mayalabs import Worker, WorkerClient, SessionClient
-from typing import Any, Dict
-from .mayalabs import authenticate
+from typing import Dict, Union
 from .utils.log import log
 from colorama import Fore, Style
-from .exceptions import IntegrityException
+from .exceptions import IntegrityException, NoDashboardException, WebBrowserException
 from .utils.logging import format_error_log
+from .utils.defaults import dashboard_nodes_list, default_log_level
+from .utils.general import Views
 import concurrent.futures
-import random
-import asyncio, os
+import webbrowser
 
 class Function:
-    # @authenticate
     def __init__(self, name, script=None, deploy=False):
         """Initailize remote Maya function. A Maya function is a managed compute, storage and network
         infrastructure on which business logic defined gets deployed and executed
@@ -196,3 +195,107 @@ class Function:
         else:
             self.worker.locked = True
             return False
+        
+
+    def show(self, view:Union[Views, str] = Views.dashboard, open_browser=True) -> str:
+        """attempts to open the view of function program graph editor or dashboard in default web browser
+
+        Args:
+            view (Views, optional): Takes a string value from 'editor' or 'dashboard'. Attempts to open program graph or dashboard generated from the program in default web browser. Defaults to Views.dashboard. Raises exception if browser can't be found.
+            open_browser (bool, optional): A true value attempts opening the 'editor' or 'dashboard' in the default web browser. Defaults to True.
+
+        Raises:
+            NoDashboardException: if no dashboard is present on the function this error is raised
+            WebBrowserException: if there is error opening the default web browser
+
+        Returns:
+            str: Web URL to view program graph if view set to 'editor' and URl to view dashboard if view is set to 'dashboard'.
+        """
+        if isinstance(view, str):
+            if view not in [e.value for e in Views]:
+                raise ValueError(f"Invalid value for view. Allowed values: {[e.value for e in Views]}")
+            view = Views(view)
+            # print(Views.dashboard)
+            # if view == Views.dashboard:
+            #     view = Views.dashboard
+            # elif view == Views.editor:
+            #     view = Views.editor
+            # else:
+            #     raise ValueError(f"Invalid value for view. Allowed values: {[e.value for e in Views]}")
+        if not isinstance(view, Views):
+            raise ValueError(f"Invalid value for view. Allowed values: {[e.value for e in Views]}")
+
+        if self.worker.status == "STARTED":
+            worker_health = self.worker.get_health()
+            if worker_health.status_code != 200:
+                log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
+                self.worker.start()
+                with concurrent.futures.ThreadPoolExecutor() as exec:
+                    worker_start_result = exec.submit(self.session.check_worker_start)
+                worker_start_result.result()
+        elif self.worker.status == "STOPPED" or self.worker.status == "PENDING":
+            log(Fore.CYAN + 'Making sure the worker is online...' + Style.RESET_ALL, prefix='mayalabs')
+            self.worker.start()
+            with concurrent.futures.ThreadPoolExecutor() as exec:
+                worker_start_result = exec.submit(self.session.check_worker_start)
+            worker_start_result.result()
+        
+        flow = self.worker.get_flow()
+        flow_problems = self.worker.get_flow_problems()
+        has_dashboard = False
+        if view == Views.dashboard:
+            for flow_node in flow:
+                if flow_node['type'] in dashboard_nodes_list:
+                    has_dashboard = True
+                    break
+            if has_dashboard:
+                if len(flow_problems) > 0:
+                    dash_error_count = 0
+                    for node in flow_problems:
+                        if node['node_type'] in dashboard_nodes_list:
+                            dash_error_count+=1
+                            field_name, node_id, node_type = node['field_name'], node['node_id'], node['node_type']
+                            # message = f'* Missing field {field_name} on node {node_id} (type: {node_type})'
+                            message = f'* [{node_id}] Missing field {field_name} on node with type: {node_type}' if default_log_level()=="debug" else f'* Missing field {field_name} on node with type: {node_type}'
+                            log(
+                                Fore.YELLOW + message + Style.RESET_ALL,
+                                prefix = self.worker.name,
+                                prefix_color = self.worker.prefix_color
+                            )
+                    if dash_error_count < 1:
+                        log(
+                            Fore.GREEN + 'View the program dashboard here: ' + Style.RESET_ALL, 
+                            "\x1B[3m" + self.worker.dash_url + Style.RESET_ALL,
+                            prefix = self.worker.name,
+                            prefix_color = self.worker.prefix_color
+                        )
+
+                        if open_browser:
+                            try:
+                                webbrowser.open(self.worker.dash_url, new=0, autoraise=True)
+                            except Exception as e:
+                                raise WebBrowserException(e)
+                        return self.worker.dash_url
+                else:
+                    log(
+                        Fore.GREEN + 'View the program dashboard here: ' + Style.RESET_ALL, 
+                        "\x1B[3m" + self.worker.dash_url + Style.RESET_ALL,
+                        prefix = self.worker.name,
+                        prefix_color = self.worker.prefix_color
+                    )
+                    if open_browser:
+                        try:
+                            webbrowser.open(self.worker.dash_url, new=0, autoraise=True)
+                        except Exception as e:
+                            raise WebBrowserException(e)
+                    return self.worker.dash_url
+            else:
+                raise NoDashboardException(Exception(f"function [{self.name}] does not have a dashboard output to show"))
+        
+        elif view == Views.editor:
+            if open_browser:
+                try:
+                    webbrowser.open(self.worker.app_url, new=0, autoraise=True)
+                except Exception as e:
+                    raise WebBrowserException(e)
+            return self.worker.app_url
