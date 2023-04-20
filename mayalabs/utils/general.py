@@ -125,3 +125,8 @@ class Force(Enum):
     normal = "normal"
     redeploy = "redeploy"
     regenerate = "regenerate"
+
+
+class Views(Enum):
+    dashboard="dashboard"
+    editor="editor"
