@@ -95,8 +95,6 @@ https://user-images.githubusercontent.com/52493077/231979284-a7d1c43d-f6c6-4726-
 
 All feedback and bug reports welcome! Report in the [issues section](https://github.com/mayahq/mayalabs-sdk-python/issues), or mail us at humans@mayalabs.io.
 
-Full list of capabilities and limits [here](https://docs.mayalabs.io/capabilities-and-limits).
-
 
 ## Roadmap
 - [x] Cleaner logs and exception handling
