@@ -74,9 +74,6 @@ Check our [documentation]("https://mayalabs.io/docs") for more usage and tutoria
 - [Platform Bots](/EXAMPLES.md#platform-bots)
 - [Business Processes](/EXAMPLES.md#business-processes)
 - [Long-term memory](/EXAMPLES.md#long-term-memory)
-- [Division of labour](/EXAMPLES.md#division-of-labour)
-  - [Parallelization](/EXAMPLES.md#parallelization)
-  - [Concurrency](/EXAMPLES.md#concurrency)
 
 ## Command Line Usage
 
