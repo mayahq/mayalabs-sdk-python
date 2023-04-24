@@ -19,7 +19,7 @@ pip install --upgrade mayalabs
 ```
 ## Preview
 
-[demo.webm](https://user-images.githubusercontent.com/52493077/233965080-856dcad6-12ab-4412-8fae-2a4e98ec51e3.webm)
+https://user-images.githubusercontent.com/52493077/233965080-856dcad6-12ab-4412-8fae-2a4e98ec51e3.webm
 
 
 ## Usage
