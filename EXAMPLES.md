@@ -116,7 +116,7 @@ Which can be changed into an interactive dashboard by adding three lines in betw
 1. from SQL fetch 'all users who live in Bangalore'
 2. show in a table with button labelled Modify
    - 2.1. edit in a form with fields User, Name, Email
-     2.1. go to step 3
+   2.1. go to step 3
 3. put all data into gsheet
 ```
 
