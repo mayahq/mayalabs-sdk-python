@@ -1,4 +1,4 @@
-import os
+import os, platform
 import requests
 from requests.exceptions import SSLError
 import asyncio
@@ -152,6 +152,8 @@ class Worker:
         return problems
 
     def get_flow_problems(self):
+        if platform.system()=='Windows':
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         problems = asyncio.run(
             self._async_get_flow_problems()
         )
@@ -225,7 +227,8 @@ class Worker:
             await asyncio.gather(call_task, log_task)
 
             return call_task, log_task
-
+        if platform.system()=='Windows':
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         call_task, _ = asyncio.run(async_wrapper())
         return call_task.result()
 
@@ -425,7 +428,8 @@ class WorkerClient:
                     return health_state_response.status_code == 200
                 except requests.RequestException:
                     return False
-
+            if platform.system()=='Windows':
+                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
             asyncio.run(poll(start_confirmation_function, 1000, 120000))
         return start_response.json()
     
