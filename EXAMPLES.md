@@ -80,7 +80,7 @@ Modelling interactive UI components like tables, rich-text, forms, buttons, temp
 // create a form to put data into spreadsheet
 
 1. create a form with fields {{Name}}, {{Age}}, {{Occupation}}
-2. put Name, Age, Occupation into gsheet
+2. write {{Name}}, {{Age}}, {{Occupation}} into google sheet
 ```
 
 Or interspersed in between steps.
@@ -90,8 +90,8 @@ Or interspersed in between steps.
 // and
 
 1. add a button with label 'fetch schema'
-   - 1.1. connect to a MySQL Database and store it's create schema in {{schema}}
-     1.2. store {{schema}} in flow.{{context}}
+    - 1.1. connect to a MySQL Database and store it's create schema in {{schema}}
+    1.2. store {{schema}} in flow.{{context}}
 2. show a text editor to take input {{input}}
 3. create sql query to get {{input}} using {{schema}}
 4. show a text editor to show {{query}}
@@ -107,7 +107,7 @@ For instance, here's a natural language script to move some columns from SQL to 
 
 ```
 1. from SQL fetch 'all users who live in Bangalore'
-2. put all data into gsheet
+2. write all data into google sheet
 ```
 
 Which can be changed into an interactive dashboard by adding three lines in between, for showing the data in a table and modifying it item-wise in a form.
@@ -115,9 +115,9 @@ Which can be changed into an interactive dashboard by adding three lines in betw
 ```
 1. from SQL fetch 'all users who live in Bangalore'
 2. show in a table with button labelled Modify
-   - 2.1. edit in a form with fields User, Name, Email
-     2.1. go to step 3
-3. put all data into gsheet
+    - 2.1. edit in a form with fields User, Name, Email
+    2.1. go to step 3
+3. write all data into google sheet
 ```
 
 ### Platform Bots
@@ -139,12 +139,12 @@ For instance, the script below automates a sales process of fetching leads from 
 1. from gsheet get {{Name}}, {{Website}}, {{Company}}, {{Email}}, {{Linkedin}}
 2. split data into batches and send at intervals of 2 seconds
     - 2.1. scrape and extract title, description and text from {{Website}}
-        2.1.1. go to step 3
+    2.1.1. go to step 3
     - 2.2. scrape and extract text from {{Linkedin}}
-        2.2.1. go to step 3
+    2.2.1. go to step 3
     - 2.3. store {{Company}} in {{company}}
-        2.3.1. go to step 3
-3. show in a table with button Research
+    2.3.1. go to step 3
+3. show response in table with button 'Research'
 4. create a research prompt with instructions "Write a 100 word blurb on {{company}}"
     - 4.1. show in text editor
     4.2. go to step 5
@@ -206,10 +206,13 @@ For instance, take this simple task that fetches certain data from SQL every day
 ```
 // every day at 5pm, fetch all users who signed up today and send to channel #insights on slack
 1. repeat every day at 5pm
-2. connect to a MySQL Database and store it's create schema in {{schema}}
-3. store {{schema}} in flow.{{context}}
-4. create sql query to run 'fetch all users who signed up today' using {{schema}}
-5. send to slack channel #insights
+2. connect to a MySQL Database and get stored schema
+3. save schema in flow.{{context}}
+4. create SQL query prompt using schema {{schema}} to run 'fetch all users who signed up today'
+5. generate using large language model
+6. convert {{payload}} to SQL compatible format
+7. execute query in MySQL
+8. send to slack channel #insights
 ```
 
 #### Parallelization
