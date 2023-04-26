@@ -14,7 +14,7 @@ def authenticate(func):
     def wrapped_function(*args, **kwargs):
         api_key = default_api_key()
         if not api_key:
-            error_log = ["No API key provided.", "You can set your API key in code using 'mayalabs.api_key = <API-KEY>', or you can set the environment variable MAYA_API_KEY=<API-KEY>).", "You can generate API keys in the Maya web interface.", "See https://docs.mayalabs.io for details, or email humans@mayalabs.io if you have any questions."]
+            error_log = ["No API key provided.", "You can set your API key in code using 'mayalabs.api_key = <API-KEY>', or you can set the environment variable MAYA_API_KEY=<API-KEY>).", "You can generate API keys in the Maya web interface.", "See https://mayalabs.io/docs for details, or email humans@mayalabs.io if you have any questions."]
             sys.exit(format_error_log(error_log))
             # raise AuthException(format_error_log(error_log))
         
