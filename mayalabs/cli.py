@@ -36,6 +36,8 @@ def cli():
         command = arguments[0]
         option = arguments[1]
         print(f"execute '{option}' for {command}")
+        if command == 'instruct':
+            instruct(command=option, from_scratch=True, session_id=None)
 
 
     # command = args.command
