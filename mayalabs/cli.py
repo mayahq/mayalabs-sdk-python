@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 import shutil
 import time
 import argparse
@@ -18,26 +19,38 @@ MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
 def cli():
     """
-    Main function for the mayalabs CLI.
+    Use Maya from the command line.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("function_name", help="The function to execute")
-    parser.add_argument("-c", "--command", help="The command to pass to function")
-    parser.add_argument("-k", "--key", help="The API Key to use")
-    args = parser.parse_args()
-    command = args.command
-    key = args.key
-    function_name = args.function_name
-    if function_name == "instruct" and not command:
-        print("Please provide a command with the -c flag")
-    elif function_name == "instruct" and command:
-        instruct(command=command, from_scratch=True, session_id=None)
-    elif function_name == "set" and not key:
-        print("Please provide the API key with the -k flag")
-    elif function_name == "set" and key:
-        set_key(api_key=key)
-    elif function_name == "whoami":
-        whoami()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("command", help="The command to execute", required=False)
+    # parser.add_argument("-c", "--command", help="The command to pass to function")
+    # parser.add_argument("-k", "--key", help="The API Key to use")
+    # args = parser.parse_args()
+    arguments = sys.argv[1:]
+    if len(arguments) == 0:
+        print('print usage instructions for mayalabs')
+    elif len(arguments) == 1:
+        command = arguments[0]
+        print(f"print usage instructions for {command}")
+    elif len(arguments) == 2:
+        command = arguments[0]
+        option = arguments[1]
+        print(f"execute '{option}' for {command}")
+
+
+    # command = args.command
+    # key = args.key
+    # function_name = args.function_name
+    # if function_name == "instruct" and not command:
+    #     print("Please provide a command with the -c flag")
+    # elif function_name == "instruct" and command:
+    #     instruct(command=command, from_scratch=True, session_id=None)
+    # elif function_name == "set" and not key:
+    #     print("Please provide the API key with the -k flag")
+    # elif function_name == "set" and key:
+    #     set_key(api_key=key)
+    # elif function_name == "whoami":
+        # whoami()
 
 def get_api_key(prompt_if_missing):
     """
