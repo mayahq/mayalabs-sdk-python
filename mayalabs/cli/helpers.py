@@ -12,6 +12,24 @@ guide = {
         'usage': 'mayalabs <command> <subcommand>', 
         'commands_table': [['auth:', 'Authenticate mayalabs'], ['instruct:', 'Instruct Maya'], ['search:', 'Search Maya']],
         'examples': ["$ mayalabs search 'comic book'", "$ mayalabs instruct 'get data from gsheet'"]
+    },
+    'auth': {
+        'description': 'Authenticate Maya.',
+        'usage': 'mayalabs auth <subcommand>', 
+        'commands_table': [['login:', 'Login to Maya'], ['status:', 'Check authorization status'], ['logout:', 'Logout of Maya']],
+        'examples': ["$ mayalabs auth login", "$ mayalabs auth status"]
+    },
+    'search': {
+        'description': 'Search Maya.',
+        'usage': 'mayalabs search <query>', 
+        'commands_table': [],
+        'examples': ["$ mayalabs search 'comic book'", "$ mayalabs search 'postgresql'"]
+    },
+    'instruct': {
+        'description': 'Instruct Maya.',
+        'usage': 'mayalabs instruct <instruction>', 
+        'commands_table': [],
+        'examples': ["$ mayalabs instruct 'send emails from gsheet'", "$ mayalabs instruct 'scrape wikipedia for Alan Turing'"]
     }
 }
 
@@ -20,9 +38,10 @@ def print_usage_guide(command):
     print(Style.BRIGHT + '\nUSAGE' + Style.RESET_ALL)
     print(guide[command]['usage'])
 
-    print(Style.BRIGHT + '\nCOMMANDS' + Style.RESET_ALL)
     table = guide[command]['commands_table']
-    print(tabulate(table, tablefmt='plain'))
+    if len(table) >= 1:
+        print(Style.BRIGHT + '\nCOMMANDS' + Style.RESET_ALL)
+        print(tabulate(table, tablefmt='plain'))
 
     print(Style.BRIGHT + '\nEXAMPLES' + Style.RESET_ALL)
     for i in range(len(guide[command]['examples'])):
