@@ -14,6 +14,7 @@ from .utils.name_gen import get_random_name
 from .utils.defaults import default_api_base_url
 from halo import Halo
 from simple_term_menu import TerminalMenu
+import requests
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -35,10 +36,10 @@ def cli():
     elif len(arguments) == 2:
         command = arguments[0]
         option = arguments[1]
-        print(f"execute '{option}' for {command}")
         if command == 'instruct':
             instruct(command=option, from_scratch=True, session_id=None)
-
+        if command == 'search':
+            search(query=option)
 
     # command = args.command
     # key = args.key
@@ -226,3 +227,8 @@ def print_user_command(command):
     for line in command_lines:
         print("│  " + line.ljust(box_width - 4) + "  │")
     print("╰" + "─" * box_width + "╯")
+
+def search(query):
+    api_key = get_api_key(prompt_if_missing=True)
+    response = requests.request('GET', url=f'https://api.dev.mayalabs.io/pac/v1/session/suggest?q={query}&display_length=20&limit=20', headers={'X-API-KEY': api_key}, timeout=30)
+    print(response.text)
