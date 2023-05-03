@@ -25,14 +25,14 @@ A simple if...then else switch, with a loop written in English.
 
 ```
 1. trigger on receive message
-2. set {{payload}} to '{"num": 29}'
-3. add 1 to {{payload.num}}
-4. print {{payload.num}}
-5. if {{payload.num}} is less than 36
+2. set {{msg.payload}} to '{"num": 29}'
+3. add 1 to {{msg.payload.num}}
+4. print {{msg.payload.num}}
+5. if {{msg.payload.num}} is less than 36
     - 5.1. go to step 3
 6. else if {{payload.num}} is more than 36
-    - 6.1. print {{payload.num}}
-7. respond back with {{payload}}
+    - 6.1. print {{msg.payload.num}}
+7. respond back with {{msg.payload}}
 ```
 
 ### Custom Functions
@@ -42,7 +42,7 @@ PAC-1 uses code generation models for synthesising Javascript and Python functio
 ```
 1. trigger on recieve
 2. make a GET request to '<apilink>'
-3. run a custom function to 'add 5 to every element of {{payload}}'
+3. run a custom function to 'add 5 to every element of {{msg.payload}}'
 4. send response back
 ```
 
@@ -51,13 +51,13 @@ PAC-1 uses code generation models for synthesising Javascript and Python functio
 Fetching data from a source, and splitting it into three branches that go scrape the web, and display results in a table.
 
 ```
-1. from gsheet get {{Name}}, {{Website}}, {{Company}}, {{Email}}, {{Linkedin}}
+1. from gsheet get 'Name, Website, Company, Email, Linkedin'
 2. split data into batches and send at intervals of 2 seconds
-    - 2.1. scrape and extract title, description and text from {{Website}}
+    - 2.1. scrape and extract title, description and text from 'Website'
         2.1.1. go to step 3
-    - 2.2. scrape and extract text from {{Linkedin}}
+    - 2.2. scrape and extract text from 'Linkedin'
         2.2.1. go to step 3
-    - 2.3. store {{Company}} in {{company}}
+    - 2.3. store 'Company' in {{msg.payload.company}}
         2.3.1. go to step 3
 3. show in a table with button Research
 ```
@@ -79,8 +79,8 @@ Modelling interactive UI components like tables, rich-text, forms, buttons, temp
 ```
 // create a form to put data into spreadsheet
 
-1. create a form with fields {{Name}}, {{Age}}, {{Occupation}}
-2. write {{Name}}, {{Age}}, {{Occupation}} into google sheet
+1. create a form with fields 'Name, Age, Occupation'
+2. write 'Name, Age, Occupation' from {{msg.payload}} into google sheet
 ```
 
 Or interspersed in between steps.
@@ -90,12 +90,12 @@ Or interspersed in between steps.
 // and
 
 1. add a button with label 'fetch schema'
-    - 1.1. connect to a MySQL Database and store it's create schema in {{schema}}
-    1.2. store {{schema}} in flow.{{context}}
-2. show a text editor to take input {{input}}
-3. create sql query to get {{input}} using {{schema}}
-4. show a text editor to show {{query}}
-5. run sql query {{query}} on MySQL
+    - 1.1. connect to a MySQL Database and store it's create schema in {{msg.payload.schema}}
+    1.2. set {{msg.payload.schema}} in {{global.schema}}
+2. show a text editor to take input {{msg.payload.input}}
+3. create sql query to get {{msg.payload.input}} using {{global.schema}}
+4. show a text editor to show {{msg.payload.query}}
+5. run sql query {{msg.payload.query}} on MySQL
 6. show results in table with button 'Submit'
 ```
 
@@ -114,8 +114,8 @@ Which can be changed into an interactive dashboard by adding three lines in betw
 
 ```
 1. from SQL fetch 'all users who live in Bangalore'
-2. show in a table with button labelled Modify
-    - 2.1. edit in a form with fields User, Name, Email
+2. show in a table with button labelled 'Modify'
+    - 2.1. edit in a form with fields 'User, Name, Email'
     2.1. go to step 3
 3. write all data into google sheet
 ```
@@ -136,16 +136,16 @@ PAC-1 can be taught and interpret to scripts of arbitrary complexity and length,
 For instance, the script below automates a sales process of fetching leads from a google sheet, researching them on the web, composing blurbs to place in the mails based on some email templates it's been shown before.
 
 ```
-1. from gsheet get {{Name}}, {{Website}}, {{Company}}, {{Email}}, {{Linkedin}}
+1. from gsheet get 'Name, Website, Company, Email, Linkedin'
 2. split data into batches and send at intervals of 2 seconds
-    - 2.1. scrape and extract title, description and text from {{Website}}
+    - 2.1. extract 'title, description and text' from 'Website'
     2.1.1. go to step 3
-    - 2.2. scrape and extract text from {{Linkedin}}
+    - 2.2. extract 'text' from 'Linkedin'
     2.2.1. go to step 3
-    - 2.3. store {{Company}} in {{company}}
+    - 2.3. store 'Company' in {{msg.payload.company}}
     2.3.1. go to step 3
 3. show response in table with button 'Research'
-4. create a research prompt with instructions "Write a 100 word blurb on {{company}}"
+4. create a research prompt with instructions "Write a 100 word blurb on {{msg.payload.company}}"
     - 4.1. show in text editor
     4.2. go to step 5
 5. generate using large model
@@ -157,14 +157,14 @@ For instance, the script below automates a sales process of fetching leads from 
             - 5.2.3.1. go to step 6
         - 5.2.4. Search company info in doc library
             5.2.4.1 check search query results
-            5.2.4.2. if {{condition}} is Bad
+            5.2.4.2. if {{msg.payload.condition}} is Bad
                 - 5.2.4.2.1. rephrase search query
                 5.2.4.2.2. Loop thrice before breaking
                 5.2.4.2.3 go to step 5.2.
-            5.2.4.3. else if {{condition}} is Good
+            5.2.4.3. else if {{msg.payload.condition}} is Good
                 - 5.2.4.3.1. go to step 6
 6. combine messages
-7. create an email prompt with blurb from {{CompanyBlurb}} and description from {{CompanyInfo}} to "Write an email for {{Company}} in {{FromCompany}}'s perspective"
+7. create an email prompt with blurb from {{global.CompanyBlurb}} and description from {{global.CompanyInfo}} to "Write an email for {{msg.payload.company}} in {{msg.payload.fromCompany}}'s perspective"
     - 7.1. show in text editor
     7.2. generate using large model
     7.3 go to step 8
@@ -177,7 +177,7 @@ PAC-1 can generating programs to selectively call its own API - in this case it'
 
 ```
 // A command to store any document in a persistent database for later recall.
-1. store {{info}} in native memory
+1. store {{msg.payload.info}} in native memory
 
 // Commands to search and ask questions from the stored documents, like this:
 1. search native memory for 'emailing templates'
@@ -189,7 +189,7 @@ Persisting information and use it later across Workers and programs, like this :
 ```
 // Worker 1
 1. research 'Nelson Mandela' on wikipedia
-2. store {{payload}} to native memory
+2. store {{msg.payload.payload}} to native memory
 
 // Worker 2
 1. search native memory for 'Nelson Mandela monuments'
@@ -207,10 +207,10 @@ For instance, take this simple task that fetches certain data from SQL every day
 // every day at 5pm, fetch all users who signed up today and send to channel #insights on slack
 1. repeat every day at 5pm
 2. connect to a MySQL Database and get stored schema
-3. save schema in flow.{{context}}
-4. create SQL query prompt using schema {{schema}} to run 'fetch all users who signed up today'
+3. set {{msg.schema}} to {{global.schema}}
+4. create SQL query prompt using schema {{global.schema}} to run 'fetch all users who signed up today'
 5. generate using large language model
-6. convert {{payload}} to SQL compatible format
+6. convert {{msg.payload}} to SQL compatible format
 7. execute query in MySQL
 8. send to slack channel #insights
 ```
@@ -238,9 +238,9 @@ Tasks can also be broken down and distributed concurrently amongst workers, so t
     - 1.2. create worker 'DEF' to run 'create a PDF report based on the tabular data in {{rowData}}'
         1.2.2. go to step 2
 2. call worker 'ABC'
-3. set {{rowData}} to {{payload}}
+3. set {{msg.rowData}} to {{msg.payload}}
 4. call worker 'DEF' with {{rowData}}
-5. print {{payload}}
+5. print {{msg.payload}}
 6. repeat every month, second Saturday
 	- 5.1. send instruction 'add 1000 to units value to be checked'
          5.2. go to step 2
