@@ -11,7 +11,7 @@ The SDK Interactions prescribe using `call(..)` method to interact with the Maya
 
 these nodes are seen on the IDE and SDK script as follows:
 
-![IDE_Editor_1.png](https://dotmaya.notion.site/image/https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4e356eb5-bce5-4db5-8e6b-e6e8d5a3f498/Screenshot_2023-04-27_at_12.03.54_AM.png)
+![1](https://user-images.githubusercontent.com/9352128/235934082-45867273-47e9-49ba-b093-d86c6f51b882.png)
 ```python
 1. trigger on receive
 ...
@@ -31,7 +31,8 @@ More about the Maya SDK can be learned in the section for Maya SDK.
 
 Maya comes with a fully featured web IDE and editor to write scripts or modify the program graph deployed on the compute. If you physically want to view and interact with the program you’d be doing it here. But interacting in the sense of executing the program for it to do some action from the editor would require you to use a special node called **inject** node. The inject node comes with a button on the left of it pressing which ‘inject’ a dummy message to the successive connected node. As shown in example image below a dummy message would be passed to connected ********debug******** node.
 
-![Screenshot 2023-04-27 at 12.26.56 AM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/44cef05a-9941-4ed0-afc7-569a0f9ec003/Screenshot_2023-04-27_at_12.26.56_AM.png)
+![2](https://user-images.githubusercontent.com/9352128/235934541-a69edd62-07c4-44c0-a08c-b06471a89633.png)
+
 
 `inject` node can be used to emit more than just a dummy message forward. More on `inject` node can be learned on in section for `inject` node.
 
@@ -54,7 +55,7 @@ Depending on the method you choose to interact with your `Hello, World!` program
 
 Using IDE’s debug console to run your Hello, World! program goes like this:
 
-![Screenshot 2023-04-27 at 3.18.53 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1d8977c7-ee11-47aa-a8fb-a53f8e7eaebe/Screenshot_2023-04-27_at_3.18.53_PM.png)
+![3](https://user-images.githubusercontent.com/9352128/235934726-aaece6a2-72e0-4190-8a71-b02f50af5ea9.png)
 
 And if you probe into the inject node you see a `string` value `Hello, World!` set on to `msg.payload` and looking into the configuration of debug node you see output set to `msg.payload` which is shows the msg emitted from the inject node and received by debug node in the debug panel on the right of the screen.
 
@@ -80,7 +81,7 @@ output = function.call(payload={})
 
 This above script renders a Maya program in the cloud worker that responds in the same debug console as before:
 
-![Screenshot 2023-04-27 at 5.38.34 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/82c0e495-c6d9-4117-bbbd-5eba5cf885e1/Screenshot_2023-04-27_at_5.38.34_PM.png)
+4![4](https://user-images.githubusercontent.com/9352128/235934940-e7475324-2a79-4164-8154-4a19db9e748e.png
 
 The reason why this Hello, World program looks more complicated than the previous one is because we chose to display the `Hello, World!` message on the IDE while triggering the program execution from SDK’s `call()` method. 
 
@@ -106,5 +107,4 @@ Hello, World!
 ```
 
 and the program graph which enables the Hello, World program above is deployed as shown in image here:
-
-![Screenshot 2023-04-27 at 6.14.34 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/142786fe-133a-4efb-be87-fe9eb095353b/Screenshot_2023-04-27_at_6.14.34_PM.png)
+![5](https://user-images.githubusercontent.com/9352128/235935058-0882e458-6b47-49fb-8cac-28ce61bf768c.png)
