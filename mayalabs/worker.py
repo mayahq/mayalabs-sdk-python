@@ -277,6 +277,28 @@ class Worker:
 
         app_subdomain = 'devapp' if "dev" in parts else 'app'
         return f'https://{app_subdomain}.mayalabs.io/configure?worker={self.id}'
+    
+    @authenticate
+    def set_config(self, type, data, api_key=None):
+        if data is None:
+            raise ValueError('The `data` argument cannot be none')
+        
+        api_base = default_api_base_url()
+        request = {
+            "url": f"{api_base}/app/v2/configNodeAlias",
+            "method": "post",
+            "headers": {
+                'x-api-key': api_key
+            },
+            "json": {
+                'workerId': self.id,
+                'nodeType': type,
+                'data': data
+            }
+        }
+
+        response = requests.request(**request)
+        return response.json()
 
 
 class WorkerClient:

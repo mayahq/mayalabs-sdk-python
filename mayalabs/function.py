@@ -299,3 +299,7 @@ class Function:
                 except Exception as e:
                     raise WebBrowserException(e)
             return self.worker.app_url
+
+     
+    def set_config(self, type, data = {}):
+        return self.worker.set_config(type, data)
