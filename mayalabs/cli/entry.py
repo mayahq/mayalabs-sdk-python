@@ -28,12 +28,9 @@ def cli():
 
         print(Style.BRIGHT + '\nLEARN MORE' + Style.RESET_ALL)
         print('Read the manual at https://mayalabs.io/docs/cli\n')
-    elif len(arguments) == 1:
+    elif len(arguments) >= 1:
         first_arg = arguments[0]
-        print(f"print usage instructions for {first_arg}")
-    elif len(arguments) == 2:
-        first_arg = arguments[0]
-        second_arg = arguments[1]
+        second_arg = arguments[1] if len(arguments) > 1 else None
         if first_arg == 'instruct':
             instruct(command=second_arg, from_scratch=True, session_id=None)
         elif first_arg == 'search':

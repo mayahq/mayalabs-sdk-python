@@ -20,7 +20,11 @@ def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
-    mayalabs.api_key = get_api_key(prompt_if_missing=True)
+    api_key = get_api_key(show_instructions=True)
+    if api_key:
+        mayalabs.api_key = api_key
+    else:
+        return
     # to be used if testing using devapp
     # mayalabs.api_base = "https://api.dev.mayalabs.io"
     recipe = ""

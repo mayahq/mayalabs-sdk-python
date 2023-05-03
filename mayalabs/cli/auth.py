@@ -4,6 +4,7 @@ import json
 import getpass
 from colorama import Fore, Style
 from .helpers import get_api_key
+from .helpers import print_usage_guide
 from ..utils.defaults import default_api_base_url
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
@@ -20,7 +21,7 @@ def auth(subcommand):
         else:
             print('Not logged in')
     else:
-        show_usage_guide()
+        print_usage_guide('auth')
 
 def login():
     api_key = getpass.getpass(prompt='Please enter your API key: ')
@@ -62,7 +63,7 @@ def logout():
 
 def status():
     url = f"{default_api_base_url()}/app/v2/profiles/whoami"
-    api_key = get_api_key(prompt_if_missing=False)
+    api_key = get_api_key(show_instructions=False)
     if api_key:
         headers = { 'X-API-KEY': api_key }
         response = requests.request("GET", url, headers=headers, timeout=30)
@@ -71,6 +72,3 @@ def status():
         return name_value
     else:
         return None
-
-def show_usage_guide():
-    print('USAGE')
