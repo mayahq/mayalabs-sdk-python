@@ -20,7 +20,7 @@ def get_api_key(prompt_if_missing):
                 need_api_key = False
 
     if need_api_key and prompt_if_missing:
-        print(Style.BRIGHT + Fore.BLUE + 'Please paste your API key and press Enter.' + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.BLUE + 'Paste your API key and press Enter.' + Style.RESET_ALL)
         api_key = getpass.getpass(prompt='You can get one from https://app.mayalabs.io/settings/developers: \n')
         file_json = {"MAYA_API_KEY": api_key}
         with open(MAYA_CACHE_FILE, "w+", encoding='UTF-8') as f:

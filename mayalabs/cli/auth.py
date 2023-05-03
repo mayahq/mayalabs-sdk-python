@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+import getpass
 from colorama import Fore, Style
 from .helpers import get_api_key
 from ..utils.defaults import default_api_base_url
@@ -22,7 +23,7 @@ def auth(subcommand):
         show_usage_guide()
 
 def login():
-    api_key = input('Please enter your API key: ')
+    api_key = getpass.getpass(prompt='Please enter your API key: ')
     file_json = {"MAYA_API_KEY": api_key}
     if os.path.isfile(MAYA_CACHE_FILE):
         with open(MAYA_CACHE_FILE, "r", encoding='UTF-8') as f:
