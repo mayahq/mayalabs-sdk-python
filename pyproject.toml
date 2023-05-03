@@ -32,7 +32,7 @@ build-backend = "setuptools.build_meta"
 find = {}
 
 [project.scripts]
-mayalabs = "mayalabs.cli:cli"
+mayalabs = "mayalabs.cli.entry:cli"
 
 [project.urls]
 homepage = "https://mayalabs.io"

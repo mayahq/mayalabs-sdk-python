@@ -8,13 +8,14 @@ import getpass
 import requests
 from colorama import Fore, Style
 import mayalabs
-from .session import Session
-from .function import Function
-from .utils.name_gen import get_random_name
-from .utils.defaults import default_api_base_url
+from ..session import Session
+from ..function import Function
+from ..utils.name_gen import get_random_name
+from ..utils.defaults import default_api_base_url
 from halo import Halo
 from simple_term_menu import TerminalMenu
 from tabulate import tabulate
+from .auth import auth
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -234,5 +235,3 @@ def search(query):
         table.append([current_object['id'] ,current_object['main_text'], current_object['num_samples']])
     print(tabulate(table, headers=['ID', 'COMMAND', 'NUMBER OF SAMPLES'], tablefmt='plain'))
     
-def auth(subcommand):
-    print(subcommand)
