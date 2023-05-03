@@ -11,7 +11,7 @@ The SDK Interactions prescribe using `call(..)` method to interact with the Maya
 
 these nodes are seen on the IDE and SDK script as follows:
 
-![IDE_Editor_1.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4e356eb5-bce5-4db5-8e6b-e6e8d5a3f498/Screenshot_2023-04-27_at_12.03.54_AM.png)
+![IDE_Editor_1.png](https://dotmaya.notion.site/image/https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4e356eb5-bce5-4db5-8e6b-e6e8d5a3f498/Screenshot_2023-04-27_at_12.03.54_AM.png)
 ```python
 1. trigger on receive
 ...
@@ -108,7 +108,3 @@ Hello, World!
 and the program graph which enables the Hello, World program above is deployed as shown in image here:
 
 ![Screenshot 2023-04-27 at 6.14.34 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/142786fe-133a-4efb-be87-fe9eb095353b/Screenshot_2023-04-27_at_6.14.34_PM.png)
-
-[Rules of Value Assignment](https://www.notion.so/Rules-of-Value-Assignment-978b1d4ce75f496caf43ac0157dc2e19)
-
-[Messed Up Variables](https://www.notion.so/Messed-Up-Variables-c98d3ec15397450eb72532aa13364fd1)
