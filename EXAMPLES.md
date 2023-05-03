@@ -21,9 +21,9 @@ The PAC-1 natural language interpreter can assemble natural language programs ac
 
 ### If...Then Conditionals and Looping
 
-A simple if...then else switch, with a loop written in English.
+A simple if...else flow, with a loop written in English. Maya and PAC-1 utlizes an assembly style `go to` to direct a program flow execution to a preceding or jump over a succeeding step. Looping, hence is just `if ... otherwise` conditional checks on `go to` checkpoints.
 
-```
+```python
 1. trigger on receive message
 2. set {{msg.payload}} to '{"num": 29}'
 3. add 1 to {{msg.payload.num}}
@@ -35,6 +35,11 @@ A simple if...then else switch, with a loop written in English.
 7. respond back with {{msg.payload}}
 ```
 
+Maya with PAC-1 interpreter doesn't have an `else if ...` paradigm and utilizes multiple `if ... else` to bring the same effects.
+
+```python
+# insert if..else if... logic script here
+```
 ### Custom Functions
 
 PAC-1 uses code generation models for synthesising Javascript and Python functions for simple variable manipulation.
@@ -222,9 +227,9 @@ If you wanted to try instantiate different variations of this task in one go in 
 ```
 // fetch relevant user insights and send alerts to slack
 1. add a button with label 'Spawn Workers'
-	- 1.1. spawn a worker 'ABC' to run 'fetch all the users who signed up and send to channel #growth on slack, every day at 8pm'
-    - 1.2. spawn a worker 'DEF' which runs 'fetch all the users who churned this week and send to channel #growth on slack, every week on Monday'
-    - 1.3. spawn a worker 'GHI' which runs 'fetch all users in the schema and send to channel #marketing on slack'
+	- 1.1. spawn a worker 'Growth' to run 'fetch all the users who signed up and send to channel #growth on slack, every day at 8pm'
+    - 1.2. spawn a worker 'Monitor' which runs 'fetch all the users who churned this week and send to channel #growth on slack, every week on Monday'
+    - 1.3. spawn a worker 'Market' which runs 'fetch all users grouped by location and send to channel #marketing on slack'
 ```
 
 #### Concurrency
