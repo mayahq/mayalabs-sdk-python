@@ -2,8 +2,13 @@ import json
 import requests
 from tabulate import tabulate
 from .helpers import get_api_key
+from .helpers import print_usage_guide
 
 def search(query):
+    if not query:
+        print_usage_guide('search')
+        return
+
     api_key = get_api_key(show_instructions=True)
     if not api_key:
         return

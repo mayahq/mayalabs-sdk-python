@@ -13,6 +13,7 @@ from ..utils.defaults import default_api_base_url
 from halo import Halo
 from simple_term_menu import TerminalMenu
 from .helpers import get_api_key
+from .helpers import print_usage_guide
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
 
@@ -20,6 +21,10 @@ def instruct(command, from_scratch, session_id):
     """
     Executes a command provided with the -c option.
     """
+    if not command:
+        print_usage_guide('instruct')
+        return
+
     api_key = get_api_key(show_instructions=True)
     if api_key:
         mayalabs.api_key = api_key
