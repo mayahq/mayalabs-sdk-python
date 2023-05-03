@@ -16,8 +16,8 @@ guide = {
     'auth': {
         'description': 'Authenticate Maya.',
         'usage': 'mayalabs auth <subcommand>', 
-        'commands_table': [['login:', 'Login to Maya'], ['status:', 'Check authorization status'], ['logout:', 'Logout of Maya']],
-        'examples': ["$ mayalabs auth login", "$ mayalabs auth status"]
+        'commands_table': [['login:', 'Login to Maya'], ['whoami:', 'Check authorized user'], ['logout:', 'Logout of Maya']],
+        'examples': ["$ mayalabs auth login", "$ mayalabs auth whoami"]
     },
     'search': {
         'description': 'Search Maya.',

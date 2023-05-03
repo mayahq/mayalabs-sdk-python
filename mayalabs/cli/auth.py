@@ -14,8 +14,8 @@ def auth(subcommand):
         login()
     elif subcommand == 'logout':
         logout()
-    elif subcommand == 'status':
-        user_name = status()
+    elif subcommand == 'whoami':
+        user_name = whoami()
         if user_name:
             print(f'Authenticated as {user_name}')
         else:
@@ -38,14 +38,14 @@ def login():
         with open(MAYA_CACHE_FILE, "w", encoding='UTF-8') as f:
             f.write(json.dumps(file_json))
             f.close()
-    user_name = status()
+    user_name = whoami()
     if user_name:
         print(f'Authenticated as {user_name}')
     else:
         print('Invalid API Key')
 
 def logout():
-    user_name = status()
+    user_name = whoami()
     if user_name:
         print(f'Logging out {user_name}')
     else:
@@ -61,7 +61,7 @@ def logout():
             f.close()   
     print('Logged out')
 
-def status():
+def whoami():
     url = f"{default_api_base_url()}/app/v2/profiles/whoami"
     api_key = get_api_key(show_instructions=False)
     if api_key:

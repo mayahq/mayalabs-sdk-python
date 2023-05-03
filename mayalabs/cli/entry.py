@@ -1,5 +1,6 @@
 import os
 import sys
+import mayalabs
 from colorama import Style
 from tabulate import tabulate
 from .auth import auth
@@ -14,21 +15,9 @@ def cli():
     Use Maya from the command line.
     """
     arguments = sys.argv[1:]
+    # If testing using dev key
+    mayalabs.api_base = 'https://api.dev.mayalabs.io'
     if len(arguments) == 0:
-        # print('Use Maya from the command line.')
-        # print(Style.BRIGHT + '\nUSAGE' + Style.RESET_ALL)
-        # print('mayalabs <command> <subcommand>')
-
-        # print(Style.BRIGHT + '\nCOMMANDS' + Style.RESET_ALL)
-        # table = [['auth:', 'Authenticate mayalabs'], ['instruct:', 'Instruct Maya'], ['search:', 'Search Maya']]
-        # print(tabulate(table, tablefmt='plain'))
-
-        # print(Style.BRIGHT + '\nEXAMPLES' + Style.RESET_ALL)
-        # print("$ mayalabs search 'comic book'")
-        # print("$ mayalabs instruct 'get data from gsheet'")
-
-        # print(Style.BRIGHT + '\nLEARN MORE' + Style.RESET_ALL)
-        # print('Read the manual at https://mayalabs.io/docs/cli\n')
         print_usage_guide('mayalabs')
     elif len(arguments) >= 1:
         first_arg = arguments[0]
