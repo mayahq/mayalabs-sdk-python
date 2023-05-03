@@ -22,20 +22,14 @@ def cli():
     """
     Use Maya from the command line.
     """
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("command", help="The command to execute", required=False)
-    # parser.add_argument("-c", "--command", help="The command to pass to function")
-    # parser.add_argument("-k", "--key", help="The API Key to use")
-    # args = parser.parse_args()
     arguments = sys.argv[1:]
     if len(arguments) == 0:
-        print('Use Maya from the command line.\n')
-        print(Style.BRIGHT + 'CORE COMMANDS' + Style.RESET_ALL)
-        table = [['auth:', 'Authenticate mayalabs'], ['instruct:', 'Instruct Maya'], ['search:', 'Search Maya']]
-        print(tabulate(table, tablefmt='plain'))
+        print('Use Maya from the command line.')
+        print(Style.BRIGHT + '\nUSAGE' + Style.RESET_ALL)
+        print('mayalabs <command> <subcommand>')
 
-        print(Style.BRIGHT + '\nFLAGS' + Style.RESET_ALL)
-        table = [['--help', 'Show help for a command'], ['--version', 'Show mayalabs version']]
+        print(Style.BRIGHT + '\nCOMMANDS' + Style.RESET_ALL)
+        table = [['auth:', 'Authenticate mayalabs'], ['instruct:', 'Instruct Maya'], ['search:', 'Search Maya']]
         print(tabulate(table, tablefmt='plain'))
 
         print(Style.BRIGHT + '\nEXAMPLES' + Style.RESET_ALL)
@@ -44,40 +38,18 @@ def cli():
 
         print(Style.BRIGHT + '\nLEARN MORE' + Style.RESET_ALL)
         print('Read the manual at https://mayalabs.io/docs/cli\n')
-
-        # complete this section. This will give visibility into the current core commands.
-        # Use that to refine the code further below
-        # Might need some sort of "type-che*king" for robustness of functions
-        # could think about having one file per core command
-        # core commands right now without checking - auth, instruct, search
-        # each command (instruct, auth, search) will either take a sub_command or a command for the main action.
-        # Improve the terminology - right now it's getting confusing. Again, creating the usage section will help out with this
-        # eg. of command taking sub command: mayalabs auth login, mayalabs auth status
-        # eg. of command taking a direct command: mayalabs instruct 'get data from gsheet'
     elif len(arguments) == 1:
-        command = arguments[0]
-        print(f"print usage instructions for {command}")
+        first_arg = arguments[0]
+        print(f"print usage instructions for {first_arg}")
     elif len(arguments) == 2:
-        command = arguments[0]
-        option = arguments[1]
-        if command == 'instruct':
-            instruct(command=option, from_scratch=True, session_id=None)
-        if command == 'search':
-            search(query=option)
-
-    # command = args.command
-    # key = args.key
-    # function_name = args.function_name
-    # if function_name == "instruct" and not command:
-    #     print("Please provide a command with the -c flag")
-    # elif function_name == "instruct" and command:
-    #     instruct(command=command, from_scratch=True, session_id=None)
-    # elif function_name == "set" and not key:
-    #     print("Please provide the API key with the -k flag")
-    # elif function_name == "set" and key:
-    #     set_key(api_key=key)
-    # elif function_name == "whoami":
-        # whoami()
+        first_arg = arguments[0]
+        second_arg = arguments[1]
+        if first_arg == 'instruct':
+            instruct(command=second_arg, from_scratch=True, session_id=None)
+        elif first_arg == 'search':
+            search(query=second_arg)
+        elif first_arg == 'auth':
+            auth(subcommand=second_arg)
 
 def get_api_key(prompt_if_missing):
     """
@@ -262,3 +234,5 @@ def search(query):
         table.append([current_object['id'] ,current_object['main_text'], current_object['num_samples']])
     print(tabulate(table, headers=['ID', 'COMMAND', 'NUMBER OF SAMPLES'], tablefmt='plain'))
     
+def auth(subcommand):
+    print(subcommand)
