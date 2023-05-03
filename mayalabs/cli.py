@@ -29,7 +29,31 @@ def cli():
     # args = parser.parse_args()
     arguments = sys.argv[1:]
     if len(arguments) == 0:
-        print('print usage instructions for mayalabs')
+        print('Use Maya from the command line.\n')
+        print(Style.BRIGHT + 'CORE COMMANDS' + Style.RESET_ALL)
+        table = [['auth:', 'Authenticate mayalabs'], ['instruct:', 'Instruct Maya'], ['search:', 'Search Maya']]
+        print(tabulate(table, tablefmt='plain'))
+
+        print(Style.BRIGHT + '\nFLAGS' + Style.RESET_ALL)
+        table = [['--help', 'Show help for a command'], ['--version', 'Show mayalabs version']]
+        print(tabulate(table, tablefmt='plain'))
+
+        print(Style.BRIGHT + '\nEXAMPLES' + Style.RESET_ALL)
+        print("$ mayalabs search 'comic book'")
+        print("$ mayalabs instruct 'get data from gsheet'")
+
+        print(Style.BRIGHT + '\nLEARN MORE' + Style.RESET_ALL)
+        print('Read the manual at https://mayalabs.io/docs/cli\n')
+
+        # complete this section. This will give visibility into the current core commands.
+        # Use that to refine the code further below
+        # Might need some sort of "type-che*king" for robustness of functions
+        # could think about having one file per core command
+        # core commands right now without checking - auth, instruct, search
+        # each command (instruct, auth, search) will either take a sub_command or a command for the main action.
+        # Improve the terminology - right now it's getting confusing. Again, creating the usage section will help out with this
+        # eg. of command taking sub command: mayalabs auth login, mayalabs auth status
+        # eg. of command taking a direct command: mayalabs instruct 'get data from gsheet'
     elif len(arguments) == 1:
         command = arguments[0]
         print(f"print usage instructions for {command}")
