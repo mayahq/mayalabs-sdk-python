@@ -275,7 +275,11 @@ class Session():
             
             # loop = asyncio.get_event_loop()
             async def async_wrapper():
-                if update:
+                # the change session request responds with a value of changed that is set
+                # the deployment needs to be done the first time when changed is None and
+                # all subsequent times when change is True
+                # if update is set to false deployment doesn't happen irrespective of changed status
+                if update and (self.changed is True or self.changed is None):
                     deploy_task = asyncio.create_task(SessionClient.deploy_session(self.id, self.worker.id))
                     log_task = asyncio.create_task(self.worker.ws_client.start_listener(events=deploy_events, log_prefix=f'{self.worker.name}'))
                     def stop_log_task(future):
