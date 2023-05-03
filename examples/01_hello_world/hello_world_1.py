@@ -1,3 +1,4 @@
+# script to print Hello, World! on Maya IDE/editor debug console
 import mayalabs
 
 script = """

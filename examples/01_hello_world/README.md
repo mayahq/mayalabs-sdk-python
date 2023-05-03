@@ -81,7 +81,7 @@ output = function.call(payload={})
 
 This above script renders a Maya program in the cloud worker that responds in the same debug console as before:
 
-4![4](https://user-images.githubusercontent.com/9352128/235934940-e7475324-2a79-4164-8154-4a19db9e748e.png
+![4](https://user-images.githubusercontent.com/9352128/235934940-e7475324-2a79-4164-8154-4a19db9e748e.png)
 
 The reason why this Hello, World program looks more complicated than the previous one is because we chose to display the `Hello, World!` message on the IDE while triggering the program execution from SDK’s `call()` method. 
 
