@@ -34,21 +34,14 @@ A simple if...else flow, with a loop written in English. Maya and PAC-1 utlizes 
     - 6.1. print {{msg.payload.num}}
 7. respond back with {{msg.payload}}
 ```
-
-Maya with PAC-1 interpreter doesn't have an `else if ...` paradigm and utilizes multiple `if ... else` to bring the same effects.
-
-```python
-# insert if..else if... logic script here
-```
 ### Custom Functions
 
 PAC-1 uses code generation models for synthesising Javascript and Python functions for simple variable manipulation.
 
 ```
 1. trigger on recieve
-2. make a GET request to '<apilink>'
-3. run a custom function to 'add 5 to every element of {{msg.payload}}'
-4. send response back
+2. run a custom function to 'add 5 to every element of {{msg.payload.list}}'
+3. send response back
 ```
 
 ### Web Scrapers
