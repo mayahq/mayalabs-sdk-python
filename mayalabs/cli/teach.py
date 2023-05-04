@@ -17,15 +17,10 @@ def teach(file_path):
     mayalabs.api_key = api_key
 
     if os.path.isfile(file_path):
-        # teach the contents of the file here
         url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
-
-        with open(file_path, "rb") as f:
-            files = {"file": f}
-            print(files)
-            headers = {"X-API-KEY": api_key}
-            response = requests.post(url, headers=headers, files=files, timeout=30)
-
+        files = {"files": open(file_path, "rb")}
+        headers = {"X-API-KEY": api_key}
+        response = requests.post(url, headers=headers, files=files, timeout=30)
         response_text = json.loads(response.text)
         print(response_text)
     else:
