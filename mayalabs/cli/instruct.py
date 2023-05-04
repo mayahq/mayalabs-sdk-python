@@ -27,9 +27,7 @@ def instruct(command, from_scratch, session_id):
         return
 
     api_key = get_api_key(show_instructions=True)
-    if api_key:
-        mayalabs.api_key = api_key
-    else:
+    if not api_key:
         return
     # to be used if testing using devapp
     # mayalabs.api_base = "https://api.dev.mayalabs.io"

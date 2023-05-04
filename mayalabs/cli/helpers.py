@@ -48,6 +48,15 @@ guide = {
             "$ mayalabs instruct 'scrape wikipedia for Alan Turing'",
         ],
     },
+    "teach": {
+        "description": "Teach Maya.",
+        "usage": "mayalabs teach <filepath>",
+        "commands_table": [],
+        "examples": [
+            "$ mayalabs teach ./maya_wiki_researcher.nl",
+            "$ mayalabs teach ../skills/playstation_store_scraper.nl",
+        ],
+    },
 }
 
 

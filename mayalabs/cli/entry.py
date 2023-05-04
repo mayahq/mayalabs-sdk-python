@@ -6,6 +6,7 @@ from tabulate import tabulate
 from .auth import auth
 from .search import search
 from .instruct import instruct
+from .teach import teach
 from .helpers import print_usage_guide
 
 MAYA_CACHE_FILE = os.path.join(os.path.expanduser("~"), ".mayalabs")
@@ -29,3 +30,5 @@ def cli():
             search(query=second_arg)
         elif first_arg == "auth":
             auth(subcommand=second_arg)
+        elif first_arg == "teach":
+            teach(file_path=second_arg)
