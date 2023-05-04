@@ -1,7 +1,10 @@
 import mayalabs
+mayalabs.api_key = "mayakey-$2a$10$mBaPxpG3wUkqWOEJtz4ssOj1TmsWOUvivzgrCYSbB/pp/tVDPjy8C"
+mayalabs.api_base = "https://api.dev.mayalabs.io"
+
 
 fn = mayalabs.Function(name="Branching_1")
-
+fn.clear()
 mayalabs.log_level = "debug"
 script = """
 1. trigger on receive

@@ -3,12 +3,30 @@
 Maya with PAC-1 follows a flow based programming (FBP) paradigm. One of the core strengths in an FBP system is to branch out and merge back provided data is not corrupted for the succeeding logic unit. Maya with PAC-1 has attempted to create a synatactical structure to define such an FBP in natural language sequence code.
 
 The branching syntax in Maya with PAC-1 works on three special character (or character classes). 
-- 1. Identation: a step starting from 4-indentation on right from the start position of previous step is considered a branch-out
-
+- 1. Indentation: a step starting from 4-indentation on right from the start position of previous step is considered a branch-out
 - 2. `-` dash symbol on an indented step refers to parallel child branches from a preceding step
 - 3. Numeric step identification with `.` dot symbol: The steps are identified for readability and sequential clarity using bulleted numbering system (1., 1.1., 2., 2.1, 2.1.1, etc.)
 
-The branched scripts can get a bit unruly and unreadable. The following examples should help understand implementation of branching in Maya with PAC-1 interpreter:
+Having syntax structure out of the way, there is a caveat which is implicit, but worth noting. In an FBP paradigm technically every subsequent step is a branch out of a previous step, however for the definition of the term 'branching' to be ubiquitously understood, more than one branch out from a preceding node is accepted as branched logic. While branching is meant to enable parallel execution of different logic path, if we were to use the branching syntax as we saw before and do not create multiple branched flow paths, we essentially have built a linear flow again, as you may see in our two Hello, World examples: [hello_world_1.py](/examples/01_hello_world/hello_world_1.py) and [hello_world_2.py](/examples/01_hello_world/hello_world_2.py).
+
+A very simple 'branched' flow logic should look something like:
+```python
+import mayalabs
+
+fn = mayalabs.Function(name="Branching_Simple")
+script = """
+1. set {{msg.payload}} to 20
+    - 1.1. add '5' to {{msg.payload}}
+    1.2. print {{msg.payload}}
+    - 1.3. add '10' to {{msg.payload}}
+    1.4. print {{msg.payload}}
+"""
+fn.update(script=script)
+```
+The above example just creates two branches which respectively add 5 and 10 to number 20 in their individual paths and prints it. We can create nested branching paths also by repeating the same syntax structure of `-` (dash) and indentation rules. 
+
+
+However, the branched scripts can get a bit unruly and unreadable, especially if there is nested branching and recombination or both. The following examples should help understand implementation of branching in Maya with PAC-1 interpreter:
 
 ```python
 import mayalabs
