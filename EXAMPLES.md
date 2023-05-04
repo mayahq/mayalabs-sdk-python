@@ -44,6 +44,15 @@ PAC-1 uses code generation models for synthesising Javascript and Python functio
 3. send response back
 ```
 
+```
+1. get 'Name and Website' from notion
+    - 1.1. search the web for {{msg.payload.}}
+      1.2. go to step 2
+    - 1.3. scrape the website with url {{Website}}
+      1.4. go to step 2
+2. print {{payload}}
+```
+
 ### Web Scrapers
 
 Fetching data from a source, and splitting it into three branches that go scrape the web, and display results in a table.
@@ -51,12 +60,10 @@ Fetching data from a source, and splitting it into three branches that go scrape
 ```
 1. from gsheet get 'Name, Website, Company, Email, Linkedin'
 2. split data into batches and send at intervals of 2 seconds
-    - 2.1. scrape and extract title, description and text from 'Website'
-        2.1.1. go to step 3
-    - 2.2. scrape and extract text from 'Linkedin'
-        2.2.1. go to step 3
-    - 2.3. store 'Company' in {{msg.payload.company}}
-        2.3.1. go to step 3
+    - 2.1. extract title, description and text from 'Website'
+    2.1.1. go to step 3
+    - 2.2. extract text from 'Linkedin'
+    2.2.1. go to step 3
 3. show in a table with button Research
 ```
 
