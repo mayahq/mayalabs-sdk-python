@@ -23,6 +23,9 @@ script = """
 """
 fn.update(script=script)
 ```
+<img width="514" alt="Screenshot 2023-05-04 at 6 14 32 PM" src="https://user-images.githubusercontent.com/9352128/236237247-ffe15b48-ae49-4f63-8d0a-a3c03192b0a3.png">
+
+
 The above example just creates two branches which respectively add 5 and 10 to number 20 in their individual paths and prints it. We can create nested branching paths also by repeating the same syntax structure of `-` (dash) and indentation rules. 
 
 
