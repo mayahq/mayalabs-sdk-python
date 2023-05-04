@@ -1,5 +1,4 @@
 import mayalabs
-mayalabs.api_key = '< your API key here >'
 
 script = """
 1. trigger on receive
@@ -12,8 +11,8 @@ script = """
 8. send response back
 """
 
-fn = mayalabs.Function.create(name = 'google_result_scraper', script = script)
-fn.deploy()
+fn = mayalabs.Function(name = 'google_result_scraper')
+fn.update(script = script)
 
 result = fn.call(payload={
     'url': 'ws://10.0.156.100:3000', # Points to Maya's internal browser service. You cannot access it from outside Maya.
