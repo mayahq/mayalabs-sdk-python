@@ -17,11 +17,22 @@ def teach(file_path):
     mayalabs.api_key = api_key
 
     if os.path.isfile(file_path):
-        url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
-        files = {"files": open(file_path, "rb")}
         headers = {"X-API-KEY": api_key}
+        files = {"files": open(file_path, "rb")}
+        # Checking collision levels
+        url = "https://api.dev.mayalabs.io/pac/v1/library/skill/verify"
         response = requests.post(url, headers=headers, files=files, timeout=30)
         response_text = json.loads(response.text)
-        print(response_text)
+        steps = response_text["reference"]["steps"]
+        print(steps)
+
+        max_collision = 0.0
+        # find the max_collision from the nested data
+
+        # Teaching
+        # url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
+        # response = requests.post(url, headers=headers, files=files, timeout=30)
+        # response_text = json.loads(response.text)
+        # print(response_text)
     else:
         print(f"{file_path} does not lead to a file.")
