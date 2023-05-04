@@ -52,7 +52,7 @@ def logout():
     if user_name:
         print(f"Logging out {user_name}")
     else:
-        print("Not logged in")
+        print("Already logged out")
         return
     if os.path.isfile(MAYA_CACHE_FILE):
         with open(MAYA_CACHE_FILE, "r", encoding="UTF-8") as f:

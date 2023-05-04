@@ -32,3 +32,5 @@ def cli():
             auth(subcommand=second_arg)
         elif first_arg == "teach":
             teach(file_path=second_arg)
+        else:
+            print_usage_guide("mayalabs")

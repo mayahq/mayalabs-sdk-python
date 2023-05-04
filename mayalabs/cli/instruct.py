@@ -4,6 +4,7 @@ import shutil
 import time
 import getpass
 import requests
+import mayalabs
 from colorama import Fore, Style
 import mayalabs
 from ..session import Session
@@ -29,8 +30,7 @@ def instruct(command, from_scratch, session_id):
     api_key = get_api_key(show_instructions=True)
     if not api_key:
         return
-    # to be used if testing using devapp
-    # mayalabs.api_base = "https://api.dev.mayalabs.io"
+    mayalabs.api_key = api_key
     recipe = ""
     initial_spinner_text = "Generating..."
     if not from_scratch:

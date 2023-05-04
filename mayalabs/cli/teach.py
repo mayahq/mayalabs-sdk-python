@@ -1,4 +1,7 @@
 import os
+import json
+import requests
+import mayalabs
 from .helpers import get_api_key
 from .helpers import print_usage_guide
 
@@ -11,11 +14,19 @@ def teach(file_path):
     api_key = get_api_key(show_instructions=True)
     if not api_key:
         return
+    mayalabs.api_key = api_key
 
     if os.path.isfile(file_path):
-        with open(file_path, "r") as f:
-            contents = f.read()
-        print(contents)
         # teach the contents of the file here
+        url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
+
+        with open(file_path, "rb") as f:
+            files = {"file": f}
+            print(files)
+            headers = {"X-API-KEY": api_key}
+            response = requests.post(url, headers=headers, files=files, timeout=30)
+
+        response_text = json.loads(response.text)
+        print(response_text)
     else:
-        print(f"The filepath {file_path} does not lead to a file.")
+        print(f"{file_path} does not lead to a file.")

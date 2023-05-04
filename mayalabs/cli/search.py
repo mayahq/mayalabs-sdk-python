@@ -1,5 +1,6 @@
 import json
 import requests
+import mayalabs
 from tabulate import tabulate
 from .helpers import get_api_key
 from .helpers import print_usage_guide
@@ -13,6 +14,7 @@ def search(query):
     api_key = get_api_key(show_instructions=True)
     if not api_key:
         return
+    mayalabs.api_key = api_key
     response = requests.request(
         "GET",
         url=f"https://api.dev.mayalabs.io/pac/v1/session/suggest?q={query}&display_length=20&limit=20",

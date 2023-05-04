@@ -53,8 +53,8 @@ guide = {
         "usage": "mayalabs teach <filepath>",
         "commands_table": [],
         "examples": [
-            "$ mayalabs teach ./maya_wiki_researcher.nl",
-            "$ mayalabs teach ../skills/playstation_store_scraper.nl",
+            "$ mayalabs teach ./maya_wiki_researcher.zip",
+            "$ mayalabs teach ../skills/playstation_store_scraper.zip",
         ],
     },
 }
