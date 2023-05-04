@@ -24,7 +24,7 @@ Maya with PAC-1 interpreter doesn't have an `else if ...` paradigm and utilizes 
 3. if {{msg.payload.num}} is less than 36
     - 3.1 set {{msg.payload.response}} to "Number less than 36"
     3.2. print "Number less than 36"
-4. set {{msg.payload.response}} to "Number greater than or equal to 36"
+4. if {{msg.payload.response}} to "Number greater than or equal to 36"
 5. print "Number is greater than or equal to 36"
 7. respond back with {{msg.payload}}
 ```
