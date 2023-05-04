@@ -1,0 +1,5 @@
+## Examples of working with Maya and PAC-1 interpreter
+
+Maya Labs is attempting to bring to forth a new paradigm of getting machines to work for you through instruction is natural language. While we excited for you to use it, just like any programming paradigm Maya when working with PAC-1 requires following certain basic rules, familiarizing with which would enrich the development experience.
+
+We have put these rules in a progressive complexity in [examples directory](/examples) to follow and get to know Maya. The readme files in each section from [01_hello_world](/examples/01_hello_world/) to [09_miscellaneous](/examples/09_miscellaenous/) should guide you to better understand working with various Maya concepts viz. Workers, Sessions, Configs, Secrets, Generation, Instruction, SDK, Web IDE/Editor, etc. 
