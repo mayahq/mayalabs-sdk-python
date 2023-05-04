@@ -1,4 +1,5 @@
 import mayalabs
+mayalabs.api_key = '<YOUR API KEY>'
 
 script = """
 1. trigger on receive
