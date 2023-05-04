@@ -1,7 +1,5 @@
 ### Browser control with Puppeteer
 
-Maya with PAC-1 follows a flow based programming (FBP) paradigm. One of the core strengths in an FBP system is to branch out and merge back provided data is not corrupted for the succeeding logic unit. Maya with PAC-1 has attempted to create a synatactical structure to define such an FBP in natural language sequence code.
-
 The below program will go to Google, search for "Dr. Homi Bhabha" and give you the description that appears in the summary box to the right of the search results.
 
 ```python
