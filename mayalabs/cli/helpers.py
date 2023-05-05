@@ -51,11 +51,11 @@ guide = {
     },
     "teach": {
         "description": "Teach Maya.",
-        "usage": "mayalabs teach <filepath>",
+        "usage": "mayalabs teach <filepath(s)>",
         "commands_table": [],
         "examples": [
-            "$ mayalabs teach ./maya_wiki_researcher.zip",
-            "$ mayalabs teach ../skills/playstation_store_scraper.zip",
+            "$ mayalabs teach ./wiki.txt",
+            "$ mayalabs teach ./gsheet1.txt ./gsheet2.txt",
         ],
     },
 }

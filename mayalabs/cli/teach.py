@@ -9,8 +9,8 @@ from .helpers import get_api_key
 from .helpers import print_usage_guide
 
 
-def teach(file_path):
-    if not file_path:
+def teach(file_paths):
+    if not file_paths:
         print_usage_guide("teach")
         return
 
@@ -19,8 +19,14 @@ def teach(file_path):
         return
     mayalabs.api_key = api_key
 
-    if os.path.isfile(file_path):
-        # Creating zip in memory using the specified files
+    # Checking if all files exist
+    missing_file_path = ""
+    for i in range(len(file_paths)):
+        if not os.path.isfile(file_paths[i]):
+            missing_file_path = file_paths[i]
+
+    # Creating zip in memory using the specified files
+    if missing_file_path == "":
         buffer = io.BytesIO()
         with zipfile.ZipFile(
             buffer, mode="w", compression=zipfile.ZIP_DEFLATED
@@ -28,14 +34,9 @@ def teach(file_path):
             zip_file.writestr("recipes/", "")
 
             zip_file.writestr("recipes/recipe_1/", "")
-            zip_file.write(file_path, "recipes/recipe_1/s0.txt")
+            for i in range(len(file_paths)):
+                zip_file.write(file_paths[i], f"recipes/recipe_1/s{i + 1}.txt")
         zip_data = buffer.getvalue()
-
-        with zipfile.ZipFile(buffer, "r") as zip_ref:
-            for file_name in zip_ref.namelist():
-                print(file_name)
-
-        # return
 
         # Checking collision levels
         collision_spinner = Halo(spinner="dots")
@@ -68,7 +69,7 @@ def teach(file_path):
             teaching_spinner = Halo(spinner="dots")
             teaching_spinner.start()
             headers = {"X-API-KEY": api_key}
-            files = {"files": open(file_path, "rb")}
+            files = {"files": ("filename.zip", io.BytesIO(zip_data))}
             url = "https://api.dev.mayalabs.io/pac/v1/library/recipe/teach"
             response = requests.post(url, headers=headers, files=files, timeout=30)
             teaching_spinner.stop()
@@ -78,4 +79,4 @@ def teach(file_path):
         else:
             return
     else:
-        print(f"{file_path} does not lead to a file.")
+        print(f"{missing_file_path} does not lead to a file.")
