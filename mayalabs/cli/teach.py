@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import mayalabs
+from halo import Halo
 from .helpers import get_api_key
 from .helpers import print_usage_guide
 
@@ -18,12 +19,15 @@ def teach(file_path):
 
     if os.path.isfile(file_path):
         # Checking collision levels
+        collision_spinner = Halo(spinner="dots")
+        collision_spinner.start()
         headers = {"X-API-KEY": api_key}
         files = {"files": open(file_path, "rb")}
         url = "https://api.dev.mayalabs.io/pac/v1/library/skill/verify"
         response = requests.post(url, headers=headers, files=files, timeout=30)
         response_text = json.loads(response.text)
         verification_data = response_text["reference"]["steps"][0]
+        collision_spinner.stop()
         max_mean_collision_score = 0
         for key, value in verification_data.items():
             for i in range(len(value)):
@@ -33,10 +37,12 @@ def teach(file_path):
 
         # Checking user's intent to teach
         max_mean_collision_percentage = max_mean_collision_score * 100
-        print(
-            f"The uploaded skill has a clash of {max_mean_collision_percentage}% with an existing skill."
-        )
-        intent_to_teach = input("Do you want to teach the skill or abort? [y/N] ")
+        intent_to_teach = "y"
+        if max_mean_collision_percentage > 50:
+            print(
+                f"The uploaded skill has a clash of {round(max_mean_collision_percentage, 2)}% with an existing skill."
+            )
+            intent_to_teach = input("Do you want to teach the skill or abort? [y/N] ")
 
         # Teaching
         if intent_to_teach == "y" or intent_to_teach == "Y":
@@ -46,6 +52,7 @@ def teach(file_path):
             response = requests.post(url, headers=headers, files=files, timeout=30)
             response_text = json.loads(response.text)
             print(response_text)
+            print("Skill has been taught.")
         else:
             return
     else:
