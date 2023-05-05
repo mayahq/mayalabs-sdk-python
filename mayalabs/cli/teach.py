@@ -20,26 +20,22 @@ def teach(file_path):
     mayalabs.api_key = api_key
 
     if os.path.isfile(file_path):
-        # create a BytesIO object to hold the zip file in memory
+        # Creating zip in memory using the specified files
         buffer = io.BytesIO()
-
-        # create a ZipFile object using the buffer as the file
         with zipfile.ZipFile(
             buffer, mode="w", compression=zipfile.ZIP_DEFLATED
         ) as zip_file:
-            # create the steps, docs, and recipes folders
-            zip_file.writestr("steps/", "")
-            zip_file.writestr("docs/", "")
             zip_file.writestr("recipes/", "")
 
-            # create the recipe_1 folder and add the text file to it
             zip_file.writestr("recipes/recipe_1/", "")
             zip_file.write(file_path, "recipes/recipe_1/s0.txt")
-
-        # get the contents of the zip file from the buffer
         zip_data = buffer.getvalue()
 
-        # do something with the zip data, like write it to a file or send it over the network
+        with zipfile.ZipFile(buffer, "r") as zip_ref:
+            for file_name in zip_ref.namelist():
+                print(file_name)
+
+        # return
 
         # Checking collision levels
         collision_spinner = Halo(spinner="dots")
@@ -73,7 +69,7 @@ def teach(file_path):
             teaching_spinner.start()
             headers = {"X-API-KEY": api_key}
             files = {"files": open(file_path, "rb")}
-            url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
+            url = "https://api.dev.mayalabs.io/pac/v1/library/recipe/teach"
             response = requests.post(url, headers=headers, files=files, timeout=30)
             teaching_spinner.stop()
             response_text = json.loads(response.text)
