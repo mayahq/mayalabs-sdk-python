@@ -70,12 +70,12 @@ def teach(file_paths):
             teaching_spinner.start()
             headers = {"X-API-KEY": api_key}
             files = {"files": ("filename.zip", io.BytesIO(zip_data))}
-            url = "https://api.dev.mayalabs.io/pac/v1/library/recipe/teach"
+            url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
             response = requests.post(url, headers=headers, files=files, timeout=30)
             teaching_spinner.stop()
             response_text = json.loads(response.text)
-            print(response_text)
-            # print("Recipe taught! You can now use it your programs.")
+            if response_text["status"] == "ok":
+                print("Recipe taught! You can now use it your programs.")
         else:
             return
     else:
