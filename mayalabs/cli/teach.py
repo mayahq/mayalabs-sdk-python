@@ -46,13 +46,15 @@ def teach(file_path):
 
         # Teaching
         if intent_to_teach == "y" or intent_to_teach == "Y":
+            teaching_spinner = Halo(spinner="dots")
+            teaching_spinner.start()
             headers = {"X-API-KEY": api_key}
             files = {"files": open(file_path, "rb")}
             url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
             response = requests.post(url, headers=headers, files=files, timeout=30)
+            teaching_spinner.stop()
             response_text = json.loads(response.text)
-            print(response_text)
-            print("Skill has been taught.")
+            print("Skill taught! You can now use it your programs.")
         else:
             return
     else:
