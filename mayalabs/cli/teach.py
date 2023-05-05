@@ -17,10 +17,9 @@ def teach(file_path):
     mayalabs.api_key = api_key
 
     if os.path.isfile(file_path):
+        # Checking collision levels
         headers = {"X-API-KEY": api_key}
         files = {"files": open(file_path, "rb")}
-
-        # Checking collision levels
         url = "https://api.dev.mayalabs.io/pac/v1/library/skill/verify"
         response = requests.post(url, headers=headers, files=files, timeout=30)
         response_text = json.loads(response.text)
@@ -35,15 +34,19 @@ def teach(file_path):
         # Checking user's intent to teach
         max_mean_collision_percentage = max_mean_collision_score * 100
         print(
-            f"The uploaded skill has a clash {max_mean_collision_percentage}% with an existing skill."
+            f"The uploaded skill has a clash of {max_mean_collision_percentage}% with an existing skill."
         )
-        intent_to_teach = input("Do you want to teach the skill or abort [y/N] ")
-        # print(intent_to_teach)
+        intent_to_teach = input("Do you want to teach the skill or abort? [y/N] ")
 
         # Teaching
-        # url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
-        # response = requests.post(url, headers=headers, files=files, timeout=30)
-        # response_text = json.loads(response.text)
-        # print(response_text)
+        if intent_to_teach == "y" or intent_to_teach == "Y":
+            headers = {"X-API-KEY": api_key}
+            files = {"files": open(file_path, "rb")}
+            url = "https://api.dev.mayalabs.io/pac/v1/library/skill/teach"
+            response = requests.post(url, headers=headers, files=files, timeout=30)
+            response_text = json.loads(response.text)
+            print(response_text)
+        else:
+            return
     else:
         print(f"{file_path} does not lead to a file.")
