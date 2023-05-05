@@ -31,6 +31,7 @@ def instruct(command, from_scratch, session_id):
     if not api_key:
         return
     mayalabs.api_key = api_key
+
     recipe = ""
     initial_spinner_text = "Generating..."
     if not from_scratch:

@@ -11,9 +11,10 @@ guide = {
         "description": "Use Maya from the command line.",
         "usage": "mayalabs <command> <subcommand>",
         "commands_table": [
-            ["auth:", "Authenticate mayalabs"],
+            ["auth:", "Authenticate Maya"],
             ["instruct:", "Instruct Maya"],
             ["search:", "Search Maya"],
+            ["teach:", "Instruct Maya"],
         ],
         "examples": [
             "$ mayalabs search 'comic book'",
